@@ -22,6 +22,12 @@
     Run RunFRTB_Silent and Test_RunRegression_Silent after the build and check
     the result on the Test_Expected sheet.
 
+.PARAMETER Template
+    Save the built workbook as a macro-free template instead, by default
+    dist\FRTB_Template.xlsx, with personal information removed. Review it
+    before copying it to the reserved path src\workbook\FRTB_Template.xlsx.
+    Cannot be combined with -RunTests.
+
 .PARAMETER Production
     Leave out the test modules of tests\modules (the "Run regression test"
     button then has no macro). Cannot be combined with -RunTests.
@@ -37,6 +43,7 @@ param(
     [string]$OutputPath,
     [switch]$RunTests,
     [switch]$Production,
+    [switch]$Template,
     [switch]$Force
 )
 
@@ -51,8 +58,15 @@ if (-not $Production) {
 if ($Production -and $RunTests) {
     throw '-RunTests needs the test modules; do not combine it with -Production'
 }
+if ($Template -and $RunTests) {
+    throw '-Template saves the workbook before any run; do not combine it with -RunTests'
+}
 if (-not $OutputPath) {
-    $OutputPath = Join-Path $repoRoot 'dist\K-FRTB-SA.xlsm'
+    if ($Template) {
+        $OutputPath = Join-Path $repoRoot 'dist\FRTB_Template.xlsx'
+    } else {
+        $OutputPath = Join-Path $repoRoot 'dist\K-FRTB-SA.xlsm'
+    }
 }
 $OutputPath = [System.IO.Path]::GetFullPath($OutputPath)
 
@@ -108,8 +122,14 @@ try {
         }
     }
 
-    # 52 = xlOpenXMLWorkbookMacroEnabled
-    $workbook.SaveAs($OutputPath, 52)
+    if ($Template) {
+        # 51 = xlOpenXMLWorkbook: the saved file carries no VBA project
+        $workbook.RemovePersonalInformation = $true
+        $workbook.SaveAs($OutputPath, 51)
+    } else {
+        # 52 = xlOpenXMLWorkbookMacroEnabled
+        $workbook.SaveAs($OutputPath, 52)
+    }
     Write-Host "Saved $OutputPath"
 } finally {
     if ($workbook -ne $null) {

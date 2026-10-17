@@ -156,7 +156,7 @@ End Sub
 
 
 ' Brand bar, title bar, subtitle and spacer rows shared by every sheet
-' (the K-SACCR frame); lastCol is the last column of the bars.
+' (the workbook frame); lastCol is the last column of the bars.
 Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle As String, _
                        ByVal kind As Long, ByVal lastCol As Long)
     ws.Cells(1, 2).Value = APP_NAME
@@ -510,7 +510,7 @@ Private Sub BuildInputSheet(ByVal sheetName As String, ByVal subtitle As String,
     FormatDataRows ws, LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_DATA_ROW + INPUT_ROWS - 1, nCols, firstNumCol, "#,##0.####", True
     On Error Resume Next
     ws.Range(TableCell(ws, LAYOUT_HEADER_ROW, 1), TableCell(ws, LAYOUT_HEADER_ROW, nCols)).AutoFilter
-    ' Short codes (risk class, bucket, sub-type) centered, as in the K-SACCR input sheets
+    ' Short codes (risk class and bucket) centered
     ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, 2), TableCell(ws, LAYOUT_FIRST_DATA_ROW + INPUT_ROWS - 1, 3)).HorizontalAlignment = -4108
     On Error GoTo 0
 End Sub

@@ -1,28 +1,30 @@
-# 🧩 Production Source
+# 🧩 Production source
 
-`src/` holds the production VBA source: the only input from which the
-K-FRTB-SA workbook is built. The layout follows VBA-SACCR-Toolkit and is
-described in the [workbook guide](../docs/workbook-guide.md#source-of-truth).
+This directory is the production-source boundary. It holds the exported VBA
+of the v0.1.0 prototype (issue #20) and the [workbook reservation](workbook/README.md).
+The prototype uses Excel/VBA to evaluate the approach; it is not the platform
+decision, which stays open in [Scope](../docs/SCOPE.md).
 
-- `core/CORE_Config.bas`: product name, sheet names, layout, palette and the
-  risk class, component and scenario codes;
-- `core/CORE_Util.bas`: sheet access, tagged parameter tables, conversions,
-  table formatting and the run log;
-- `core/CORE_Params.bas`: loading of the Control settings and `P_*`
-  parameters, and the risk weight and correlation accessors;
-- `core/CORE_SBM.bas`: the sensitivities-based method (delta, vega,
-  curvature) under the three correlation scenarios;
-- `core/CORE_DRC.bas`: the default risk charge for non-securitizations;
-- `core/CORE_RRAO.bas`: the residual risk add-on;
-- `workbook/M_Main.bas`: the sheet-button macros and automation entry points,
-  and the Results and Out_Summary reports;
-- `workbook/M_Setup.bas`: the workbook builder (sheets, palette, parameters,
-  sample portfolio, expected results);
-- `workbook/M_Dev.bas`: the export of the modules back to the repository.
+[Repository structure](../docs/REPOSITORY_STRUCTURE.md) owns placement and the
+source-of-truth policy; the [workbook guide](../docs/workbook-guide.md) owns
+the module layout, build and sheet conventions.
 
-Core modules declare `Option Private Module`. The engine does not yet keep
-core free of worksheet access: `CORE_Util`, `CORE_SBM`, `CORE_DRC` and
-`CORE_RRAO` read the input sheets and write the output sheets, as the engine
-of VBA-SACCR-Toolkit did when it was imported from its prototype.
+| Path | Content |
+| --- | --- |
+| `core/CORE_Config.bas` | Product name, sheet names, layout, palette and the risk class, component and scenario codes |
+| `core/CORE_Util.bas` | Sheet access, tagged parameter tables, conversions, table formatting and the run log |
+| `core/CORE_Params.bas` | Loading of the Control settings and `P_*` parameters; risk weight and correlation accessors |
+| `core/CORE_SBM.bas` | Sensitivities-based method (delta, vega, curvature) under the three correlation scenarios |
+| `core/CORE_DRC.bas` | Default risk charge for non-securitizations |
+| `core/CORE_RRAO.bas` | Residual risk add-on |
+| `workbook/M_Main.bas` | Sheet-button macros and automation entry points; Results and Out_Summary reports |
+| `workbook/M_Setup.bas` | Workbook builder: sheets, palette, parameters, sample portfolio, expected results |
+| `workbook/M_Dev.bas` | Export of the modules back to the repository |
 
-Do not place tests, examples, built workbooks or generated output here.
+Core modules declare `Option Private Module`. Known deviation: `CORE_Util`,
+`CORE_SBM`, `CORE_DRC` and `CORE_RRAO` read the input sheets and write the
+output sheets, so core is not yet free of worksheet access.
+
+Keep test code under `tests/` and maintenance logic under `tools/` or the
+existing `.github/scripts/`. Workbook binaries must never be the only source
+record.

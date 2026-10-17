@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// SPDX-License-Identifier: MPL-2.0
-// Adapted from danielep71/VBA-SACCR-Toolkit; see ../THIRD_PARTY_NOTICES.md.
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Daniele Penza
 
 import assert from "node:assert/strict";
 import { appendFile, readFile } from "node:fs/promises";

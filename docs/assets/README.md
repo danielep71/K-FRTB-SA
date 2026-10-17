@@ -6,7 +6,7 @@ engine or replace the [methodology](../methodology.md).
 ## 🪧 Social preview
 
 `FRTB_social_preview.png` (1280 x 640) is rendered from
-`FRTB_social_preview.html`, adapted from VBA-SACCR-Toolkit's social preview.
+`FRTB_social_preview.html`.
 Its figures are the results of the synthetic sample portfolio with the
 default parameters and settings, as written by the reconciled VBA run:
 total 3,877,793, SBM 3,163,703 (low scenario), DRC 636,589, RRAO 77,500.

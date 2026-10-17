@@ -12,7 +12,7 @@
 [![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#quick-start)
 [![Framework](https://img.shields.io/badge/Framework-Basel_MAR21--MAR23-1f3a5f?style=for-the-badge)](docs/methodology.md)
 [![Status](https://img.shields.io/badge/Status-Prototype_0.1.0-D93F0B?style=for-the-badge)](#status)
-[![Reference tests](https://img.shields.io/badge/Reconciliation-55_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
+[![Reconciliation](https://img.shields.io/badge/Reconciliation-55_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
 [![Excel evidence](https://img.shields.io/badge/Excel_evidence-pending-6E7781?style=for-the-badge)](docs/validation.md#not-validated)
 [![License](https://img.shields.io/badge/License-MIT-2ea44f?style=for-the-badge)](LICENSE)
 
@@ -40,7 +40,7 @@
 &nbsp;·&nbsp;
 [Methodology](docs/methodology.md)
 &nbsp;·&nbsp;
-[Workbook guide](docs/workbook-guide.md)
+[Scope](docs/SCOPE.md)
 
 ---
 
@@ -57,11 +57,14 @@
 <a id="status"></a>
 
 > [!IMPORTANT]
-> **Version 0.1.0 is a prototype.** The engine implements the Basel
-> standardized approach (MAR21-MAR23) with parameters checked against the BIS
-> text, and every output is reconciled with an independent Python reference.
-> It has **not yet been compiled or run in Excel**, and no result is validated
-> for regulatory use ([validation](docs/validation.md)).
+> **Version 0.1.0 is a prototype** of the
+> [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+> milestone (issue #20). It implements the Basel standardized approach
+> (MAR21-MAR23) in Excel VBA with parameters checked against the BIS text,
+> and every output is reconciled with an independent Python reference. It has
+> **not yet been compiled or run in Excel**, the engine platform decision is
+> still open ([scope](docs/SCOPE.md#platform-and-environment)), and no result
+> is validated for regulatory use ([validation](docs/validation.md)).
 
 > [!NOTE]
 > The workbook is **not stored in the repository**. It is built from the
@@ -70,8 +73,10 @@
 
 ## ✨ What this project is
 
-The **FRTB standardized approach** sets the own-funds requirement for market
-risk as the sum of three parts:
+**FRTB-SA** supports transparent implementation, benchmarking and validation
+of the **Fundamental Review of the Trading Book standardized approach**. The
+standardized approach sets the own-funds requirement for market risk as the
+sum of three parts:
 
 ```text
 Capital = SBM + DRC + RRAO
@@ -79,13 +84,12 @@ SBM     = max over {low, medium, high} correlation scenarios of
           sum over risk classes of (delta + vega + curvature)
 ```
 
-**K-FRTB-SA** is an Excel/VBA implementation for reproducing, testing and
-explaining that calculation. You enter sensitivities and positions; the
-engine nets them per risk factor, applies the risk weights and correlations
-of each bucket, aggregates across buckets under three correlation scenarios
-and writes every intermediate result.
-
-It is built for people who need to **check** an FRTB-SA number:
+**K-FRTB-SA** is the workbook prototype. You enter sensitivities and
+positions; the engine nets them per risk factor, applies the risk weights and
+correlations of each bucket, aggregates across buckets under three correlation
+scenarios and writes every intermediate result. It is built for market risk
+practitioners, model developers, validators, researchers and educators who
+need to **check** an FRTB-SA number:
 
 - each bucket's `Kb` and `Sb`, the curvature scenario chosen and every use of
   the alternative `Sb` are visible on `Out_Buckets`;
@@ -94,6 +98,16 @@ It is built for people who need to **check** an FRTB-SA number:
 - every rejected input row is listed on `Log` with the reason, never counted
   as zero;
 - every parameter sits on an editable `P_*` sheet next to its MAR paragraph.
+
+| Area | Status |
+| --- | --- |
+| Label catalogue, reconciliation, and drift detection | Implemented |
+| Repository protection and security baseline | Configured; remaining dependencies tracked in issue #2 |
+| Universal integrity gate | Pending issue #7 |
+| Sensitivities-based method (SBM) | Prototype: GIRR, CSR non-securitization, equity, commodity, FX; delta, vega, curvature |
+| Default risk charge (DRC) | Prototype: non-securitizations |
+| Residual risk add-on (RRAO) | Prototype |
+| Independent benchmarks and runtime evidence | Python reference reconciled with the VBA run in LibreOffice; Excel evidence pending |
 
 ---
 
@@ -120,15 +134,19 @@ It is built for people who need to **check** an FRTB-SA number:
 
 ## 1. Clone and check
 
+Prototype work integrates on **`release/v0.1.0`**; setup work stays on
+`release/v0.0.1`. See [branch governance](docs/GOVERNANCE.md).
+
 ```sh
-git clone https://github.com/danielep71/MKT-FTRB-SA.git
+git clone --branch release/v0.1.0 https://github.com/danielep71/MKT-FTRB-SA.git
 cd MKT-FTRB-SA
 python3 tools/vba_lint.py
 ```
 
 Use a clone, not **Download ZIP**: a clone checks the VBA out with the CRLF
 line endings the VBA editor expects. The full test suite needs LibreOffice
-and Python packages; see [validation](docs/validation.md).
+and Python packages; see [validation](docs/validation.md). The label tools
+are described in [Installation](INSTALLATION.md).
 
 ## 2. Build the workbook
 
@@ -193,8 +211,10 @@ role.
 | VBA reconciliation | The VBA, run headless in LibreOffice, reproduces every output of the Python reference, with and without the discretions, and logs every invalid row |
 | In-workbook regression | 52 items PASS |
 
-The [validation record](docs/validation.md) lists the commands and,
-explicitly, what is **not** validated yet.
+Static checks, runtime execution, independent numerical comparison and
+methodology review establish different things. The
+[validation record](docs/validation.md) lists the commands and, explicitly,
+what is **not** validated yet.
 
 <a id="limitations"></a>
 
@@ -206,16 +226,52 @@ explicitly, what is **not** validated yet.
 - Sensitivities and CVRs are inputs: the workbook does not price instruments.
 - The [interpretations](docs/methodology.md#interpretations-and-simplifications-to-review)
   listed in the methodology still need a decision.
+- No regulatory compliance, verified capital calculation or production
+  readiness is claimed. Keep examples and datasets synthetic: never submit
+  client, counterparty, position or credential data.
 
-## 📚 Documentation
+## 📚 Documentation and project tracking
 
-| Document | Content |
+| Need | Start here |
 | --- | --- |
-| [Methodology](docs/methodology.md) | Formulas, parameters, the BIS check and the interpretations to review |
-| [Workbook guide](docs/workbook-guide.md) | Source layout, build, sheets, inputs, running |
-| [Validation](docs/validation.md) | Automated checks and what is not validated |
-| [Labels and triage](docs/LABELS.md) | Issue labels and metadata rules |
+| Formulas, parameters, BIS check, open interpretations | [Methodology](docs/methodology.md) |
+| Source layout, build, sheets, inputs, running | [Workbook guide](docs/workbook-guide.md) |
+| Automated checks and what is not validated | [Validation](docs/validation.md) |
+| Local setup and verification commands | [Installation](INSTALLATION.md) |
+| Source, tests, generated files, and evidence placement | [Repository structure](docs/REPOSITORY_STRUCTURE.md) |
+| Documentation index | [Documentation](docs/README.md) |
+| Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
+| Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
+| Label usage, issue priorities, and metadata checks | [Labels and triage](docs/LABELS.md) |
+| How to contribute | [Contributing](CONTRIBUTING.md) |
+| Development branches and integration | [Governance](docs/GOVERNANCE.md) |
+| Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
+| Recorded changes | [Changelog](CHANGELOG.md) |
+| Prototype backlog | [v0.1.0 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/2) |
+| Setup backlog | [v0.0.1 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1) |
+| Privately report a potential vulnerability | [Private vulnerability reporting](https://github.com/danielep71/MKT-FTRB-SA/security/advisories/new) |
+
+Every issue must have **one priority label**, a milestone, and an assignee.
+P1 is reserved for confirmed calculation bugs.
+
+## 📜 Regulatory basis and evidence
+
+The methodology follows the Basel Framework (MAR21-MAR23, in force since
+1 January 2023) and keeps any jurisdiction-specific implementation separate.
+Each implemented rule carries its paragraph reference; a link to a regulation
+is not proof that an implementation matches it.
+[Scope](docs/SCOPE.md#source-and-validation-policy) defines the source and
+independent-validation policy.
+
+## 🏷️ Project name
+
+The documentation uses **FRTB-SA**, with the standard acronym FRTB, and the
+workbook is branded **K-FRTB-SA**. The GitHub repository identifier is
+**MKT-FTRB-SA**, which transposes the letters in FRTB; it is retained for URL
+and clone-path continuity.
 
 ## 📄 License
 
-[MIT](LICENSE) © 2026 Daniele Penza
+This project is distributed under the [MIT License](LICENSE).
+
+Maintained by [Daniele Penza](https://github.com/danielep71).

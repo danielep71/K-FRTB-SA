@@ -30,7 +30,7 @@ Attribute VB_Name = "M_Main"
 '
 ' KNOWN DEVIATION
 '   This standard module lives in src/workbook because the sheet buttons
-'   call it, as M_Main does in VBA-SACCR-Toolkit.
+'   call it; see src/README.md.
 '
 ' COMPATIBILITY
 '   Excel VBA; no references beyond the defaults.

@@ -1,4 +1,8 @@
-# 🧪 Tests
+# 🧪 Verification source and data
+
+This directory holds the verification source of the v0.1.0 prototype
+(issue #20). Expected results are derived by an independent Python reference,
+never copied from the VBA under test.
 
 | Path | Content |
 | --- | --- |
@@ -11,5 +15,13 @@
 | `conftest.py` | Shared LibreOffice fixtures |
 | `requirements.txt` | Pinned Python test dependencies |
 
-Run them as described in [validation](../docs/validation.md). The fixtures
-are synthetic: never add real portfolio data.
+The sample portfolio and the test cases are synthetic, written for this
+project. Each hand-calculated case states its inputs and the MAR formula it
+works through; tolerances are in the tests. Do not put disposable run output
+here; use ignored root `test-results/`.
+
+The label scripts listed in [Tooling](../tools/README.md) keep their own
+self-tests. [Scope](../docs/SCOPE.md) owns validation principles,
+[Repository structure](../docs/REPOSITORY_STRUCTURE.md) owns placement and
+durable evidence, and [Validation](../docs/validation.md) records what the
+prototype checks do and do not establish.

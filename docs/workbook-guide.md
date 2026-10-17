@@ -2,7 +2,7 @@
 
 [![Model: source first](https://img.shields.io/badge/model-source--first-0969da)](#source-of-truth)
 [![Build: Excel COM](https://img.shields.io/badge/build-Excel%20COM-217346)](#building-the-workbook-windows-excel)
-[![Layout: K-SACCR frame](https://img.shields.io/badge/layout-K--SACCR%20frame-1f3864)](#sheets)
+[![Layout: workbook frame](https://img.shields.io/badge/layout-workbook%20frame-1f3864)](#sheets)
 
 This document is authoritative for **how the workbook is built, laid out and
 used**. What it calculates is owned by the [methodology](methodology.md);
@@ -16,7 +16,9 @@ The exported VBA modules are the source of truth. The `.xlsm` workbook is a
 build output: it is not committed (`/dist/` is ignored) and is rebuilt from
 the modules. `M_Setup` creates every sheet, writes the default parameters and
 the synthetic sample portfolio, and embeds the expected results of the
-regression test. The layout follows VBA-SACCR-Toolkit.
+regression test. Building from source is a documented deviation from the
+[template-based build](REPOSITORY_STRUCTURE.md#conditional-excelvba-policy):
+`tools/Build-Workbook.ps1 -Template` saves the macro-free template for review.
 
 ```text
 src/
@@ -43,8 +45,7 @@ docs/          methodology, workbook guide, validation, assets
 | `tests/modules/TEST_Regression` | `Test_RunRegression`, `Test_RunRegression_Silent` |
 
 Each module opens with a banner (purpose, public surface, dependencies, state
-ownership, error policy, compatibility), as in VBA-SACCR-Toolkit's house
-style; `tools/vba_lint.py` checks the banner, the `CORE_`/`TEST_` prefixes and
+ownership, error policy, compatibility); `tools/vba_lint.py` checks the banner, the `CORE_`/`TEST_` prefixes and
 `Option Private Module` in core.
 
 <a id="building-the-workbook-windows-excel"></a>
@@ -62,7 +63,8 @@ style; `tools/vba_lint.py` checks the banner, the `CORE_`/`TEST_` prefixes and
    The script imports `src\core`, `src\workbook` and `tests\modules` into a
    new workbook, runs `BuildWorkbook`, the calculation and the regression
    test, and saves `dist\K-FRTB-SA.xlsm`. `-Production` leaves out the test
-   modules; `-Force` overwrites an existing file.
+   modules; `-Template` saves the freshly built, macro-free workbook as
+   `dist\FRTB_Template.xlsx` instead; `-Force` overwrites an existing file.
 3. Open the workbook and run **Debug → Compile VBAProject**.
 
 Manual alternative: in a new workbook open the VBA editor (Alt+F11), use
@@ -73,7 +75,7 @@ Manual alternative: in a new workbook open the VBA editor (Alt+F11), use
 
 ## 🎨 Sheets
 
-Every sheet carries the K-SACCR frame: the product name in gold (`FFC000`) on
+Every sheet carries the same frame: the product name in gold (`FFC000`) on
 a black bar, the title in white on a blue bar (`265A99`), an italic grey
 subtitle and tables from column C. Input tables have navy headers (`1F3864`)
 and cream input cells (`FFF2CC`); output tables have blue headers
