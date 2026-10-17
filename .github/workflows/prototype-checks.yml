@@ -1,0 +1,62 @@
+name: Prototype checks
+run-name: Prototype checks — ${{ github.ref_name }} @ ${{ github.sha }}
+
+# Static lint of the VBA modules, hand-calculated reference tests, and
+# reconciliation of the VBA engine executed headless in LibreOffice with the
+# independent Python reference. Excel itself is not available on hosted
+# runners, so Excel compilation and runtime remain manual evidence.
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "release/**"
+    paths:
+      - src/**
+      - tests/**
+      - tools/**
+      - .github/workflows/prototype-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prototype-checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  checks:
+    name: VBA lint, reference tests and LibreOffice reconciliation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out the exact SHA under review
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install LibreOffice Calc and the Python UNO bridge
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-calc python3-uno
+
+      - name: Install pinned Python test dependencies
+        run: |
+          /usr/bin/python3 -m venv --system-site-packages .venv
+          .venv/bin/python -m pip install --disable-pip-version-check -r tests/requirements.txt
+
+      - name: Static lint of the VBA modules
+        run: .venv/bin/python tools/vba_lint.py
+
+      - name: Reference, reconciliation and tooling tests
+        env:
+          REQUIRE_LIBREOFFICE: "1"
+        run: .venv/bin/python -m pytest -v tests

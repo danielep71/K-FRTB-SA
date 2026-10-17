@@ -1,0 +1,12 @@
+# Built workbooks (rebuild with tools/Build-Workbook.ps1)
+/dist/
+
+# Excel lock and temporary files
+~$*
+*.tmp
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

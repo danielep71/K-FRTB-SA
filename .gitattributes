@@ -1,0 +1,10 @@
+# VBA modules are imported by the Excel VBA editor, which expects CRLF.
+*.bas text eol=crlf
+*.cls text eol=crlf
+*.frm text eol=crlf
+*.ps1 text eol=crlf
+
+# Workbooks are build outputs or binary fixtures
+*.xlsm binary
+*.xlsx binary
+*.frx binary
