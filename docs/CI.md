@@ -29,8 +29,9 @@ after installation and all maintenance fixtures are offline.
   GitHub Actions or issue-form schema validation.
 - Tracked text has a final newline and no accidental trailing whitespace or
   extra EOF blank lines. Intentional Markdown hard breaks are allowed. VBA
-  exports may use CRLF and Windows-1252; binary assets are excluded from text
-  checks by the documented extensions in the checker.
+  exports may use CRLF and Windows-1252. Binary assets are excluded according
+  to Git's resolved `text` attribute from `.gitattributes`, including its
+  macros and path overrides; the checker has no separate extension list.
 - Common inline Markdown links/images and reference definitions outside code
   fences point to tracked repository files or directories. Anchors and remote
   URLs are not fetched or validated; this is not a complete Markdown parser.
@@ -41,7 +42,8 @@ after installation and all maintenance fixtures are offline.
   label workflows remain responsible for their own live evidence and trusted
   reconciliation; this runner does not duplicate their implementations.
 - Offline maintenance tests under `tests/tooling` cover malformed/duplicate
-  configuration, broken links, whitespace, unpinned actions, narrowed trigger
+  configuration (including non-standard JSON numeric constants), binary policy,
+  broken links, whitespace, unpinned actions, narrowed trigger
   coverage, incorrect update targets, and the traffic collector's safeguards.
 
 A failed prerequisite, validation error or failed child command exits nonzero.

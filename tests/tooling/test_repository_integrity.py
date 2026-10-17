@@ -4,6 +4,7 @@
 import copy
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 
@@ -29,6 +30,24 @@ class RepositoryIntegrityTests(unittest.TestCase):
             with self.subTest(name=name, text=text):
                 self.assertTrue(self.check_fixture({name: text}))
         self.assertIn("on", checker.load_yaml("on:\n  push: null\n"))
+        for constant in ["NaN", "Infinity", "-Infinity"]:
+            with self.subTest(constant=constant):
+                errors = self.check_fixture({"a.json": '{"value":' + constant + '}\n'})
+                self.assertTrue(any("non-standard JSON constant" in error for error in errors))
+
+    def test_binary_formats_follow_git_attributes(self):
+        source = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            (root / ".gitattributes").write_text((source / ".gitattributes").read_text() + "\n*.fixture opaque\n")
+            names = ["image.webp", "icon.ico", "font.woff2", "slides.pptx", "archive.7z", "custom.fixture"]
+            for name in names + ["bad.txt"]:
+                (root / name).write_bytes(b"\x00\xff\x10")
+            binary = checker.binary_paths(root, names + ["bad.txt"])
+            self.assertEqual(binary, set(names))
+            self.assertEqual(checker.validate_files(root, names, binary), [])
+            self.assertTrue(checker.validate_files(root, ["bad.txt"], binary))
 
     def test_broken_links_and_tracked_whitespace(self):
         for text in ["[Missing](missing.md)\n", "[Outside](../outside.md)\n", "bad \n", "no newline", "extra\n\n"]:

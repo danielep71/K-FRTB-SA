@@ -45,6 +45,18 @@ def load_yaml(text):
     return yaml.load(text, Loader=ConfigLoader)
 
 
+def reject_json_constant(value):
+    raise ValueError(f"non-standard JSON constant: {value}")
+
+
+def binary_paths(root, paths):
+    result = subprocess.check_output(
+        ["git", "check-attr", "-z", "--stdin", "text"],
+        input=("\0".join(paths) + "\0").encode(), cwd=root,
+    ).decode().rstrip("\0").split("\0")
+    return {result[index] for index in range(0, len(result), 3) if result[index + 2] == "unset"}
+
+
 def markdown_targets(text):
     # Common inline links/images and reference definitions outside fenced code.
     lines = []
@@ -63,7 +75,7 @@ def markdown_targets(text):
     return [target.strip("<>") for target in targets]
 
 
-def validate_files(root, paths):
+def validate_files(root, paths, binary=frozenset()):
     errors = []
     tracked = set(paths)
     for name in paths:
@@ -73,7 +85,7 @@ def validate_files(root, paths):
         except OSError as error:
             errors.append(f"{name}: {error}")
             continue
-        if path.suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".xlsx", ".frx", ".pdf", ".zip"}:
+        if name in binary:
             continue
         if b"\0" in data:
             errors.append(f"{name}: unexpected NUL in text")
@@ -97,7 +109,7 @@ def validate_files(root, paths):
             errors.append(f"{name}: extra blank line at EOF")
         try:
             if path.suffix == ".json":
-                json.loads(text, object_pairs_hook=unique_pairs)
+                json.loads(text, object_pairs_hook=unique_pairs, parse_constant=reject_json_constant)
             elif path.suffix in {".yml", ".yaml"}:
                 document = load_yaml(text)
                 if not isinstance(document, dict):
@@ -165,7 +177,7 @@ def validate_controls(root):
 def main():
     root = Path(__file__).resolve().parents[1]
     paths = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().rstrip("\0").split("\0")
-    errors = validate_files(root, paths)
+    errors = validate_files(root, paths, binary_paths(root, paths))
     try:
         validate_controls(root)
     except (OSError, KeyError, TypeError, ValueError, yaml.YAMLError) as error:
