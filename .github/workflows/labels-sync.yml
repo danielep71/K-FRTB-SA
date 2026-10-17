@@ -102,4 +102,3 @@ jobs:
           path: test-results/labels-*
           if-no-files-found: error
           retention-days: 30
-

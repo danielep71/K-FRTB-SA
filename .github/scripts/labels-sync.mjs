@@ -13,6 +13,7 @@ const API_VERSION = "2022-11-28";
 const PROFILE_NAMES = ["application", "library", "ui-component"];
 const LABELS_PER_PAGE = 100;
 const MAX_LABEL_PAGES = 100;
+const MAX_ISSUE_PAGES = 100;
 const MAX_RATE_LIMIT_RETRIES = 2;
 const MAX_RETRY_DELAY_MS = 5000;
 
@@ -364,6 +365,26 @@ async function listLiveLabels(repository, token) {
   throw new Error(`GitHub label pagination exceeded ${MAX_LABEL_PAGES} pages`);
 }
 
+async function listLabelAssociations(repository, token, name, request = githubRequest) {
+  if (!name.includes(",")) {
+    return request(repository, token, "GET", `/issues?state=all&labels=${encodeURIComponent(name)}&per_page=1`);
+  }
+  // GitHub splits its labels filter on commas after URL decoding. For these
+  // names, inspect the actual labels on all issues and PRs, including closed.
+  for (let page = 1; page <= MAX_ISSUE_PAGES; page += 1) {
+    const batch = await request(repository, token, "GET", `/issues?state=all&per_page=100&page=${page}`);
+    if (!Array.isArray(batch)) throw new Error("GitHub issue associations response is not an array");
+    for (const issue of batch) {
+      if (!Array.isArray(issue.labels) || issue.labels.some(label => typeof label?.name !== "string")) {
+        throw new Error("GitHub issue labels response is malformed");
+      }
+      if (issue.labels.some(label => label.name.toLowerCase() === name.toLowerCase())) return [issue];
+    }
+    if (batch.length < 100) return [];
+  }
+  throw new Error(`GitHub issue association pagination exceeded ${MAX_ISSUE_PAGES} pages`);
+}
+
 async function applyChanges(repository, token, changes) {
   for (const change of changes) {
     if (change.action === "update") {
@@ -609,6 +630,25 @@ async function runSelfTest(manifestPath, policyPath) {
   await assert.rejects(() => assertUnusedDeletions(deletionPlan, async () => ({})), /not an array/);
   await assert.rejects(() => assertUnusedDeletions(deletionPlan, async () => { throw new Error("Association lookup failed"); }), /Association lookup failed/);
 
+  const commaPlan = [{ action: "delete", currentName: "foo,bar", name: "foo,bar" }];
+  const lookupCalls = [];
+  const commaLookup = async (_repository, _token, method, suffix) => {
+    assert.equal(method, "GET");
+    lookupCalls.push(suffix);
+    return suffix.endsWith("page=1")
+      ? Array.from({ length: 100 }, () => ({ labels: [{ name: "foo" }, { name: "bar" }] }))
+      : [{ labels: [{ name: "FOO,BAR" }] }];
+  };
+  await assert.rejects(
+    () => assertUnusedDeletions(commaPlan, name => listLabelAssociations("fixture/repo", "unused", name, commaLookup)),
+    /Refusing to prune used label "foo,bar"/
+  );
+  assert.deepEqual(lookupCalls, ["/issues?state=all&per_page=100&page=1", "/issues?state=all&per_page=100&page=2"]);
+  assert.deepEqual(await listLabelAssociations("fixture/repo", "unused", "foo,bar", async () => [{ labels: [{ name: "foo" }, { name: "bar" }] }]), []);
+  await assert.rejects(() => listLabelAssociations("fixture/repo", "unused", "foo,bar", async () => [{ labels: null }]), /malformed/);
+  await assert.rejects(() => listLabelAssociations("fixture/repo", "unused", "foo,bar", async () => ({})), /not an array/);
+  await assert.rejects(() => listLabelAssociations("fixture/repo", "unused", "foo,bar", async () => Array.from({ length: 100 }, () => ({ labels: [] }))), /pagination exceeded/);
+
   const unknownDomainPolicy = structuredClone(generatedPolicy);
   unknownDomainPolicy.label_domains = ["unknown"];
   expectFailure(() => resolvePolicySelection(unknownDomainPolicy, manifest), /unknown domain/);
@@ -686,12 +726,7 @@ async function main() {
   }
 
   // Guard the actual plan before any mutation. Closed issues and PRs count too.
-  await assertUnusedDeletions(changes, name => githubRequest(
-    options.repository,
-    process.env.GITHUB_TOKEN,
-    "GET",
-    `/issues?state=all&labels=${encodeURIComponent(name)}&per_page=1`
-  ));
+  await assertUnusedDeletions(changes, name => listLabelAssociations(options.repository, process.env.GITHUB_TOKEN, name));
   await applyChanges(options.repository, process.env.GITHUB_TOKEN, changes);
   const after = await listLiveLabels(options.repository, process.env.GITHUB_TOKEN);
   const remaining = planChanges(desired, after, { prune: manifest.prune });
@@ -718,4 +753,3 @@ main().catch(async error => {
     process.exitCode = 1;
   }
 });
-

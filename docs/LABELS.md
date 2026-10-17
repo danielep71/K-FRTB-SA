@@ -107,6 +107,10 @@ association checks. The workflow retains its read-only preview; the script
 rechecks current live labels and associations before applying its actual plan.
 The offline self-test covers retained used overlays, disabled pruning, used
 and unused deletion candidates, and failed or malformed association lookups.
+For comma-containing label names, the script scans actual issue/PR labels
+instead of GitHub's comma-separated filter. The scan includes closed items,
+matches complete names case-insensitively, and fails closed on malformed data
+or after 100 pages of 100 items; it never assumes a truncated scan is empty.
 
 Keep deliberate catalogue changes in a reviewed PR. Do not run unreviewed
 workflow code with a write token.
@@ -129,4 +133,3 @@ node .github/scripts/labels-sync.mjs --mode reconcile --repository danielep71/MK
 The scripts use bounded pagination and retries. Workflow actions are pinned to
 full commit SHAs, checkout credentials are not persisted, and PR validation
 never receives a write token.
-
