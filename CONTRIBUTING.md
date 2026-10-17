@@ -71,8 +71,9 @@ For documentation, verify local paths, headings, and commands against the
 candidate tree. For ignore or attribute changes, exercise representative
 paths with `git check-ignore --no-index` and `git check-attr`.
 
-The universal local validation command and hosted integrity workflow are
-pending issue #7. Do not claim they ran before they exist. Inspect applicable
+Run `python tools/check_repository.py` after installing the pinned
+`.github/requirements.txt` dependency; [Repository checks](docs/CI.md) documents
+its tracked-file inventory, prerequisites and limits. Inspect applicable
 hosted checks and reviews before merging; no emitted job is not a passing job.
 
 ## Compatibility and evidence

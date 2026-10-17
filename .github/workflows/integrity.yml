@@ -1,0 +1,38 @@
+name: Repository integrity
+
+# No path filters: documentation-only PRs must produce the same required check.
+on:
+  pull_request:
+    branches: [main, "release/**"]
+  push:
+    branches: [main, "release/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integrity-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    name: Repository integrity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned configuration parser
+        run: |
+          python3 --version
+          node --version
+          git --version
+          python3 -m venv .venv-ci
+          .venv-ci/bin/python -m pip install --disable-pip-version-check -r .github/requirements.txt
+      - name: Validate repository and run offline maintenance fixtures
+        run: .venv-ci/bin/python tools/check_repository.py

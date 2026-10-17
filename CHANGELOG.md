@@ -15,6 +15,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Universal Repository integrity check for ordinary PRs and pushes to main
+  and release branches; one local entry point for configuration, tracked
+  whitespace, local documentation targets and existing maintenance tests.
+  Weekly Dependabot version updates cover Actions on both integration lines,
+  the CI parser and the existing prototype test packages (#7).
+
 - Owner-requested persistent traffic-history branch, daily/manual main-only
   collection, offline tooling checks, operational documentation, and an
   explicit analytics credential/first-run prerequisite (#23). The collector

@@ -7,6 +7,7 @@ procedures. Keep root entry documents linked rather than copying them here.
 
 | Need | Document |
 | --- | --- |
+| Universal integrity and dependency updates | [🧪 Repository checks](CI.md) |
 | Current capability, platform decisions, regulatory-source and validation policy | [Scope](SCOPE.md) |
 | Directory ownership, generated files, workbook policy, and evidence | [Repository structure](REPOSITORY_STRUCTURE.md) |
 | Current local checkout and verification | [Installation](../INSTALLATION.md) |

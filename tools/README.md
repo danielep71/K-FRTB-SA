@@ -2,7 +2,14 @@
 
 This directory indexes maintenance tools and will hold future general-purpose
 repository checks/build helpers when they exist. No engine runtime, workbook
-builder, or additional package dependency is introduced by this skeleton.
+builder, or calculation dependency is introduced by setup maintenance.
+
+## 🧪 Universal repository integrity
+
+After installing `.github/requirements.txt`, run `python tools/check_repository.py`.
+It validates tracked content and calls existing label scripts and offline
+maintenance tests. [Repository checks](../docs/CI.md) owns coverage, installation,
+hosted check identity and dependency policy. It does not run Excel or the engine.
 
 ## 📈 Traffic analytics
 
@@ -17,7 +24,8 @@ python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v
 
 The collector's dedicated Administration: read credential belongs in the
 main-restricted analytics environment, never in PR validation. This tooling
-is separate from the engine runtime and the pending universal gate.
+is separate from the engine runtime. Its offline fixtures are also included
+in the universal maintenance gate.
 
 ## Available commands
 
@@ -36,9 +44,8 @@ paths under `.github/scripts/`; do not duplicate them here.
 [Labels](../docs/LABELS.md) owns live verification and trusted reconciliation.
 
 [Installation](../INSTALLATION.md) describes checkout and local verification.
-The universal validation entry point, hosted integrity workflow, and dependency
-update configuration are pending issue #7. No `tools/check.py` or other
-universal runner exists yet. Do not report an absent gate as green.
+`check_repository.py` is the shared local/hosted entry point; its PyYAML
+dependency is pinned separately from the prototype's test packages.
 
 Add new tools only for real work, document their prerequisites and failure
 behavior, and keep calculation logic under `src/`. Generated output and
