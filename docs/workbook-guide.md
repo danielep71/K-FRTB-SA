@@ -24,7 +24,8 @@ The template is generated, never edited by hand: `python3
 tools/build_template.py` rebuilds it headless in LibreOffice, and
 `tools/update_expected.py` rebuilds it whenever the expected values change.
 `tests/test_template.py` fails when the committed template differs from a
-fresh build of the modules or carries VBA, controls or personal properties.
+fresh build of the modules, in values or layout, or carries VBA, controls or
+personal properties.
 `tools/Build-Workbook.ps1 -Template` produces the same template through Excel.
 
 ```text

@@ -53,15 +53,68 @@ def build(output: Path) -> None:
         raise RuntimeError("; ".join(errors))
 
 
-def cell_values(path: Path) -> dict:
-    wb = openpyxl.load_workbook(path, data_only=True)
-    out = {}
+def _color(c) -> str | None:
+    if c is None:
+        return None
+    if c.type == "rgb":
+        return str(c.rgb)
+    return f"{c.type}:{c.value}:{round(c.tint or 0, 4)}"
+
+
+def _cell_style(c) -> tuple:
+    f, fill, a, b = c.font, c.fill, c.alignment, c.border
+    return (
+        c.number_format,
+        (f.name, f.sz, bool(f.b), bool(f.i), _color(f.color)),
+        (fill.fill_type, _color(fill.fgColor) if fill.fill_type else None),
+        (a.horizontal, a.vertical, bool(a.wrap_text)),
+        tuple((side.style, _color(side.color)) for side in (b.left, b.right, b.top, b.bottom)),
+    )
+
+
+def signature(path: Path) -> dict:
+    """Normalized content and layout of a workbook: values, cell styles,
+    column widths, row heights, merged ranges, tab colors, frozen panes,
+    gridlines and autofilters of every sheet."""
+    wb = openpyxl.load_workbook(path)
+    sheets = {}
     for ws in wb.worksheets:
+        cells = {}
         for row in ws.iter_rows():
             for c in row:
-                if c.value is not None:
-                    out[(ws.title, c.coordinate)] = c.value
-    return {"sheets": wb.sheetnames, "cells": out}
+                if c.value is not None or c.has_style:
+                    cells[c.coordinate] = (c.value, _cell_style(c))
+        sheets[ws.title] = {
+            "cells": cells,
+            "columns": {k: round(v.width or 0, 2) for k, v in ws.column_dimensions.items()},
+            "rows": {k: v.height for k, v in ws.row_dimensions.items() if v.height is not None},
+            "merged": sorted(str(r) for r in ws.merged_cells.ranges),
+            "tab": _color(ws.sheet_properties.tabColor),
+            "freeze": ws.freeze_panes,
+            "gridlines": ws.sheet_view.showGridLines,
+            "autofilter": ws.auto_filter.ref,
+        }
+    return {"order": wb.sheetnames, "sheets": sheets}
+
+
+def signature_differences(a: dict, b: dict, limit: int = 5) -> list[str]:
+    """Describe the first differences between two signatures."""
+    out = []
+    if a["order"] != b["order"]:
+        out.append(f"sheet order differs: {a['order']} vs {b['order']}")
+    for name in sorted(a["sheets"].keys() & b["sheets"].keys()):
+        sa, sb = a["sheets"][name], b["sheets"][name]
+        for key in ("columns", "rows", "merged", "tab", "freeze", "gridlines", "autofilter"):
+            if sa[key] != sb[key]:
+                out.append(f"{name}: {key} differs")
+        for coord in sorted(sa["cells"].keys() ^ sb["cells"].keys()):
+            out.append(f"{name}!{coord}: present in only one workbook")
+        for coord in sorted(sa["cells"].keys() & sb["cells"].keys()):
+            if sa["cells"][coord] != sb["cells"][coord]:
+                out.append(f"{name}!{coord}: {sa['cells'][coord]} vs {sb['cells'][coord]}")
+            if len(out) >= limit:
+                return out
+    return out[:limit]
 
 
 def package_problems(path: Path) -> list[str]:
@@ -88,12 +141,8 @@ def check() -> list[str]:
     with tempfile.TemporaryDirectory() as tmp:
         fresh = Path(tmp) / "fresh.xlsx"
         build(fresh)
-        a, b = cell_values(TEMPLATE), cell_values(fresh)
-    if a["sheets"] != b["sheets"]:
-        problems.append(f"sheets differ: {a['sheets']} vs {b['sheets']}")
-    diff = sorted(set(a["cells"].items()) ^ set(b["cells"].items()), key=str)
-    if diff:
-        problems.append(f"{len(diff)} cell values differ, first: {diff[:3]}")
+        diffs = signature_differences(signature(TEMPLATE), signature(fresh))
+    problems.extend(f"differs from a fresh build: {d}" for d in diffs)
     return problems
 
 
