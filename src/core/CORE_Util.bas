@@ -293,12 +293,27 @@ End Function
 
 
 ' Bucket label: integers for numbered risk classes, upper-case text otherwise.
+' A non-integral number is returned as a label no bucket matches, so that
+' 8.6 is rejected instead of being rounded into bucket 9.
 Public Function BucketLabel(ByVal v As Variant) As String
+    Dim x As Double
     If IsNumber(v) Then
-        BucketLabel = CStr(CLng(ToDouble(v, 0#)))
+        x = ToDouble(v, 0#)
+        If x = Int(x) Then
+            BucketLabel = CStr(CLng(x))
+        Else
+            BucketLabel = "NON-INTEGER " & CStr(v)
+        End If
     Else
         BucketLabel = ToText(v)
     End If
+End Function
+
+
+' True for a blank cell or a number: optional numeric inputs (tenor,
+' maturity, LGD override) must not read text as zero.
+Public Function IsBlankOrNumber(ByVal v As Variant) As Boolean
+    IsBlankOrNumber = IsBlank(v) Or IsNumber(v)
 End Function
 
 

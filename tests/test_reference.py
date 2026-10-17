@@ -389,3 +389,26 @@ def test_csr_and_commodity_curvature_risk_factors(p):
     assert capital["CSR_NS"]["MEDIUM"] == approx(6_000)
     rho = 0.95**2  # commodity correlation squared; delivery location is not a curvature dimension
     assert capital["COM"]["MEDIUM"] == approx(math.sqrt(6_000**2 + 3_000**2 + 2 * rho * 6_000 * 3_000))
+
+
+# --------------------------------------------------------------------------
+# Invalid optional numerics and fractional buckets are rejected, not coerced
+# --------------------------------------------------------------------------
+def test_fractional_bucket_is_rejected(p):
+    assert ref.delta_risk_factors(p, [["1", "EQ", 8.6, "A", "SPOT", None, 1_000]]) == []
+    assert ref.delta_risk_factors(p, [["1", "EQ", "8.6", "A", "SPOT", None, 1_000]]) == []
+    assert len(ref.delta_risk_factors(p, [["1", "EQ", 8.0, "A", "SPOT", None, 1_000]])) == 1
+
+
+def test_nonnumeric_tenor_is_rejected(p):
+    assert ref.delta_risk_factors(p, [["1", "COM", 2, "BRENT", "X", "abc", 1_000]]) == []
+    assert ref.vega_risk_factors(p, [["1", "EQ", 8, "A", None, "abc", None, 1_000]]) == []
+
+
+def test_drc_nonnumeric_maturity_or_lgd_is_rejected(p):
+    total, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity="abc")])
+    assert total == 0 and obl == {}
+    total, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, lgd="x")])
+    assert total == 0 and obl == {}
+    _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity=None)])
+    assert obl["A"][3] == approx(70)  # blank maturity: one year

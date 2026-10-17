@@ -12,7 +12,7 @@
 [![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#quick-start)
 [![Framework](https://img.shields.io/badge/Framework-Basel_MAR21--MAR23-1f3a5f?style=for-the-badge)](docs/methodology.md)
 [![Status](https://img.shields.io/badge/Status-Prototype_0.1.0-D93F0B?style=for-the-badge)](#status)
-[![Reconciliation](https://img.shields.io/badge/Reconciliation-55_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
+[![Reconciliation](https://img.shields.io/badge/Reconciliation-58_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
 [![Excel evidence](https://img.shields.io/badge/Excel_evidence-pending-6E7781?style=for-the-badge)](docs/validation.md#not-validated)
 [![License](https://img.shields.io/badge/License-MIT-2ea44f?style=for-the-badge)](LICENSE)
 

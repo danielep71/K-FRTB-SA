@@ -171,6 +171,8 @@ INVALID_ROWS = {
         ["X3", "FX", "EUR", "EUR", None, None, 1000],
         ["X4", "EQ", 99, "A", "SPOT", None, 1000],
         ["X5", "EQ", 8, "A", "SPOT", None, "abc"],
+        ["X6", "COM", 2, "BRENT", "ROTTERDAM", "abc", 1000],
+        ["X7", "EQ", 8.6, "A", "SPOT", None, 1000],
     ],
     "In_Vega": [["Y1", "EQ", 8, "A", None, 2, None, 1000]],
     "In_Curvature": [["Z1", "EQ", 8, "A", None, 1000, None]],
@@ -179,6 +181,8 @@ INVALID_ROWS = {
         ["K2", "A", "XXX", "A", "SENIOR", 1, 1, 1, None],
         ["K3", "A", "CORP", "A", "JUNK", 1, 1, 1, None],
         ["K4", "BANK_A", "CORP", "BBB", "SENIOR", 100, 100, 1, None],
+        ["K5", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, "abc", None],
+        ["K6", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, 1, "x"],
     ],
     "In_RRAO": [["Q1", "FOO", 1000], ["Q2", "OTHER", -5]],
 }
@@ -216,9 +220,9 @@ def test_variant_run_reconciles_with_reference(lo_variant_run):
 def test_variant_run_logs_every_invalid_row(lo_variant_run):
     errors = log_rows(lo_variant_run, "ERROR")
     sources = sorted(r[1] for r in errors)
-    assert len(errors) == 12, errors
-    assert sum(s.startswith("In_Delta") for s in sources) == 5
-    assert sum(s.startswith("In_DRC") for s in sources) == 3
+    assert len(errors) == 16, errors
+    assert sum(s.startswith("In_Delta") for s in sources) == 7
+    assert sum(s.startswith("In_DRC") for s in sources) == 5
     warnings = log_rows(lo_variant_run, "WARN")
     assert len(warnings) == 1 and "credit qualities" in warnings[0][2]
 

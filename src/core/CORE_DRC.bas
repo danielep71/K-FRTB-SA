@@ -106,6 +106,13 @@ Public Sub RunDRC()
         ElseIf Not IsNumber(TableCell(ws, r, 6).Value) Or Not IsNumber(TableCell(ws, r, 7).Value) Then
             LogMessage "ERROR", src, "Notional and market value must be numeric; row skipped"
             ok = False
+        ElseIf Not IsBlankOrNumber(TableCell(ws, r, 8).Value) Then
+            ' Blank means one year; text must not be read as zero and floored to three months
+            LogMessage "ERROR", src, "Maturity is not numeric; row skipped"
+            ok = False
+        ElseIf Not IsBlankOrNumber(TableCell(ws, r, 9).Value) Then
+            LogMessage "ERROR", src, "LGD override is not numeric; row skipped"
+            ok = False
         Else
             DrcRiskWeight quality, found
             If Not found Then

@@ -209,6 +209,10 @@ Private Sub LoadDelta()
             LogMessage "ERROR", src, "Sensitivity is not numeric; row skipped"
             ok = False
         End If
+        If ok And Not IsBlankOrNumber(TableCell(ws, r, 6).Value) Then
+            LogMessage "ERROR", src, "Tenor is not numeric; row skipped"
+            ok = False
+        End If
         If ok Then
             Select Case rc
                 Case RC_GIRR
@@ -296,6 +300,10 @@ Private Sub LoadVega()
         ok = ValidateCommon(rc, bucket, src)
         If ok And Not IsNumber(TableCell(ws, r, 8).Value) Then
             LogMessage "ERROR", src, "Vega sensitivity is not numeric; row skipped"
+            ok = False
+        End If
+        If ok And Not (IsBlankOrNumber(TableCell(ws, r, 6).Value) And IsBlankOrNumber(TableCell(ws, r, 7).Value)) Then
+            LogMessage "ERROR", src, "Option or underlying maturity is not numeric; row skipped"
             ok = False
         End If
         If ok And Not IsValidVegaMaturity(optMat) Then

@@ -61,15 +61,15 @@ class Params:
 
 
 def _label(v) -> str:
+    """Bucket label; a non-integral number matches no bucket instead of being rounded."""
     if v is None:
         return ""
-    if isinstance(v, (int, float)) and not isinstance(v, bool):
-        return str(int(v))
     s = str(v).strip().upper()
     try:
-        return str(int(float(s)))
+        x = float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else float(s)
     except ValueError:
         return s
+    return str(int(x)) if x == int(x) else f"NON-INTEGER {s}"
 
 
 def _text(v) -> str:
@@ -92,6 +92,10 @@ def _is_num(v) -> bool:
         return True
     except ValueError:
         return False
+
+
+def _blank_or_num(v) -> bool:
+    return v is None or (isinstance(v, str) and v.strip() == "") or _is_num(v)
 
 
 def _bool(v) -> bool:
@@ -256,8 +260,10 @@ def delta_risk_factors(p: Params, rows):
     rfs = []
     for r in rows:
         rc, b, q, sub = _text(r[1]), _label(r[2]), _text(r[3]), _text(r[4])
-        t = _num(r[5])
+        t = _num(r[5]) if _is_num(r[5]) else 0.0
         if rc not in RISK_CLASSES or not _bucket_valid(p, rc, b) or not _is_num(r[6]):
+            continue
+        if not _blank_or_num(r[5]):
             continue
         if rc == "GIRR":
             sub = sub or "YIELD"
@@ -335,6 +341,8 @@ def vega_risk_factors(p: Params, rows):
     mats = p.vertices["VEGA_MATURITIES"]
     for r in rows:
         rc, b, q, sub = _text(r[1]), _label(r[2]), _text(r[3]), _text(r[4])
+        if not (_blank_or_num(r[5]) and _blank_or_num(r[6])):
+            continue
         topt, tund = _num(r[5]), _num(r[6])
         if rc not in RISK_CLASSES or not _bucket_valid(p, rc, b) or not _is_num(r[7]):
             continue
@@ -595,7 +603,7 @@ def drc(p: Params, rows):
         obl, bucket, quality, sen = _text(r[1]), _text(r[2]), _text(r[3]), _text(r[4])
         if not obl or bucket not in p.drc_buckets or sen not in p.drc_seniority or quality not in p.drc_rw:
             continue
-        if not (_is_num(r[5]) and _is_num(r[6])):
+        if not (_is_num(r[5]) and _is_num(r[6])) or not (_blank_or_num(r[7]) and _blank_or_num(r[8])):
             continue
         notional, mv = float(r[5]), float(r[6])
         maturity = _num(r[7], p.drc["MAX_MATURITY"])
