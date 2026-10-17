@@ -109,6 +109,8 @@ def merge_daily(previous, payload):
         if reader.fieldnames != COLUMNS:
             raise ValueError("Unexpected daily history CSV header")
         for raw in reader:
+            if set(raw) != set(COLUMNS) or any(value is None for value in raw.values()):
+                raise ValueError("Unexpected daily history CSV row width")
             date = dt.date.fromisoformat(raw["date"]).isoformat()
             if date in rows or raw["date"] != date:
                 raise ValueError("Duplicate or noncanonical history date")

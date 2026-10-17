@@ -89,6 +89,15 @@ class TrafficTests(unittest.TestCase):
             traffic.publish(writer, "owner/repo", data)
         self.assertTrue(all(method == "GET" for method, _, _ in writer.calls))
 
+    def test_extra_or_missing_history_columns_fail_before_writes(self):
+        header = "date,views,views_uniques,clones,clones_uniques\n"
+        for row in ("2026-10-17,5,3,2,1,unexpected\n", "2026-10-17,5,3,2\n"):
+            writer = Writer(header + row)
+            snapshot = {**fixture(), "collected_at_utc": "2026-10-18T00:00:00+00:00"}
+            with self.subTest(row=row), self.assertRaisesRegex(ValueError, "row width"):
+                traffic.publish(writer, "owner/repo", snapshot)
+            self.assertTrue(all(method == "GET" for method, _, _ in writer.calls))
+
     def test_atomic_snapshot_and_expected_parent(self):
         writer = Writer()
         snapshot = {**fixture(), "collected_at_utc": "2026-10-18T00:00:00+00:00"}

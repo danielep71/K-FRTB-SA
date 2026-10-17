@@ -106,3 +106,8 @@ The owner authorized traffic-history collection under issue #23.
 protection, analytics environment and credential contract. A real successful
 collection is required before reporting the feature operational; branch or
 workflow presence alone is insufficient.
+
+Traffic ruleset **25321321** is active for `traffic-history`, blocks deletion
+and non-fast-forward updates, and has no bypass actors. The `analytics`
+environment is restricted to branch `main` (no tags). Verified October 18,
+2026 Europe/Rome; TRAFFIC_TOKEN and successful collection remain pending #23.

@@ -95,3 +95,12 @@ to make a failed publish pass. No automated issue or external message is sent.
 
 This is operational analytics. Static tests, traffic counts, and successful
 collection do not run Excel or validate capital calculations.
+
+## 📋 Live configuration record
+
+Verified on October 18, 2026 (Europe/Rome): the data-only branch exists;
+[Protect traffic history](https://github.com/danielep71/MKT-FTRB-SA/rules/25321321)
+is active for its exact ref, blocks deletion and non-fast-forward updates,
+and has no bypass actors. The `analytics` environment permits the main branch
+only (one branch, zero tags). Its TRAFFIC_TOKEN secret is not configured yet;
+issue #23 remains open for the credential and first real export.
