@@ -11,6 +11,14 @@ embedded whitespace, trailing junk and overflow are rejected rather than
 partly converted. Thus text `0,5` is rejected on every host; a numeric cell
 containing one half is supported on every host. Required key/value numeric
 parameters reject blank, error and nonnumeric values with key/sheet context.
+Every numeric value in a `P_*` table (risk weights, correlation matrices,
+liquidity horizons, DRC and RRAO weights, bucket numbers) and every entry of
+a `P_General` vertex list is required as well: a blank or nonnumeric value,
+an empty list or a blank list entry (`0.25,,1`, a trailing comma) stops the
+run and the `Log` names the sheet, table, data row and column, or the list.
+Every run clears the output sheets first and again when it fails, so a
+failed run shows "Run failed" on `Results` and leaves neither earlier nor
+partial capital behind (#45).
 
 Validation and conversion use the same parser. Blank/error optional values
 still use the caller's explicit default; this does not relax required-key

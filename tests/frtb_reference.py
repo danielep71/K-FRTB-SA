@@ -13,6 +13,7 @@ residual risk add-on. References are to the Basel Framework (MAR21-MAR23).
 from __future__ import annotations
 
 import math
+import re
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass, field
 
@@ -60,14 +61,36 @@ class Params:
     rrao_rw: dict = field(default_factory=dict)
 
 
+# Numeric text as CORE_Util accepts it: optional sign, ASCII digits with an
+# optional "." and an optional exponent, spaces around it at most. Commas,
+# grouping, "_", "inf", "nan" and trailing text are not numbers, nor is a
+# value beyond the Double range. Booleans and dates are not numbers.
+_NUMERIC_TEXT = re.compile(r"[+-]?(\d*)(?:\.(\d*))?(?:[eE][+-]?\d+)?", re.ASCII)
+
+
+def _number(v):
+    """Value of a number or numeric text, or None when it is not a number."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    if not isinstance(v, str):
+        return None
+    s = v.strip(" ")
+    m = _NUMERIC_TEXT.fullmatch(s)
+    if not m or not (m.group(1) or m.group(2)):
+        return None
+    x = float(s)
+    return x if math.isfinite(x) else None
+
+
 def _label(v) -> str:
     """Bucket label; a non-integral number matches no bucket instead of being rounded."""
     if v is None:
         return ""
     s = str(v).strip().upper()
-    try:
-        x = float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else float(s)
-    except ValueError:
+    x = _number(v)
+    if x is None:
         return s
     return str(int(x)) if x == int(x) else f"NON-INTEGER {s}"
 
@@ -77,21 +100,12 @@ def _text(v) -> str:
 
 
 def _num(v, default=0.0) -> float:
-    if v is None or (isinstance(v, str) and v.strip() == ""):
-        return default
-    return float(v)
+    x = _number(v)
+    return default if x is None else x
 
 
 def _is_num(v) -> bool:
-    if isinstance(v, bool) or v is None:
-        return False
-    if isinstance(v, (int, float)):
-        return True
-    try:
-        float(str(v).strip())
-        return True
-    except ValueError:
-        return False
+    return _number(v) is not None
 
 
 def _blank_or_num(v) -> bool:
@@ -289,7 +303,7 @@ def delta_risk_factors(p: Params, rows):
             q, sub, t = b, "", 0.0
         if not q:
             continue
-        rfs.append(RF(rc, b, q, sub, t, 0.0, float(r[6])))
+        rfs.append(RF(rc, b, q, sub, t, 0.0, _num(r[6])))
     rfs = _net(rfs)
     for f in rfs:
         f.rw = delta_rw(p, f)
@@ -360,7 +374,7 @@ def vega_risk_factors(p: Params, rows):
                 q, sub = b, ""
             if not q:
                 continue
-        rfs.append(RF(rc, b, q, sub, topt, tund, float(r[7])))
+        rfs.append(RF(rc, b, q, sub, topt, tund, _num(r[7])))
     rfs = _net(rfs)
     for f in rfs:
         f.rw = vega_rw(p, f.rc, f.bucket)
@@ -374,7 +388,7 @@ def curvature_risk_factors(p: Params, rows):
         rc, b, q, sub = _text(r[1]), _label(r[2]), _text(r[3]), _text(r[4])
         if rc not in RISK_CLASSES or not _bucket_valid(p, rc, b) or not (_is_num(r[5]) and _is_num(r[6])):
             continue
-        up, dn = float(r[5]), float(r[6])
+        up, dn = _num(r[5]), _num(r[6])
         if rc == "GIRR":
             q, sub = "", ""
         elif rc in ("CSR_NS", "EQ", "COM"):
@@ -605,9 +619,9 @@ def drc(p: Params, rows):
             continue
         if not (_is_num(r[5]) and _is_num(r[6])) or not (_blank_or_num(r[7]) and _blank_or_num(r[8])):
             continue
-        notional, mv = float(r[5]), float(r[6])
+        notional, mv = _num(r[5]), _num(r[6])
         maturity = _num(r[7], p.drc["MAX_MATURITY"])
-        lgd = float(r[8]) if _is_num(r[8]) else p.drc_seniority[sen][1]
+        lgd = _num(r[8]) if _is_num(r[8]) else p.drc_seniority[sen][1]
         jtd = lgd * notional + (mv - notional)
         jtd = max(jtd, 0.0) if notional >= 0 else min(jtd, 0.0)
         w = min(max(maturity, p.drc["MIN_MATURITY"]), p.drc["MAX_MATURITY"]) / p.drc["MAX_MATURITY"]
@@ -657,8 +671,8 @@ def rrao(p: Params, rows) -> float:
     total = 0.0
     for r in rows:
         cat = _text(r[1])
-        if cat in p.rrao_rw and _is_num(r[2]) and float(r[2]) >= 0:
-            total += p.rrao_rw[cat] * float(r[2])
+        if cat in p.rrao_rw and _is_num(r[2]) and _num(r[2]) >= 0:
+            total += p.rrao_rw[cat] * _num(r[2])
     return total
 
 

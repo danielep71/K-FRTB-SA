@@ -11,7 +11,14 @@ Unreleased describe integrated work, not a published version.
   zero for invalid text. Validation and conversion share a full invariant
   dot-decimal/scientific grammar; comma/grouped/junk/overflow text is rejected
   while actual numeric cells retain their value (#41, PR #39 review).
-
+- Parameter-table values and vertex lists are required numbers: a blank or
+  nonnumeric risk weight, correlation, liquidity horizon or DRC/RRAO weight,
+  or an invalid, blank or missing `P_General` vertex-list entry, now stops
+  the run with the sheet, table and row or list named, instead of becoming
+  zero, being dropped or being truncated by `Val`. Every run clears the
+  output sheets first and again on failure, so a failed run leaves neither
+  earlier nor partial capital and notes the failure on `Results`. The
+  reference applies the same numeric-text grammar to inputs (#45).
 - Label pruning now checks issue/PR associations against the validated,
   policy-resolved reconciliation plan, respecting selected overlays and
   `prune: false`. Used-label protection also applies to direct CLI runs;
