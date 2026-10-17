@@ -1,7 +1,7 @@
 # 🧩 Production source
 
 This directory is the production-source boundary. It holds the exported VBA
-of the v0.1.0 prototype (issue #20) and the [workbook reservation](workbook/README.md).
+of the v0.1.0 prototype (issue #20) and the macro-free [workbook template](workbook/README.md).
 The prototype uses Excel/VBA to evaluate the approach; it is not the platform
 decision, which stays open in [Scope](../docs/SCOPE.md).
 
@@ -22,9 +22,10 @@ the module layout, build and sheet conventions.
 | `modules/M_Dev.bas` | Export of the modules back to the repository |
 | `workbook/FRTB_Template.xlsx` | Macro-free template generated from the modules; see [workbook/README.md](workbook/README.md) |
 
-`CORE_` modules declare `Option Private Module`. Known deviation: `CORE_Util`,
-`CORE_SBM`, `CORE_DRC` and `CORE_RRAO` read the input sheets and write the
-output sheets, so core is not yet free of worksheet access.
+`CORE_` modules declare `Option Private Module`. Known deviation: `CORE_Params`,
+`CORE_SBM`, `CORE_DRC` and `CORE_RRAO` read the input and parameter sheets,
+`CORE_SBM` and `CORE_DRC` write the output sheets and `CORE_Util` writes the
+`Log`, so core is not yet free of worksheet access.
 
 Keep test code under `tests/` and maintenance logic under `tools/` or the
 existing `.github/scripts/`. Workbook binaries must never be the only source

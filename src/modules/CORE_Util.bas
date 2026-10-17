@@ -14,8 +14,9 @@ Attribute VB_Name = "CORE_Util"
 '   begins with "[TAG]"; the next row is the header and data rows follow
 '   until the first blank cell in column C.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
-'   Conversions: IsBlank, ToDouble, IsNumber, ToBool, ToText, BucketLabel,
-'   MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList, InNumberList.
+'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool,
+'   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
+'   InNumberList.
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
