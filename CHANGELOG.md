@@ -7,6 +7,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Required numeric parameters fail with key/source context instead of using
+  zero for invalid text. Validation and conversion share a full invariant
+  dot-decimal/scientific grammar; comma/grouped/junk/overflow text is rejected
+  while actual numeric cells retain their value (#41, PR #39 review).
+
 - Label pruning now checks issue/PR associations against the validated,
   policy-resolved reconciliation plan, respecting selected overlays and
   `prune: false`. Used-label protection also applies to direct CLI runs;

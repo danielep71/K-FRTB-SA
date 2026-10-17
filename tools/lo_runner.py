@@ -58,7 +58,12 @@ def module_source(path: Path) -> str:
     compiled.
     """
     lines = path.read_text(encoding="cp1252").splitlines()
-    body = [ln for ln in lines if not ln.startswith("Attribute ")]
+    # LibreOffice VBA compatibility omits this VBA intrinsic constant.
+    body = [ln.replace("vbObjectError", "LoVbObjectError")
+            for ln in lines if not ln.startswith("Attribute ")]
+    declaration = "Private Const LoVbObjectError As Long = -2147221504"
+    explicit = next(i for i, line in enumerate(body) if line.strip() == "Option Explicit")
+    body.insert(explicit + 1, declaration)
     probe = [
         "",
         f"Public Function {probe_name(path.stem)}() As Long",
@@ -74,7 +79,7 @@ def free_port() -> int:
         return s.getsockname()[1]
 
 
-def run(output: Path, macros: list[str], input_book: Path | None = None, post_process=None) -> list[str]:
+def run(output: Path, macros: list[str], input_book: Path | None = None, post_process=None, expected_results=None) -> list[str]:
     """Run macros and save the document as .xlsx.
 
     post_process, when given, is called with the UNO document after the
@@ -156,7 +161,10 @@ def run(output: Path, macros: list[str], input_book: Path | None = None, post_pr
                 f"vnd.sun.star.script:Standard.{macro}?language=Basic&location=document"
             )
             try:
-                script.invoke((), (), ())
+                result = script.invoke((), (), ())[0]
+                if expected_results is not None and macro in expected_results:
+                    if result != expected_results[macro]:
+                        errors.append(f"{macro}: unexpected completion result {result!r}")
             except Exception as exc:  # noqa: BLE001 - report and continue
                 errors.append(f"{macro}: {exc}")
 

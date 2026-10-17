@@ -1,5 +1,21 @@
 # 🗂️ Workbook Guide
 
+## Numeric cells and numeric text
+
+Use actual Excel numeric cells for amounts and parameters; values entered
+with Excel's local decimal separator retain their numeric value. Text cells
+have a locale-independent contract: optional sign, decimal point and optional
+`E` exponent (for example `0.5`, `.5`, `-1.25e2`). The entire trimmed text
+must match and fit a VBA Double. Commas, grouping, currency/type suffixes,
+embedded whitespace, trailing junk and overflow are rejected rather than
+partly converted. Thus text `0,5` is rejected on every host; a numeric cell
+containing one half is supported on every host. Required key/value numeric
+parameters reject blank, error and nonnumeric values with key/sheet context.
+
+Validation and conversion use the same parser. Blank/error optional values
+still use the caller's explicit default; this does not relax required-key
+validation. The runtime regression suite covers these contracts (#41).
+
 [![Model: template plus source](https://img.shields.io/badge/model-template%20%2B%20source-0969da)](#source-of-truth)
 [![Build: Excel COM](https://img.shields.io/badge/build-Excel%20COM-217346)](#building-the-workbook-windows-excel)
 [![Layout: workbook frame](https://img.shields.io/badge/layout-workbook%20frame-1f3864)](#sheets)

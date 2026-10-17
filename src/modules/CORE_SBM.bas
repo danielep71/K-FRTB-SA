@@ -203,7 +203,6 @@ Private Sub LoadDelta()
         bucket = BucketLabel(TableCell(ws, r, 3).Value)
         qual = ToText(TableCell(ws, r, 4).Value)
         subType = ToText(TableCell(ws, r, 5).Value)
-        tenor = ToDouble(TableCell(ws, r, 6).Value, 0#)
         ok = ValidateCommon(rc, bucket, src)
         If ok And Not IsNumber(TableCell(ws, r, 7).Value) Then
             LogMessage "ERROR", src, "Sensitivity is not numeric; row skipped"
@@ -214,6 +213,7 @@ Private Sub LoadDelta()
             ok = False
         End If
         If ok Then
+            tenor = ToDouble(TableCell(ws, r, 6).Value, 0#)
             Select Case rc
                 Case RC_GIRR
                     If subType = "" Then subType = "YIELD"
@@ -295,8 +295,6 @@ Private Sub LoadVega()
         bucket = BucketLabel(TableCell(ws, r, 3).Value)
         qual = ToText(TableCell(ws, r, 4).Value)
         subType = ToText(TableCell(ws, r, 5).Value)
-        optMat = ToDouble(TableCell(ws, r, 6).Value, 0#)
-        undMat = ToDouble(TableCell(ws, r, 7).Value, 0#)
         ok = ValidateCommon(rc, bucket, src)
         If ok And Not IsNumber(TableCell(ws, r, 8).Value) Then
             LogMessage "ERROR", src, "Vega sensitivity is not numeric; row skipped"
@@ -305,6 +303,10 @@ Private Sub LoadVega()
         If ok And Not (IsBlankOrNumber(TableCell(ws, r, 6).Value) And IsBlankOrNumber(TableCell(ws, r, 7).Value)) Then
             LogMessage "ERROR", src, "Option or underlying maturity is not numeric; row skipped"
             ok = False
+        End If
+        If ok Then
+            optMat = ToDouble(TableCell(ws, r, 6).Value, 0#)
+            undMat = ToDouble(TableCell(ws, r, 7).Value, 0#)
         End If
         If ok And Not IsValidVegaMaturity(optMat) Then
             LogMessage "ERROR", src, "Option maturity " & optMat & " is not a regulatory vertex; row skipped"
