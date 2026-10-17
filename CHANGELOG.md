@@ -5,6 +5,14 @@ Unreleased describe integrated work, not a published version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Label pruning now checks issue/PR associations against the validated,
+  policy-resolved reconciliation plan, respecting selected overlays and
+  `prune: false`. Used-label protection also applies to direct CLI runs;
+  offline regression fixtures cover the guard without live deletions, including
+  exact matching and bounded association scans for comma-containing names (#25).
+
 ### Added
 
 - Owner-requested persistent traffic-history branch, daily/manual main-only

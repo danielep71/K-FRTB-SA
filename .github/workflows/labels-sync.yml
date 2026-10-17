@@ -81,23 +81,6 @@ jobs:
           jq 'add' test-results/labels-pages-before.json > test-results/labels-before.json
           node .github/scripts/labels-sync.mjs --mode plan --live test-results/labels-before.json | tee test-results/labels-plan.md
 
-      - name: Refuse to prune labels that still have issue or PR associations
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          jq -r --slurpfile manifest .github/labels.json '
-            .[] | .name as $name |
-            select(all($manifest[0].core[]; (.name | ascii_downcase) != ($name | ascii_downcase))) |
-            .name' test-results/labels-before.json > test-results/labels-removals.txt
-          while IFS= read -r label; do
-            gh api --method GET "repos/${GITHUB_REPOSITORY}/issues" \
-              -f state=all -f labels="$label" -f per_page=1 > test-results/labels-associations.json
-            if [[ "$(jq 'length' test-results/labels-associations.json)" != "0" ]]; then
-              echo "::error::Pruning would remove a used label. Review labels-removals.txt and migrate its associations first."
-              exit 1
-            fi
-          done < test-results/labels-removals.txt
-
       - name: Reconcile and verify the versioned label selection
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

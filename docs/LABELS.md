@@ -99,6 +99,19 @@ The manifest uses `prune: true`: labels outside the selected catalogue are
 deleted, which also removes their issue/PR associations. Before any change to
 the catalogue or manual reconciliation, review the plan and inspect affected
 issue/PR associations; migrate those associations before removing a used label.
+The reconciler refuses all mutations if any planned deletion still has an
+open or closed issue/PR association, or if that lookup fails. This guard uses
+the same validated, policy-resolved plan as the mutations: selected profile
+and domain overlays are retained, and `prune: false` performs no deletion
+association checks. The workflow retains its read-only preview; the script
+rechecks current live labels and associations before applying its actual plan.
+The offline self-test covers retained used overlays, disabled pruning, used
+and unused deletion candidates, and failed or malformed association lookups.
+For comma-containing label names, the script scans actual issue/PR labels
+instead of GitHub's comma-separated filter. The scan includes closed items,
+matches complete names case-insensitively, and fails closed on malformed data
+or after 100 pages of 100 items; it never assumes a truncated scan is empty.
+
 Keep deliberate catalogue changes in a reviewed PR. Do not run unreviewed
 workflow code with a write token.
 
