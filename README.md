@@ -52,8 +52,9 @@ node .github/scripts/labels-drift.mjs --self-test
 There is currently no engine installation or calculation command. The engine's
 implementation platform and supported runtime environment remain to be
 approved. The Node.js maintenance tools do not determine that platform.
-Before starting development, check issue #4 for the active integration branch;
-GitHub's default branch is not automatically the development target.
+All development targets **`release/v0.0.1`**. Create a task branch from it and
+open the task PR against it; main remains the stable default branch.
+See [branch governance](docs/GOVERNANCE.md) for the integration procedure.
 
 ## Documentation and project tracking
 
@@ -62,6 +63,7 @@ GitHub's default branch is not automatically the development target.
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
 | Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
 | Label usage, issue priorities, and metadata checks | [Labels and triage](docs/LABELS.md) |
+| Development branches and integration | [Governance](docs/GOVERNANCE.md) |
 | Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
 | Recorded changes | [Changelog](CHANGELOG.md) |
 | Setup backlog | [v0.0.1 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1) |
