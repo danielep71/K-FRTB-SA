@@ -86,8 +86,6 @@ Issue #6 owns the dedicated security and conduct policies.
 
 ## Rights and licenses
 
-Submit only material you have the right to contribute. Original project
-material uses the [MIT License](LICENSE). Reused SACCR configuration and tooling
-retain MPL-2.0 coverage as listed in
-[third-party notices](.github/THIRD_PARTY_NOTICES.md); preserve those notices
-and the applicable license when modifying covered files.
+Submit only material you have the right to contribute. This project and
+contributions to it use the [MIT License](LICENSE). Preserve applicable
+copyright and permission notices when redistributing project material.

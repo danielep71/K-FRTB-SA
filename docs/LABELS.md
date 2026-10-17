@@ -1,10 +1,8 @@
 # Issue labels and triage
 
 The versioned catalogue in [labels.json](../.github/labels.json) is the source
-of truth for names, descriptions and colors. It matches VBA-SACCR-Toolkit's
-20 core labels. [label-policy.json](../.github/label-policy.json) selects the
-application profile with no domain overlays. Provenance and licensing are in
-[THIRD_PARTY_NOTICES.md](../.github/THIRD_PARTY_NOTICES.md).
+of truth for the names, descriptions and colors of the 20 core labels. [label-policy.json](../.github/label-policy.json) selects the
+application profile with no domain overlays.
 
 ## Metadata rules
 

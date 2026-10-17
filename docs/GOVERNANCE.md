@@ -107,7 +107,7 @@ owns progress; a guide is not a substitute for completed acceptance criteria.
 The owner approves milestone scope and any next integration branch. Before a
 milestone closes, its closeout issue must reconcile all associated work,
 including closed issues and PRs, confirm metadata and evidence, and record
-adopted and deferred SACCR practices. For v0.0.1, issue #8 owns that record.
+adopted and deferred maintenance practices. For v0.0.1, issue #8 owns that record.
 A genuine gap stays open or is explicitly respecified by the owner; moving it
 elsewhere does not make the original acceptance criterion pass.
 
@@ -139,7 +139,6 @@ Issue #7 must target Dependabot PRs at `release/v0.0.1` when adding its
 configuration. Issue #2 remains open for its required-check and review
 dependencies; issue #8 owns final milestone closeout.
 
-The procedures follow SACCR's contribution and governance approach, adapted
-to this project's setup stage and retained-release-branch protections. No
-SACCR engine, Excel harness, traffic-alert exception, or unimplemented check
-is adopted by this documentation.
+The procedures fit this project's setup stage and retained-release-branch
+protections. No engine, Excel harness, traffic-alert exception, or
+unimplemented check is introduced by this documentation.
