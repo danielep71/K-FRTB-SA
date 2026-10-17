@@ -3,19 +3,21 @@
 This document owns placement of durable source, generated files, and evidence.
 [Scope](SCOPE.md) owns platform and functional decisions;
 [installation](../INSTALLATION.md) owns the available setup commands.
-The layout separates source, tests, documentation, and tools without
-assuming an engine runtime.
+The layout separates source, tests, documentation, and tools while distinguishing maintenance from the approved Excel/VBA prototype.
 
 ## Current layout
 
 | Path | Purpose today and intended content |
 | --- | --- |
-| `src/` | Source boundary for future production components; currently guidance only |
-| `src/workbook/` | Reserved workbook-template location and its policy; no workbook exists |
-| `tests/` | Verification-source and synthetic-data policy; no calculation harness or cases yet |
-| `docs/` | Authoritative versioned scope, governance, structure, and milestone documentation |
-| `tools/` | Tooling index and placement policy; current executable label tooling remains in `.github/scripts/` |
-| `.github/` | Label manifests, scripts, and workflows |
+| `src/` | Production source boundary |
+| `src/modules/` | Prototype VBA modules: calculation engine (`CORE_*`) and workbook macros (`M_*`), issues #20 and #30 |
+| `src/workbook/` | Macro-free workbook template `FRTB_Template.xlsx`, generated from `src/modules` (#30) |
+| `tests/` | Verification source: independent Python reference, reconciliation and tooling tests |
+| `tests/modules/` | VBA test modules imported into development builds (`TEST_*`) |
+| `docs/` | Authoritative versioned scope, governance, structure, methodology, validation, and milestone documentation |
+| `docs/assets/` | Documentation images and their sources |
+| `tools/` | Tooling index; prototype build, LibreOffice runner, VBA lint and expected-value generator; label tooling remains in `.github/scripts/` |
+| `.github/` | Labels, forms, universal maintenance/analytics workflows and dependency updates |
 | Root | Entry documentation, licenses, contribution/setup guidance, and repository-control files |
 
 Each new root has a purposeful README. Add further subdirectories with their
@@ -48,8 +50,8 @@ An ignore rule is a tracking aid, not a data-security control.
 | Excel workbooks, add-ins, and templates | Ignored by default; only `src/workbook/FRTB_Template.xlsx` is currently allowed by exact rooted exception |
 | Local dependencies and environments | Ignored caches/installations; commit necessary manifests and locks when a real ecosystem is introduced |
 
-The workbook exception reserves a path; it is not an existing artifact,
-supported engine, or approval to distribute other workbook files. A future
+The approved template exists at that path for prototype builds; this does
+not approve distribution of other workbook files or a supported engine. A
 template change needs a reviewable explanation of sheets, names, formulas,
 data, and compatibility because Git treats Office packages as binary.
 Never include confidential inputs or hidden credentials in a template.
@@ -100,6 +102,17 @@ apply to that decision:
    workbook digest, suites/assertions, results, failures, and skipped work.
    Independently specified numeric expectations remain a separate requirement.
 
-No synchronizer, exporter, workbook, Excel harness, or runtime gate is
-implemented at setup time. Add them through scoped implementation issues when
-the platform is selected.
+The prototype has source export/build helpers and a LibreOffice runtime gate.
+Excel host compilation, execution and the source round trip remain unverified
+in #28/#30; those gaps must stay visible.
+
+**Prototype implementation (issues #20, #30).** Exported modules live in
+`src/modules` and `tests/modules`; the committed template at the approved
+path is generated from them by `tools/build_template.py` (LibreOffice) or
+`tools/Build-Workbook.ps1 -Template` (Excel), and `tests/test_template.py`
+checks that it matches a fresh build and carries no VBA project, controls or
+personal properties. Excel builds start from the template and
+`M_Setup.FinishWorkbook` adds the buttons and window settings. Remaining gap:
+the only runtime executed so far is LibreOffice Calc in VBA-compatibility
+mode, which is not Excel host evidence (#28); the Excel round trip and its
+digests belong to #28 and #30. See [validation](validation.md).

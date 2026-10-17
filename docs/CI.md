@@ -67,6 +67,9 @@ rulesets, requiring main to be up to date, and verifying effective enforcement.
 Adding this workflow does not itself change those settings. A task PR proves
 the hosted command; release-to-main integration and synchronization into the
 prototype branch (#31) install the workflow on the respective branch lines.
+The prototype workflow installs both requirements manifests in its own test
+environment before pytest discovers the shared maintenance tests. The
+universal job remains a separate, runtime-independent check.
 Do not require a check on a line before installing it there.
 
 ## 🔄 Dependabot policy

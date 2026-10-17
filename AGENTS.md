@@ -2,8 +2,10 @@
 
 ## Development branch
 
-- The active integration branch is `release/v0.0.1`.
-- Branch every task from that branch and open its PR against `release/v0.0.1`.
+- The active integration branches are `release/v0.0.1` (v0.0.1 repository
+  setup) and `release/v0.1.0` (v0.1.0 SA prototype).
+- Branch every task from the integration branch of its issue's milestone and
+  open its PR against that branch.
 - Put all development, documentation, tooling, tests and configuration work
   through task PRs; do not commit directly to main or the release branch.
 - Squash-merge task PRs after applicable checks pass and findings are resolved.
@@ -27,5 +29,6 @@ controls and pending integrity/review configuration.
   `.github/requirements.txt` dependency; see docs/CI.md for coverage and limits.
 - Keep incomplete acceptance criteria open and link evidence when completing
   them. Distinguish static checks from runtime and independent validation.
-- Read docs/SCOPE.md before changing functional scope. The engine platform and
-  coverage decisions remain unresolved; do not imply a working calculator.
+- Read docs/SCOPE.md before changing functional scope. Excel/VBA is approved for the prototype; the long-term platform decision
+  remains open. Do not claim Excel execution or regulatory certification
+  without the evidence tracked in #28/#29.

@@ -9,32 +9,40 @@ This document owns branch, issue, review, and milestone procedures.
 
 ## Branches
 
-The active integration branch is **`release/v0.0.1`**, selected by the owner.
-It was created from main at `96a3b44312fd0f6beb000a06d2a43ac46b0551ef`,
-so it includes all setup work already integrated through PRs #9, #10 and #11.
-Those earlier commits remain in main; shared history is preserved.
+Two integration branches are active, each selected by the owner for one
+milestone:
+
+- **`release/v0.0.1`** for the v0.0.1 repository setup. It was created from
+  main at `96a3b44312fd0f6beb000a06d2a43ac46b0551ef`, so it includes all
+  setup work already integrated through PRs #9, #10 and #11. Those earlier
+  commits remain in main; shared history is preserved.
+- **`release/v0.1.0`** for the v0.1.0 SA prototype, approved by the owner on
+  2026-10-17 and created from main at
+  `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
 
 | Branch | Purpose and allowed changes |
 | --- | --- |
 | `release/v0.0.1` | Integration branch for all ongoing v0.0.1 development, including documentation, tooling, tests and configuration |
-| `main` | Stable default branch; receives the integration branch only through a separate owner-requested PR |
-| Short-lived task branches | Branch from `release/v0.0.1`; use focused names such as `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
+| `release/v0.1.0` | Integration branch for the v0.1.0 SA prototype |
+| `main` | Stable default branch; receives an integration branch only through a separate owner-requested PR |
+| Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
-Every development PR targets **`release/v0.0.1`**, including automated
-maintenance PRs when configured. Task PRs are squash-merged after applicable
+Every development PR targets the integration branch of its issue's milestone:
+**`release/v0.0.1`** for setup work, including automated maintenance PRs when
+configured, and **`release/v0.1.0`** for prototype work. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
 directly to main or the release branch. Check the base explicitly when opening
 a PR: GitHub's default branch remains main.
 
 Do not open or merge a release-to-main integration PR merely to report progress.
-When the owner requests integration, open a PR from `release/v0.0.1` into
+When the owner requests integration, open a PR from the applicable integration branch into
 `main`, verify its diff, applicable checks and review findings, then merge with
 a **merge commit** to preserve ancestry. Integration does not by itself publish
 a version tag, release, workbook or website.
 
 Release branches are retained: a separate active ruleset blocks their deletion
 with no bypass. After integration, an authorized maintainer may fast-forward
-`release/v0.0.1` to the main merge commit if v0.0.1 work continues, using the
+the applicable integration branch to the main merge commit if work continues, using the
 existing administrator maintenance bypass and an expected-head check. Never
 force-push, reset shared history, or delete/recreate a release branch. At a
 milestone transition, create the next owner-approved integration branch and
@@ -71,6 +79,15 @@ open with named dependencies. Static repository checks, actual runtime tests,
 independent expected-value comparisons and methodology review are distinct
 forms of evidence; do not claim one establishes the others.
 
+### Synchronizing integration branches
+
+Bring shared main changes into another active release through a task branch
+and reviewed task PR. Resolve shared documents against both source heads,
+preserving current requirements and replacing superseded statements. Record
+both heads, the resulting commit and a content comparison. A squash merge
+preserves the release's existing history but does not make the synchronized
+main head an ancestor; never use that merge to claim ancestry advancement.
+
 ### Issue forms and template activation
 
 The bug form defaults to `bug` and `P2`; feature and documentation forms
@@ -82,10 +99,10 @@ explicit metadata. Disabling ordinary blank issues does not enforce metadata
 or prevent maintainers from creating blank issues.
 
 GitHub serves the issue chooser and PR template from the default branch.
-Files merged into `release/v0.0.1` are available for review but require a
-separate owner-requested integration into main before normal default-branch
-activation can be verified. Issue #6 keeps that live verification criterion
-open until it is performed. The
+Files merged into a release branch need a separate owner-requested main
+integration before default-branch activation. Initial forms and policies were
+activated and verified through #21/#6. Prototype-aware updates on
+release/v0.1.0 require their own later main integration. The
 [PR template](../.github/PULL_REQUEST_TEMPLATE.md) contains the single merge
 checklist; this document owns its detailed procedures.
 
@@ -116,10 +133,11 @@ checklist; this document owns its detailed procedures.
 
 ### Milestone management
 
-The active milestone is
-[v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1).
-Its [detailed guide](Milestones/v0.0.1.md) defines purpose, entry and exit
-criteria, dependencies, evidence, and deferred scope. The live issue tracker
+Two milestones are active: [v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+and [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2).
+The setup [detailed guide](Milestones/v0.0.1.md) defines purpose, entry/exit
+criteria and evidence. Prototype closeout and its milestone guide are tracked
+in #32; #28 owns Excel evidence and #29 the remaining methodology decisions. The live issue tracker
 owns progress; a guide is not a substitute for completed acceptance criteria.
 
 The owner approves milestone scope and any next integration branch. Before a
@@ -153,8 +171,8 @@ verified under issue #2.
 | Issue/PR assignee, priority, milestone, acceptance evidence | Manual triage and completion procedure |
 | Owner-requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
 
-Issue #6 owns default-branch activation verification for issue forms and the
-PR template. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
+Issue #6 recorded initial default-branch activation of forms and the PR
+template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
 policies define the reporting routes.
 Dependabot targets setup updates at `release/v0.0.1` and existing prototype
 updates at `release/v0.1.0`, as detailed in [Repository checks](CI.md).
@@ -162,5 +180,6 @@ Issue #2 remains open for its required-check and review
 dependencies; issue #8 owns final milestone closeout.
 
 The procedures fit this project's setup stage and retained-release-branch
-protections. No engine, Excel harness, traffic-alert exception, or
-unimplemented check is introduced by this documentation.
+protections. This document records maintenance procedures, not Excel execution or
+regulatory certification. Prototype source and LibreOffice evidence are
+tracked separately from setup closeout.

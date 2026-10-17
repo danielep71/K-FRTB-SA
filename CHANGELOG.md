@@ -7,6 +7,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Required numeric parameters fail with key/source context instead of using
+  zero for invalid text. Validation and conversion share a full invariant
+  dot-decimal/scientific grammar; comma/grouped/junk/overflow text is rejected
+  while actual numeric cells retain their value (#41, PR #39 review).
+
 - Label pruning now checks issue/PR associations against the validated,
   policy-resolved reconciliation plan, respecting selected overlays and
   `prune: false`. Used-label protection also applies to direct CLI runs;
@@ -14,6 +19,17 @@ Unreleased describe integrated work, not a published version.
   exact matching and bounded association scans for comma-containing names (#25).
 
 ### Added
+
+- Excel/VBA SA prototype (#20/#22): SBM for five risk classes, DRC
+  non-securitization and RRAO; independent Python reference, LibreOffice
+  reconciliation and methodology/workbook/validation documentation. Excel
+  host evidence remains pending (#28).
+- Committed macro-free template and template-based builds; production and
+  workbook modules under `src/modules`, with test modules under
+  `tests/modules` (#30/#34). Generated `.xlsm` workbooks remain local.
+- Owner-approved prototype integration branch `release/v0.1.0` alongside
+  `release/v0.0.1` for setup.
+
 
 - Universal Repository integrity check for ordinary PRs and pushes to main
   and release branches; one local entry point for configuration, tracked
@@ -56,6 +72,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Synchronized main setup controls into the prototype line, preserving its
+  template and module layout. Shared guidance and forms describe both active
+  milestones; prototype tests install the separate CI parser dependency (#31).
+
+
 - Repository files consistently use the MIT license; removed external-project
   references and superseded license files at the owner's request (#5).
 
@@ -68,5 +89,6 @@ Unreleased describe integrated work, not a published version.
 - Documentation uses the correct display name FRTB-SA while retaining the
   existing MKT-FTRB-SA repository identifier and URLs (#3).
 
-No functional release has been published. SBM, DRC, and RRAO remain planned;
-no engine results or regulatory certification are claimed.
+No functional release has been published. Prototype LibreOffice results and
+independent reconciliation are recorded; Excel execution and regulatory
+certification are not claimed.

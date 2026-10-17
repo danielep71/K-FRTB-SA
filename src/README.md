@@ -1,14 +1,31 @@
-# Production source
+# 🧩 Production source
 
-This directory is the future production-source boundary. It currently contains
-guidance and the [workbook reservation](workbook/README.md), not a calculation
-engine.
+This directory is the production-source boundary. It holds the exported VBA
+of the v0.1.0 prototype (issue #20) and the [workbook reservation](workbook/README.md).
+The prototype uses Excel/VBA to evaluate the approach; it is not the platform
+decision, which stays open in [Scope](../docs/SCOPE.md).
 
 [Repository structure](../docs/REPOSITORY_STRUCTURE.md) owns placement and the
-source-of-truth policy. Before adding components, record the platform, public
-contracts, regulatory baseline, and initial coverage in
-[Scope](../docs/SCOPE.md) and the relevant implementation issues.
+source-of-truth policy; the [workbook guide](../docs/workbook-guide.md) owns
+the module layout, build and sheet conventions.
 
-Add internal subdirectories with their first real component. Keep test code
-under `tests/` and maintenance logic under `tools/` or the existing
-`.github/scripts/`. Workbook binaries must never be the only source record.
+| Path | Content |
+| --- | --- |
+| `modules/CORE_Config.bas` | Product name, sheet names, layout, palette and the risk class, component and scenario codes |
+| `modules/CORE_Util.bas` | Sheet access, tagged parameter tables, conversions, table formatting and the run log |
+| `modules/CORE_Params.bas` | Loading of the Control settings and `P_*` parameters; risk weight and correlation accessors |
+| `modules/CORE_SBM.bas` | Sensitivities-based method (delta, vega, curvature) under the three correlation scenarios |
+| `modules/CORE_DRC.bas` | Default risk charge for non-securitizations |
+| `modules/CORE_RRAO.bas` | Residual risk add-on |
+| `modules/M_Main.bas` | Sheet-button macros and automation entry points; Results and Out_Summary reports |
+| `modules/M_Setup.bas` | Workbook builder (sheets, palette, parameters, sample portfolio, expected results) and `FinishWorkbook` |
+| `modules/M_Dev.bas` | Export of the modules back to the repository |
+| `workbook/FRTB_Template.xlsx` | Macro-free template generated from the modules; see [workbook/README.md](workbook/README.md) |
+
+`CORE_` modules declare `Option Private Module`. Known deviation: `CORE_Util`,
+`CORE_SBM`, `CORE_DRC` and `CORE_RRAO` read the input sheets and write the
+output sheets, so core is not yet free of worksheet access.
+
+Keep test code under `tests/` and maintenance logic under `tools/` or the
+existing `.github/scripts/`. Workbook binaries must never be the only source
+record.

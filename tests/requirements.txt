@@ -1,0 +1,4 @@
+# Test and tooling dependencies (LibreOffice and python3-uno come from the OS)
+numpy==2.5.3
+openpyxl==3.1.5
+pytest==9.1.1

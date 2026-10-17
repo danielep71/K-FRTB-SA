@@ -52,6 +52,12 @@ and record the resulting settings/evidence in issue #2.
 
 ## Actions permissions
 
+The prototype integration branch `release/v0.1.0` was approved separately
+for milestone v0.1.0 and is covered by the same release/** protections.
+Shared maintenance content is synchronized there under #31; setup work
+continues on release/v0.0.1. This is a content synchronization, not a claim
+that a squash merge advances main's ancestry in the prototype branch.
+
 - All actions/reusable workflows are allowed, but **full-length
   commit SHA pinning is now enforced** in repository settings.
 - Default GITHUB_TOKEN permissions remain read-only (contents/packages).

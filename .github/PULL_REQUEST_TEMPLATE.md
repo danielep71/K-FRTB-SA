@@ -17,7 +17,7 @@ risks, dependencies, or missing evidence; write None when applicable.
 
 ## ✅ Merge checklist
 
-- [ ] Base is `release/v0.0.1` for a task, or this is an explicitly owner-requested release-to-main integration.
+- [ ] Base is the issue milestone's integration branch (`release/v0.0.1` for setup, `release/v0.1.0` for the prototype) for a task, or this is an explicitly owner-requested release-to-main integration.
 - [ ] Linked issue and PR have assignee `danielep71`, exactly one priority, and the appropriate milestone; P1 is only for confirmed calculation bugs.
 - [ ] Scope, compatibility impact, affected documentation, and CHANGELOG.md are current.
 - [ ] Applicable checks pass; any running automated review is finished and all review findings are addressed or explained and resolved.
