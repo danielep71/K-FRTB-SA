@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Repository editing, ignore, and Git attribute policies copied from
+  VBA-SACCR-Toolkit; removed its repository-specific workbook exception (#5).
+
 - Owner-selected integration branch `release/v0.0.1`, branch governance and
   agent instructions: all task PRs target the release branch; integration
   into main uses a separate owner-requested merge-commit PR (#4).
