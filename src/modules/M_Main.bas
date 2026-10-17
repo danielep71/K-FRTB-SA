@@ -24,9 +24,12 @@ Attribute VB_Name = "M_Main"
 '   Owns the status of the last run (mLastStatus).
 '
 ' ERROR POLICY
-'   A run error is logged, stored in LastRunStatus and shown in a message
-'   box by RunFRTB; RunFRTB_Silent never shows a dialog. Errors in the
-'   inputs are not VBA errors: they are listed on the Log sheet.
+'   A run error is logged, stored in LastRunStatus, noted on Results and
+'   shown in a message box by RunFRTB; RunFRTB_Silent never shows a dialog.
+'   Every run first clears the output sheets, so a failed run leaves no
+'   earlier capital behind. A parameter that is blank or not a number is a
+'   run error. Errors in the input rows are not VBA errors: they are listed
+'   on the Log sheet.
 '
 ' KNOWN DEVIATION
 '   The sheet buttons call this module directly; see src/README.md.
@@ -103,6 +106,7 @@ Private Function ExecuteRun() As Boolean
 
     On Error GoTo Failed
     CaptureSettings savedScreen, savedCalculation, captured
+    ClearOutputs                                             'no earlier results after a failure
     ResetLog
     LogMessage "INFO", "RunFRTB", APP_NAME & " " & APP_VERSION & " started"
     LoadAllParameters
@@ -118,6 +122,11 @@ CleanUp:
     If errNumber <> 0 Then
         mLastStatus = "Error " & errNumber & ": " & errDescription
         LogMessage "ERROR", "RunFRTB", mLastStatus
+        If SheetExists(SH_RESULTS) Then
+            TableCell(GetSheet(SH_RESULTS), LAYOUT_HEADER_ROW, 1).Value = _
+                "Run failed (see the Log sheet): " & errDescription
+            StyleNote GetSheet(SH_RESULTS).Cells(LAYOUT_HEADER_ROW, LAYOUT_FIRST_COL), True
+        End If
     End If
     If captured Then RestoreSettings savedScreen, savedCalculation
     On Error GoTo 0
