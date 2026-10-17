@@ -63,6 +63,8 @@ See [branch governance](docs/GOVERNANCE.md) for the integration procedure.
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
 | Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
 | Label usage, issue priorities, and metadata checks | [Labels and triage](docs/LABELS.md) |
+| How to contribute | [Contributing](CONTRIBUTING.md) |
+| Detailed setup purpose and completion criteria | [v0.0.1 guide](docs/Milestones/v0.0.1.md) |
 | Development branches and integration | [Governance](docs/GOVERNANCE.md) |
 | Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
 | Recorded changes | [Changelog](CHANGELOG.md) |

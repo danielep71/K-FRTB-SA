@@ -7,7 +7,9 @@ create their milestones only after the owner approves scope and dependencies.
 ## v0.0.1 — Repository setup
 
 [Live milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1).
-The issue tracker is authoritative for current progress.
+The [detailed milestone guide](Milestones/v0.0.1.md) explains purpose,
+dependencies, entry/exit criteria, and evidence. The issue tracker is
+authoritative for current progress.
 
 | Issue | Deliverable |
 | --- | --- |

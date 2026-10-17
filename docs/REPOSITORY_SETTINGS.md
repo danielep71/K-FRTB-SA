@@ -89,7 +89,12 @@ not evidence that automatic PR review is configured; that setting remains to
 be verified through its supported review configuration. Until verified, use
 maintainer review and resolve findings before merge.
 
-Issue #2 remains open for the required check from #7, integration-branch
-remaining contribution/lifecycle verification from #4, automated-review verification and a
+Issue #2 remains open for the required check from #7, automated-review verification and a
 representative PR/check verification of the completed configuration. Preserve
 an accurate distinction between live controls and pending work.
+
+The retained-branch lifecycle was exercised through PR #13: main received
+merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`, the release branch
+was fast-forwarded to it, and the post-integration CodeQL run passed.
+[Governance](GOVERNANCE.md) defines the ongoing verification procedure;
+issue #4 supplies contribution, milestone, and closeout guidance.
