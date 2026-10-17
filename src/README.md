@@ -11,17 +11,18 @@ the module layout, build and sheet conventions.
 
 | Path | Content |
 | --- | --- |
-| `core/CORE_Config.bas` | Product name, sheet names, layout, palette and the risk class, component and scenario codes |
-| `core/CORE_Util.bas` | Sheet access, tagged parameter tables, conversions, table formatting and the run log |
-| `core/CORE_Params.bas` | Loading of the Control settings and `P_*` parameters; risk weight and correlation accessors |
-| `core/CORE_SBM.bas` | Sensitivities-based method (delta, vega, curvature) under the three correlation scenarios |
-| `core/CORE_DRC.bas` | Default risk charge for non-securitizations |
-| `core/CORE_RRAO.bas` | Residual risk add-on |
-| `workbook/M_Main.bas` | Sheet-button macros and automation entry points; Results and Out_Summary reports |
-| `workbook/M_Setup.bas` | Workbook builder: sheets, palette, parameters, sample portfolio, expected results |
-| `workbook/M_Dev.bas` | Export of the modules back to the repository |
+| `modules/CORE_Config.bas` | Product name, sheet names, layout, palette and the risk class, component and scenario codes |
+| `modules/CORE_Util.bas` | Sheet access, tagged parameter tables, conversions, table formatting and the run log |
+| `modules/CORE_Params.bas` | Loading of the Control settings and `P_*` parameters; risk weight and correlation accessors |
+| `modules/CORE_SBM.bas` | Sensitivities-based method (delta, vega, curvature) under the three correlation scenarios |
+| `modules/CORE_DRC.bas` | Default risk charge for non-securitizations |
+| `modules/CORE_RRAO.bas` | Residual risk add-on |
+| `modules/M_Main.bas` | Sheet-button macros and automation entry points; Results and Out_Summary reports |
+| `modules/M_Setup.bas` | Workbook builder (sheets, palette, parameters, sample portfolio, expected results) and `FinishWorkbook` |
+| `modules/M_Dev.bas` | Export of the modules back to the repository |
+| `workbook/FRTB_Template.xlsx` | Macro-free template generated from the modules; see [workbook/README.md](workbook/README.md) |
 
-Core modules declare `Option Private Module`. Known deviation: `CORE_Util`,
+`CORE_` modules declare `Option Private Module`. Known deviation: `CORE_Util`,
 `CORE_SBM`, `CORE_DRC` and `CORE_RRAO` read the input sheets and write the
 output sheets, so core is not yet free of worksheet access.
 

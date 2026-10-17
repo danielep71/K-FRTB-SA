@@ -6,10 +6,15 @@ Attribute VB_Name = "M_Setup"
 '   Build the workbook from an empty one: every sheet with the K-FRTB-SA
 '   frame (brand bar, title bar, subtitle, tab color), the default
 '   regulatory parameters (Basel MAR21-MAR23), a synthetic sample portfolio,
-'   the buttons and the expected results of the regression test.
+'   the buttons and the expected results of the regression test. The
+'   macro-free template src/workbook/FRTB_Template.xlsx is this build saved
+'   without VBA; FinishWorkbook adds what a template cannot hold.
 '
 ' PUBLIC SURFACE
-'   BuildWorkbook: rebuild every sheet (overwrites the inputs).
+'   BuildWorkbook: rebuild every sheet (overwrites the inputs), then
+'   FinishWorkbook.
+'   FinishWorkbook: add the sheet buttons and window settings to a workbook
+'   opened from the template.
 '   ResetParameters: rewrite the P_* sheets with the defaults.
 '   LoadSampleData: rewrite the In_* sheets with the sample portfolio.
 '   ManagedSheets: the sheet names in workbook order.
@@ -46,10 +51,6 @@ Option Explicit
 '                              MODULE CONSTANTS
 '------------------------------------------------------------------------------
 Private Const INPUT_ROWS As Long = 200                       'Pre-formatted input rows per input sheet
-Private Const KIND_REFERENCE As Long = 1
-Private Const KIND_INPUT As Long = 2
-Private Const KIND_OUTPUT As Long = 3
-Private Const KIND_TEST As Long = 4
 
 '------------------------------------------------------------------------------
 '                              PUBLIC MACROS
@@ -70,8 +71,22 @@ Public Sub BuildWorkbook()
     WriteParameters
     WriteSampleData
     WriteExpectedResults
-    ApplyWindowSettings
+    SetAlerts True
+    FinishWorkbook
+End Sub
 
+
+' Buttons and window settings are not kept by a macro-free template: the
+' build from the template imports the modules and calls this procedure.
+Public Sub FinishWorkbook()
+    Dim names As Variant, i As Long
+    SetAlerts False
+    names = ManagedSheets()
+    For i = LBound(names) To UBound(names)
+        If SheetExists(CStr(names(i))) Then ApplyTabColor GetSheet(CStr(names(i)))
+    Next i
+    AddWorkbookButtons
+    ApplyWindowSettings
     On Error Resume Next
     ThisWorkbook.Worksheets(SH_README).Activate
     On Error GoTo 0
@@ -158,7 +173,7 @@ End Sub
 ' Brand bar, title bar, subtitle and spacer rows shared by every sheet
 ' (the workbook frame); lastCol is the last column of the bars.
 Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle As String, _
-                       ByVal kind As Long, ByVal lastCol As Long)
+                       ByVal lastCol As Long)
     ws.Cells(1, 2).Value = APP_NAME
     ws.Cells(2, 2).Value = title
     ws.Cells(LAYOUT_SUBTITLE_ROW, LAYOUT_FIRST_COL).Value = subtitle
@@ -187,18 +202,30 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
     ws.Rows(2).RowHeight = 26.1
     ws.Rows(3).RowHeight = 30
     ws.Rows(4).RowHeight = 9.95
-    Select Case kind
-        Case KIND_INPUT: ws.Tab.Color = TAB_INPUT
-        Case KIND_OUTPUT: ws.Tab.Color = TAB_OUTPUT
-        Case KIND_TEST: ws.Tab.Color = TAB_TEST
-        Case Else: ws.Tab.Color = TAB_REFERENCE
-    End Select
     On Error GoTo 0
+    ApplyTabColor ws
 End Sub
 
 
 ' Writes values from column C. Text is stored as text, so that a reference
 ' such as "MAR21.54" is never converted to a date or a number.
+' Tab color by role, from the sheet name: navy README, green tests, blue
+' outputs, gold inputs and parameters. Set again by FinishWorkbook because
+' not every host keeps it in the saved template.
+Private Sub ApplyTabColor(ByVal ws As Object)
+    Dim color As Long
+    Select Case True
+        Case ws.Name = SH_README: color = TAB_REFERENCE
+        Case ws.Name = SH_TEST: color = TAB_TEST
+        Case ws.Name = SH_RESULTS, ws.Name = SH_LOG, Left$(ws.Name, 4) = "Out_": color = TAB_OUTPUT
+        Case Else: color = TAB_INPUT
+    End Select
+    On Error Resume Next
+    ws.Tab.Color = color
+    On Error GoTo 0
+End Sub
+
+
 Private Sub PutRow(ByVal ws As Object, ByVal r As Long, ByVal values As Variant)
     Dim i As Long, k As Long
     k = 0
@@ -350,7 +377,7 @@ Private Sub BuildReadme()
     Dim ws As Object, r As Long
     Set ws = GetSheet(SH_README)
     ApplyFrame ws, "ReadMe", APP_TITLE & " (Basel MAR21-MAR23) in Excel VBA. Prototype " & APP_VERSION & _
-        ": results are not validated for regulatory use.", KIND_REFERENCE, 4
+        ": results are not validated for regulatory use.", 4
     SetWidths ws, Array(34, 150)
 
     r = 5
@@ -414,8 +441,7 @@ End Function
 Private Sub BuildControl()
     Dim ws As Object, r As Long
     Set ws = GetSheet(SH_CONTROL)
-    RemoveButtons ws
-    ApplyFrame ws, "Control", "Run settings and actions.", KIND_INPUT, 6
+    ApplyFrame ws, "Control", "Run settings and actions.", 6
     SetWidths ws, Array(34, 14, 95, 16)
     r = PutTable(ws, LAYOUT_HEADER_ROW, "SETTINGS", "Run settings", Array("Code", "Value", "Description", "Reference"))
     PutRow ws, r, Array("REPORTING_CCY", "EUR", "Reporting currency; FX sensitivities are against this currency", "MAR21.14")
@@ -426,44 +452,52 @@ Private Sub BuildControl()
     On Error Resume Next
     ws.Range(TableCell(ws, r, 2), TableCell(ws, r + 3, 2)).HorizontalAlignment = -4108
     On Error GoTo 0
+End Sub
+
+
+' Removes and recreates the buttons of Control and Results.
+Private Sub AddWorkbookButtons()
+    Dim ws As Object
+    Set ws = GetSheet(SH_CONTROL)
+    RemoveButtons ws
     AddButton ws, LAYOUT_FIRST_COL + 2, 0, "Run FRTB-SA", "RunFRTB"
     AddButton ws, LAYOUT_FIRST_COL + 2, 1, "Clear outputs", "ClearOutputs"
     AddButton ws, LAYOUT_FIRST_COL + 2, 2, "Run regression test", "Test_RunRegression"
+    Set ws = GetSheet(SH_RESULTS)
+    RemoveButtons ws
+    AddButton ws, LAYOUT_FIRST_COL + 5, 0, "Run FRTB-SA", "RunFRTB"
 End Sub
 
 
 Private Sub BuildOutputSheets()
     Dim ws As Object
     Set ws = GetSheet(SH_RESULTS)
-    RemoveButtons ws
-    ApplyFrame ws, "Results", "Capital by risk class, component and correlation scenario (MAR21.7), reporting currency.", _
-        KIND_OUTPUT, 9
+    ApplyFrame ws, "Results", "Capital by risk class, component and correlation scenario (MAR21.7), reporting currency.", 9
     SetWidths ws, Array(26, 14, 16, 16, 16)
     ResultsPlaceholder ws
-    AddButton ws, LAYOUT_FIRST_COL + 5, 0, "Run FRTB-SA", "RunFRTB"
 
     Set ws = GetSheet(SH_OUT_SUMMARY)
-    ApplyFrame ws, "Out_Summary", "Key results of the last run, read by the regression test and automation.", KIND_OUTPUT, 5
+    ApplyFrame ws, "Out_Summary", "Key results of the last run, read by the regression test and automation.", 5
     SetWidths ws, Array(18, 20)
     ResultsPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_CLASS)
-    ApplyFrame ws, "Out_RiskClass", "Capital per risk class, component and scenario; AltSbUsed = Y when the alternative Sb of MAR21.4(5)(b) applied.", KIND_OUTPUT, 9
+    ApplyFrame ws, "Out_RiskClass", "Capital per risk class, component and scenario; AltSbUsed = Y when the alternative Sb of MAR21.4(5)(b) applied.", 9
     SetWidths ws, Array(12, 13, 11, 16, 9, 11)
     ResultsPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_BUCKETS)
-    ApplyFrame ws, "Out_Buckets", "Kb and Sb per bucket. Notes: ALT_SB alternative Sb, UP/DOWN selected curvature scenario, OTHER other-sector bucket.", KIND_OUTPUT, 11
+    ApplyFrame ws, "Out_Buckets", "Kb and Sb per bucket. Notes: ALT_SB alternative Sb, UP/DOWN selected curvature scenario, OTHER other-sector bucket.", 11
     SetWidths ws, Array(12, 13, 11, 9, 16, 16, 11, 16)
     ResultsPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_DRC)
-    ApplyFrame ws, "Out_DRC", "Net jump-to-default per obligor after seniority netting, and the hedge benefit ratio and charge per bucket (MAR22).", KIND_OUTPUT, 18
+    ApplyFrame ws, "Out_DRC", "Net jump-to-default per obligor after seniority netting, and the hedge benefit ratio and charge per bucket (MAR22).", 18
     SetWidths ws, Array(16, 9, 13, 9, 14, 14, 3, 9, 14, 14, 10, 14, 14, 14)
     ResultsPlaceholder ws
 
     Set ws = GetSheet(SH_LOG)
-    ApplyFrame ws, "Log", "Every rejected input row with the reason, warnings and the run status.", KIND_OUTPUT, 6
+    ApplyFrame ws, "Log", "Every rejected input row with the reason, warnings and the run status.", 6
     SetWidths ws, Array(9, 24, 110)
     ResultsPlaceholder ws
 End Sub
@@ -504,7 +538,7 @@ Private Sub BuildInputSheet(ByVal sheetName As String, ByVal subtitle As String,
     Set ws = GetSheet(sheetName)
     ws.Cells.Clear
     nCols = UBound(headers) - LBound(headers) + 1
-    ApplyFrame ws, sheetName, subtitle, KIND_INPUT, LAYOUT_FIRST_COL + nCols - 1
+    ApplyFrame ws, sheetName, subtitle, LAYOUT_FIRST_COL + nCols - 1
     SetWidths ws, widths
     WriteTableHeader ws, LAYOUT_HEADER_ROW, headers, COLOR_INPUT_HEADER
     FormatDataRows ws, LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_DATA_ROW + INPUT_ROWS - 1, nCols, firstNumCol, "#,##0.####", True
@@ -534,7 +568,7 @@ Private Function ParamSheet(ByVal sheetName As String, ByVal subtitle As String,
     Dim ws As Object
     Set ws = GetSheet(sheetName)
     ws.Cells.Clear
-    ApplyFrame ws, sheetName, subtitle, KIND_INPUT, lastCol
+    ApplyFrame ws, sheetName, subtitle, lastCol
     Set ParamSheet = ws
 End Function
 
@@ -946,7 +980,7 @@ Private Sub WriteExpectedResults()
     Set ws = GetSheet(SH_TEST)
     ws.Cells.Clear
     ApplyFrame ws, "Test_Expected", "Expected results of the sample portfolio with default parameters and settings. " & _
-        "Run Run FRTB-SA, then Run regression test.", KIND_TEST, 8
+        "Run Run FRTB-SA, then Run regression test.", 8
     SetWidths ws, Array(28, 18, 18, 12, 10)
     r = PutTable(ws, LAYOUT_HEADER_ROW, "EXPECTED", "Expected values", Array("Item", "Expected", "Actual", "AbsDiff", "Status"))
     n = WriteExpectedRows(ws, r)

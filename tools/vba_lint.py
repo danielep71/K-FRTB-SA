@@ -1,4 +1,4 @@
-"""Static checks for the VBA modules in src/core, src/workbook and tests/modules.
+"""Static checks for the VBA modules in src/modules and tests/modules.
 
 LibreOffice compiles VBA leniently: undeclared variables and calls to
 missing procedures only fail when the line runs. Excel's compiler rejects
@@ -6,8 +6,9 @@ them up front under Option Explicit. This checker approximates that part of
 Excel's "Debug > Compile" for the subset of VBA used in this project:
 
 * every module declares Option Explicit and an Attribute VB_Name matching
-  its file name; modules in src/core are named CORE_* and declare
-  Option Private Module, modules in tests/modules are named TEST_*;
+  its file name; modules in src/modules are named CORE_* (engine, with
+  Option Private Module) or M_* (workbook macros); modules in tests/modules
+  are named TEST_*;
 * every identifier is a keyword, a built-in, or declared in scope
   (procedure parameters and locals, module-level names, public names of any
   module);
@@ -26,7 +27,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-VBA_DIRS = [REPO_ROOT / "src" / "core", REPO_ROOT / "src" / "workbook", REPO_ROOT / "tests" / "modules"]
+VBA_DIRS = [REPO_ROOT / "src" / "modules", REPO_ROOT / "tests" / "modules"]
 
 KEYWORDS = {
     "and", "as", "attribute", "boolean", "byref", "byval", "call", "case", "collection", "const",
@@ -147,14 +148,13 @@ def parse(path: Path) -> tuple[Module, list[str]]:
         errors.append(f"{path.name}: first line must be Attribute VB_Name = \"{path.stem}\"")
     if not re.search(r"^Option Explicit\s*$", text, re.M):
         errors.append(f"{path.name}: missing Option Explicit")
-    folder = path.parent.name
-    if folder == "core":
-        if not path.stem.startswith("CORE_"):
-            errors.append(f"{path.name}: modules in src/core are named CORE_*")
-        if not re.search(r"^Option Private Module\s*$", text, re.M):
-            errors.append(f"{path.name}: core modules declare Option Private Module")
-    if folder == "modules" and path.parent.parent.name == "tests" and not path.stem.startswith("TEST_"):
+    in_tests = path.parent.parent.name == "tests"
+    if in_tests and not path.stem.startswith("TEST_"):
         errors.append(f"{path.name}: modules in tests/modules are named TEST_*")
+    if not in_tests and not path.stem.startswith(("CORE_", "M_")):
+        errors.append(f"{path.name}: modules in src/modules are named CORE_* or M_*")
+    if path.stem.startswith("CORE_") and not re.search(r"^Option Private Module\s*$", text, re.M):
+        errors.append(f"{path.name}: CORE_ modules declare Option Private Module")
     if not re.search(r"^' MODULE: " + re.escape(path.stem) + r"\s*$", text, re.M):
         errors.append(f"{path.name}: missing module banner (' MODULE: {path.stem})")
 

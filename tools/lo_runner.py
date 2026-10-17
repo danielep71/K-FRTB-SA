@@ -4,8 +4,8 @@ LibreOffice executes VBA source in compatibility mode (Option VBASupport 1),
 which lets the engine run on Linux without Excel. The runner:
 
 1. starts a private headless soffice instance,
-2. creates an empty spreadsheet and inserts every module from src/core,
-   src/workbook and tests/modules,
+2. opens an empty spreadsheet (or --input, for example the template) and
+   inserts every module from src/modules and tests/modules,
 3. calls the requested macros in order,
 4. saves the result as .xlsx (no macros) for inspection.
 
@@ -32,7 +32,8 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-VBA_DIRS = [REPO_ROOT / "src" / "core", REPO_ROOT / "src" / "workbook", REPO_ROOT / "tests" / "modules"]
+VBA_DIRS = [REPO_ROOT / "src" / "modules", REPO_ROOT / "tests" / "modules"]
+TEMPLATE = REPO_ROOT / "src" / "workbook" / "FRTB_Template.xlsx"
 DEFAULT_MACROS = (
     "M_Setup.BuildWorkbook",
     "M_Main.RunFRTB_Silent",
@@ -73,7 +74,12 @@ def free_port() -> int:
         return s.getsockname()[1]
 
 
-def run(output: Path, macros: list[str], input_book: Path | None = None) -> list[str]:
+def run(output: Path, macros: list[str], input_book: Path | None = None, post_process=None) -> list[str]:
+    """Run macros and save the document as .xlsx.
+
+    post_process, when given, is called with the UNO document after the
+    macros and before saving (used to strip controls from the template).
+    """
     import uno  # noqa: PLC0415 - only available where LibreOffice is installed
     from com.sun.star.beans import PropertyValue  # noqa: PLC0415
 
@@ -154,6 +160,8 @@ def run(output: Path, macros: list[str], input_book: Path | None = None) -> list
             except Exception as exc:  # noqa: BLE001 - report and continue
                 errors.append(f"{macro}: {exc}")
 
+        if post_process is not None:
+            post_process(doc)
         output.parent.mkdir(parents=True, exist_ok=True)
         doc.storeToURL(output.resolve().as_uri(), (prop("FilterName", "Calc MS Excel 2007 XML"),))
         doc.close(True)

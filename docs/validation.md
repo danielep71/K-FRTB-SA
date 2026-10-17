@@ -19,6 +19,7 @@ checked. Treat any result as unvalidated for regulatory use.
 | VBA engine reconciliation | `python3 -m pytest tests/test_vba_engine.py` | The VBA modules, executed headless in LibreOffice, reproduce every `Out_RiskClass`, `Out_Buckets`, `Out_Summary` and `Out_DRC` value of the independent Python reference, on the sample portfolio and on a variant with all discretions enabled and invalid rows, each of which must be logged; empty inputs give zero capital |
 | In-workbook regression test | run inside the reconciliation tests | `Test_RunRegression` passes all 52 items embedded by `M_Setup` |
 | Expected values current | `python3 tools/update_expected.py --check` | The values embedded in `M_Setup` equal the reference results for the sample |
+| Template current | `python3 tools/build_template.py --check`, `tests/test_template.py` | The committed template equals a fresh build of the modules in values and layout (cell styles, number formats, explicitly set column widths and row heights, merged ranges, tab colors, frozen panes, gridlines, autofilters; automatic heights depend on the host's fonts and are not compared), carries no VBA project, controls or personal properties, and a build from it passes the regression test and reconciles with the reference |
 
 Run everything with:
 
@@ -36,8 +37,8 @@ workflow runs the same commands on pull requests.
 ### How the LibreOffice run works
 
 [`tools/lo_runner.py`](../tools/lo_runner.py) inserts the modules of
-`src/core`, `src/workbook` and `tests/modules` into an empty Calc document
-with `Option VBASupport 1`, calls a probe function appended to every module
+`src/modules` and `tests/modules` into an empty Calc document (or the
+template) with `Option VBASupport 1`, calls a probe function appended to every module
 (LibreOffice does not report compile errors otherwise), runs the requested
 macros and saves the result as `.xlsx`.
 

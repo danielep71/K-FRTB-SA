@@ -29,8 +29,7 @@ Attribute VB_Name = "M_Main"
 '   inputs are not VBA errors: they are listed on the Log sheet.
 '
 ' KNOWN DEVIATION
-'   This standard module lives in src/workbook because the sheet buttons
-'   call it; see src/README.md.
+'   The sheet buttons call this module directly; see src/README.md.
 '
 ' COMPATIBILITY
 '   Excel VBA; no references beyond the defaults.

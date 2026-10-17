@@ -1,18 +1,21 @@
-# 🧾 Workbook source
+# 🧾 Workbook template
 
-This directory holds the workbook glue of the v0.1.0 prototype: `M_Main`
-(sheet-button macros), `M_Setup` (workbook builder) and `M_Dev` (export back
-to the repository). See the [workbook guide](../../docs/workbook-guide.md).
+`FRTB_Template.xlsx` is the macro-free template of the K-FRTB-SA prototype,
+at the owner-approved path. It is the workbook that `M_Setup.BuildWorkbook`
+produces from [`src/modules`](../modules), saved without a VBA project,
+sheet buttons or personal document properties. Other workbook names, paths,
+and macro-enabled variants remain ignored.
 
-## Template reservation
+| Content | Detail |
+| --- | --- |
+| Sheets | README, Control, Results, In_Delta, In_Vega, In_Curvature, In_DRC, In_RRAO, Out_Summary, Out_RiskClass, Out_Buckets, Out_DRC, Log, P_General, P_GIRR, P_CSR, P_EQ, P_COM, P_FX, P_DRC, P_RRAO, Test_Expected |
+| Formulas and names | None: every value is written by `M_Setup`; the engine reads tagged tables, not workbook names |
+| Data | Default Basel MAR21-MAR23 parameters, the synthetic sample portfolio and the expected regression results; no real portfolio data |
+| Not included | VBA, buttons (added by `M_Setup.FinishWorkbook` at build time), calculation results |
 
-The owner approved the exact trackable path
-`src/workbook/FRTB_Template.xlsx`. The file does not exist yet.
-Other workbook names, paths, and macro-enabled variants remain ignored.
-
-The prototype builds every sheet from source (`M_Setup.BuildWorkbook`), a
-documented deviation from the template-based build in
-[Repository structure](../../docs/REPOSITORY_STRUCTURE.md#conditional-excelvba-policy).
-`tools/Build-Workbook.ps1 -Template` saves a macro-free template built in
-Excel; committing it here needs an issue explaining its sheets, names,
-formulas, synthetic content, and build/synchronization role.
+Never edit the template by hand. Change `src/modules` and regenerate it with
+`python3 tools/build_template.py` (LibreOffice, used for the committed file)
+or compare with `tools\Build-Workbook.ps1 -Template` (Excel).
+`tests/test_template.py` fails when the committed file differs from a fresh
+build. See the [workbook guide](../../docs/workbook-guide.md) and
+[repository structure](../../docs/REPOSITORY_STRUCTURE.md).
