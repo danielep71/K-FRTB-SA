@@ -13,6 +13,7 @@ def test_shared_numeric_validation_and_conversion(tmp_path):
     assert lo_runner.run(
         tmp_path / "numeric-contract.xlsx",
         ["TEST_Numeric.Test_NumericContracts_Silent"],
+        expected_results={"TEST_Numeric.Test_NumericContracts_Silent": 1},
     ) == []
 
 

@@ -14,7 +14,7 @@ Attribute VB_Name = "TEST_Numeric"
 '==============================================================================
 Option Explicit
 
-Public Sub Test_NumericContracts_Silent()
+Public Function Test_NumericContracts_Silent() As Long
     Dim inputs As Variant, expected As Variant, invalid As Variant, item As Variant
     Dim i As Long, parsed As Double, captured As Long
     inputs = Array("0.5", ".5", "1.", "-1.25e2", "+2E-1", " 0.5 ")
@@ -48,7 +48,8 @@ Public Sub Test_NumericContracts_Silent()
     If ToDouble(Empty, 99#) <> 99# Or ToDouble(CVErr(2015), 99#) <> 99# Then
         Err.Raise vbObjectError + ERR_APP, "TEST_Numeric", "Optional default changed"
     End If
-End Sub
+    Test_NumericContracts_Silent = 1
+End Function
 
 
 Private Sub AssertInvalidRequired(ByVal item As Variant)
