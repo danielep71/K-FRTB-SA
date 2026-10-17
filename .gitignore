@@ -70,6 +70,9 @@
 # Example for a deliberately version-controlled workbook:
 # !/examples/Project-demo.xlsm
 
+# Approved repository workbook template; keep this exception exact and rooted.
+!/src/workbook/FRTB_Template.xlsx
+
 
 #------------------------------------------------------------------------------
 # RELEASE / BUILD STAGING
