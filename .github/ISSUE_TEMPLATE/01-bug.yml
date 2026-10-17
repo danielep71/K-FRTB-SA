@@ -1,0 +1,79 @@
+name: 🐛 Bug report
+description: Report a reproducible defect in repository behavior or a documented contract.
+labels:
+- bug
+- P2
+assignees:
+- danielep71
+body:
+- type: markdown
+  attributes:
+    value: '## 🧭 Before you submit
+
+      This project is in repository setup; no calculation engine is available yet.
+
+      Use synthetic examples only. Report potential vulnerabilities privately via [SECURITY.md](https://github.com/danielep71/MKT-FTRB-SA/blob/main/SECURITY.md).
+
+      Forms set the owner and default labels; maintainers must confirm one priority and assign
+      a milestone. P1 is reserved for confirmed calculation bugs.'
+- type: input
+  id: source
+  attributes:
+    label: Source commit or version
+    description: Provide the exact commit SHA and branch or version.
+  validations:
+    required: true
+- type: textarea
+  id: environment
+  attributes:
+    label: Environment
+    description: State the OS, relevant tool versions, command or workflow, and configuration.
+  validations:
+    required: true
+- type: textarea
+  id: reproduction
+  attributes:
+    label: Steps to reproduce
+    description: Provide a minimal synthetic example and precise steps or commands.
+  validations:
+    required: true
+- type: textarea
+  id: expected
+  attributes:
+    label: Expected behavior
+    description: State the documented contract or independently justified expected result; cite
+      the authoritative source.
+  validations:
+    required: true
+- type: textarea
+  id: actual
+  attributes:
+    label: Observed behavior and evidence
+    description: Describe the actual result. Include sanitized output or relevant run links;
+      distinguish static checks from runtime execution.
+  validations:
+    required: true
+- type: textarea
+  id: acceptance
+  attributes:
+    label: Acceptance criteria
+    description: List the observable conditions and validation that would demonstrate a fix.
+  validations:
+    required: true
+- type: textarea
+  id: dependencies
+  attributes:
+    label: Dependencies and blockers
+    description: Link related issues or decisions, or write None.
+  validations:
+    required: true
+- type: checkboxes
+  id: submission-checks
+  attributes:
+    label: Submission checks
+    options:
+    - label: I have read the [Code of Conduct](https://github.com/danielep71/MKT-FTRB-SA/blob/main/CODE_OF_CONDUCT.md)
+        and will follow it.
+      required: true
+    - label: I have excluded credentials, confidential data, and undisclosed vulnerability details.
+      required: true

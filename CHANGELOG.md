@@ -7,6 +7,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Bug, feature, and documentation issue forms with owner/type/priority defaults;
+  one PR merge checklist; conduct and security policies with reporting routes;
+  default-branch activation and manual milestone triage guidance (#6).
+- Navigation glyphs and descriptive MIT/setup/development badges on the
+  project entry points and new participation policies.
+
 - Purposeful source, tests, documentation, tooling, and workbook-reservation
   READMEs; repository structure, source/generated-file and evidence policies,
   conditional VBA round-trip requirements, and local setup instructions (#5).
