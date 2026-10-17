@@ -47,7 +47,8 @@ repository labels; they are not a prototype of the calculation engine.
 | Runtime evidence and release packaging | Reproducible execution and release procedure |
 
 Issue #5 owns the source/test/tool structure appropriate to those decisions;
-issue #4 owns the contribution and branch model. Until the platform decision
+[governance](GOVERNANCE.md) establishes `release/v0.0.1` as the integration
+branch, while issue #4 owns the remaining contribution model. Until the platform decision
 is made, structure work must not imply unsupported runtime capability.
 
 ## Source and validation policy

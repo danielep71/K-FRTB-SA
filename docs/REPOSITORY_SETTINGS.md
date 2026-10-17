@@ -34,12 +34,13 @@ as in SACCR's inspected baseline; conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-No release branch or version tag existed at verification time. The patterns
-protect matching refs when they are created. Issue #4 must establish the
-active integration branch and document the lifecycle: after integration into
-main, retain and fast-forward the release branch where appropriate. Do not
-rely on deleting and recreating it, because the separate deletion rule has no
-bypass. Task branches can be deleted automatically after merge.
+The owner has selected **`release/v0.0.1`** as the active integration branch.
+It was created from main after PR #11 and inherits the existing setup work.
+All task PRs target this branch. No version tag has been created. The rulesets
+match `release/**`, including the `release/v0.0.1` name. See
+[branch governance](GOVERNANCE.md) for integration into main and subsequent
+retention/fast-forward; the separate deletion rule has no bypass. Task branches
+can be deleted automatically after merge.
 
 **Required status checks are pending issue #7.** The label checks are
 path-filtered and cannot serve as a universal repository-integrity gate.
@@ -89,6 +90,6 @@ be verified through its supported review configuration. Until verified, use
 maintainer review and resolve findings before merge.
 
 Issue #2 remains open for the required check from #7, integration-branch
-confirmation/documentation from #4, automated-review verification and a
+remaining contribution/lifecycle verification from #4, automated-review verification and a
 representative PR/check verification of the completed configuration. Preserve
 an accurate distinction between live controls and pending work.
