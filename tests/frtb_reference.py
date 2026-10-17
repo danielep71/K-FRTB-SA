@@ -100,24 +100,28 @@ def _bool(v) -> bool:
     return _text(v) in ("TRUE", "YES", "Y", "1", "-1")
 
 
+FIRST_COL = 2  # tables start in column C (0-based index 2)
+FIRST_DATA_ROW = 6  # input and output tables: header in row 5, data from row 6
+
+
 def _tables(ws) -> dict:
-    """Return {TAG: (header, rows)} for every tagged block on a sheet."""
-    rows = [list(r) for r in ws.iter_rows(values_only=True)]
+    """Return {TAG: (header, rows)} for every block whose heading starts with "[TAG]"."""
+    rows = [list(r) + [None] * 40 for r in ws.iter_rows(values_only=True)]
     out = {}
     for i, r in enumerate(rows):
-        c0 = r[0] if r else None
-        if isinstance(c0, str) and c0.startswith("[") and c0.endswith("]"):
+        c0 = r[FIRST_COL]
+        if isinstance(c0, str) and c0.startswith("[") and "]" in c0:
             header = []
-            for v in rows[i + 1]:
+            for v in rows[i + 1][FIRST_COL:]:
                 if v is None or str(v).strip() == "":
                     break
                 header.append(v)
             data = []
             j = i + 2
-            while j < len(rows) and rows[j][0] not in (None, ""):
-                data.append(rows[j][: len(header)])
+            while j < len(rows) and rows[j][FIRST_COL] not in (None, ""):
+                data.append(rows[j][FIRST_COL : FIRST_COL + len(header)])
                 j += 1
-            out[c0[1:-1].upper()] = (header, data)
+            out[c0[1 : c0.index("]")].upper()] = (header, data)
     return out
 
 
@@ -191,7 +195,7 @@ def params_from_workbook(wb) -> Params:
 
 def _input_rows(ws, ncols):
     out = []
-    for i, r in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+    for r in ws.iter_rows(min_row=FIRST_DATA_ROW, min_col=FIRST_COL + 1, values_only=True):
         r = list(r) + [None] * ncols
         if r[0] in (None, "") and r[1] in (None, ""):
             break
@@ -304,9 +308,19 @@ def delta_rw(p: Params, f: RF) -> float:
     if f.rc == "COM":
         return p.com_buckets[f.bucket]["rw"]
     rw = p.fx["RW"]
-    if p.fx_specified_on and ({f"{f.bucket}/{p.reporting_ccy}", f"{p.reporting_ccy}/{f.bucket}"} & p.fx_pairs):
+    if p.fx_specified_on and fx_pair_specified(p, f.bucket, p.reporting_ccy):
         rw /= p.fx["SPECIFIED_DIVISOR"]
     return rw
+
+
+def fx_pair_specified(p: Params, a: str, b: str) -> bool:
+    """Listed pair, or first-order cross of two currencies listed against USD (MAR21.88)."""
+    if {f"{a}/{b}", f"{b}/{a}"} & p.fx_pairs:
+        return True
+    usd_paired = {"USD"} | {x.split("/")[1] for x in p.fx_pairs if x.startswith("USD/")} | {
+        x.split("/")[0] for x in p.fx_pairs if x.endswith("/USD")
+    }
+    return a in usd_paired and b in usd_paired
 
 
 def vega_rw(p: Params, rc, bucket) -> float:
@@ -332,10 +346,8 @@ def vega_risk_factors(p: Params, rows):
             q, sub = "", ""
         else:
             tund = 0.0
-            if rc == "CSR_NS":
-                sub = sub or "BOND"
-            elif rc == "EQ":
-                sub = ""
+            if rc in ("CSR_NS", "EQ", "COM"):
+                sub = ""  # vega risk factors: name (or commodity) and option maturity only
             elif rc == "FX":
                 q, sub = b, ""
             if not q:
@@ -357,10 +369,8 @@ def curvature_risk_factors(p: Params, rows):
         up, dn = float(r[5]), float(r[6])
         if rc == "GIRR":
             q, sub = "", ""
-        elif rc == "CSR_NS":
-            sub = sub or "BOND"
-        elif rc == "EQ":
-            sub = ""
+        elif rc in ("CSR_NS", "EQ", "COM"):
+            sub = ""  # one curvature risk factor per issuer or commodity
         elif rc == "FX":
             q, sub = b, ""
             up, dn = up / div, dn / div
@@ -422,13 +432,26 @@ def _mat_rho(p: Params, x, y):
     return 1.0 if abs(x - y) < EPS else math.exp(-p.vega_alpha * abs(x - y) / min(x, y))
 
 
+def _name_rho(p: Params, rc, bucket, a: RF, b: RF) -> float:
+    """Delta correlation on the dimension vega/curvature share with delta: name or commodity."""
+    if a.qual == b.qual:
+        return 1.0
+    if rc == "CSR_NS":
+        return p.csr["RHO_NAME_INDEX"] if p.csr_buckets[bucket]["type"] == "INDEX" else p.csr["RHO_NAME"]
+    if rc == "EQ":
+        return p.eq_buckets[bucket]["rho"]
+    if rc == "COM":
+        return p.com_buckets[bucket]["rho"]
+    return 1.0
+
+
 def vega_rho(p: Params, rc, bucket, a: RF, b: RF) -> float:
-    und = _mat_rho(p, a.t2, b.t2) if rc == "GIRR" else _issuer_rho(p, rc, bucket, a, b)
+    und = _mat_rho(p, a.t2, b.t2) if rc == "GIRR" else _name_rho(p, rc, bucket, a, b)
     return min(_mat_rho(p, a.t1, b.t1) * und, 1.0)
 
 
 def curvature_rho(p: Params, rc, bucket, a: RF, b: RF) -> float:
-    return _issuer_rho(p, rc, bucket, a, b) ** 2
+    return _name_rho(p, rc, bucket, a, b) ** 2
 
 
 def gamma(p: Params, rc, b, c) -> float:
@@ -438,7 +461,8 @@ def gamma(p: Params, rc, b, c) -> float:
         return p.fx["GAMMA"]
     if rc == "CSR_NS":
         bb, cc = p.csr_buckets[b], p.csr_buckets[c]
-        rating = p.csr["GAMMA_RATING"] if bb["quality"] != cc["quality"] else 1.0
+        both_named = bb["type"] == "NAME" and cc["type"] == "NAME"  # buckets 1-15
+        rating = p.csr["GAMMA_RATING"] if both_named and bb["quality"] != cc["quality"] else 1.0
         return rating * p.csr_sector[(bb["group"], cc["group"])]
     if rc == "EQ":
         return p.eq_gamma[(b, c)]

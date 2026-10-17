@@ -4,7 +4,8 @@ LibreOffice executes VBA source in compatibility mode (Option VBASupport 1),
 which lets the engine run on Linux without Excel. The runner:
 
 1. starts a private headless soffice instance,
-2. creates an empty spreadsheet and inserts every module from src/vba,
+2. creates an empty spreadsheet and inserts every module from src/core,
+   src/workbook and tests/modules,
 3. calls the requested macros in order,
 4. saves the result as .xlsx (no macros) for inspection.
 
@@ -31,12 +32,16 @@ import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-VBA_DIR = REPO_ROOT / "src" / "vba"
+VBA_DIRS = [REPO_ROOT / "src" / "core", REPO_ROOT / "src" / "workbook", REPO_ROOT / "tests" / "modules"]
 DEFAULT_MACROS = (
-    "modSetup.Setup_BuildWorkbook",
-    "modMain.RunAllSilent",
-    "modTest.RunRegressionTestSilent",
+    "M_Setup.BuildWorkbook",
+    "M_Main.RunFRTB_Silent",
+    "TEST_Regression.Test_RunRegression_Silent",
 )
+
+
+def module_paths() -> list[Path]:
+    return sorted((p for d in VBA_DIRS for p in d.glob("*.bas")), key=lambda p: p.stem)
 
 
 def probe_name(module: str) -> str:
@@ -122,14 +127,14 @@ def run(output: Path, macros: list[str], input_book: Path | None = None) -> list
 
         libs = doc.BasicLibraries
         lib = libs.getByName("Standard") if libs.hasByName("Standard") else libs.createLibrary("Standard")
-        for path in sorted(VBA_DIR.glob("*.bas")):
+        for path in module_paths():
             name = path.stem
             if lib.hasByName(name):
                 lib.removeByName(name)
             lib.insertByName(name, module_source(path))
 
         provider = doc.getScriptProvider()
-        for path in sorted(VBA_DIR.glob("*.bas")):
+        for path in module_paths():
             script = provider.getScript(
                 f"vnd.sun.star.script:Standard.{path.stem}.{probe_name(path.stem)}"
                 "?language=Basic&location=document"

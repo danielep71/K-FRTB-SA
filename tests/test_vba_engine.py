@@ -25,8 +25,13 @@ def close(a, b):
     return math.isclose(float(a), float(b), rel_tol=REL, abs_tol=ABS)
 
 
-def sheet_rows(wb, name, min_row=2):
-    return [r for r in wb[name].iter_rows(min_row=min_row, values_only=True) if r and r[0] not in (None, "")]
+FIRST_COL = 3  # tables start in column C
+FIRST_DATA_ROW = 6  # header in row 5
+
+
+def sheet_rows(wb, name, min_row=FIRST_DATA_ROW):
+    rows = wb[name].iter_rows(min_row=min_row, min_col=FIRST_COL, values_only=True)
+    return [r for r in rows if r and r[0] not in (None, "")]
 
 
 def reconcile(wb):
@@ -38,7 +43,7 @@ def reconcile(wb):
     rows = sheet_rows(wb, "Out_RiskClass")
     if len(rows) != len(ref.RISK_CLASSES) * len(ref.COMPONENTS) * len(ref.SCENARIOS):
         problems.append(f"Out_RiskClass has {len(rows)} rows")
-    for rc, comp, scen, cap, _n, alt in rows:
+    for rc, comp, scen, cap, _n, alt in (r[:6] for r in rows):
         if not close(cap, res["capital"][(rc, comp, scen)]):
             problems.append(f"capital {rc}/{comp}/{scen}: vba={cap} ref={res['capital'][(rc, comp, scen)]}")
         if (alt == "Y") != res["alt"][(rc, comp, scen)]:
@@ -70,7 +75,11 @@ def reconcile(wb):
         v = vba_obl.get(name)
         if v and not (v[0] == bucket and v[1] == quality and close(v[2], rw) and close(v[3], lg) and close(v[4], sh)):
             problems.append(f"DRC obligor {name}: vba={v} ref={(bucket, quality, rw, lg, sh)}")
-    vba_drc_buckets = {r[8]: r[9:15] for r in wb["Out_DRC"].iter_rows(min_row=2, values_only=True) if len(r) > 8 and r[8]}
+    vba_drc_buckets = {
+        r[7]: r[8:14]
+        for r in wb["Out_DRC"].iter_rows(min_row=FIRST_DATA_ROW, min_col=FIRST_COL, values_only=True)
+        if len(r) > 7 and r[7]
+    }
     for b, vals in res["drc_buckets"].items():
         v = vba_drc_buckets.get(b)
         if v is None or not all(close(x, y) for x, y in zip(v, vals)):
@@ -102,8 +111,8 @@ def test_default_run_exercises_alternative_sb(lo_default_run):
 
 def test_in_workbook_regression_test_passes(lo_default_run):
     ws = lo_default_run["Test_Expected"]
-    assert str(ws["A2"].value).startswith("Result: PASS")
-    statuses = [r[4] for r in ws.iter_rows(min_row=5, values_only=True) if r[0]]
+    assert str(ws["C3"].value).startswith("Result: PASS")
+    statuses = [r[4] for r in ws.iter_rows(min_row=7, min_col=FIRST_COL, values_only=True) if r[0]]
     assert len(statuses) == 52 and set(statuses) == {"PASS"}
 
 
@@ -117,7 +126,7 @@ def test_workbook_layout(lo_default_run):
 
 
 # --------------------------------------------------------------------------
-# Parameters written by modSetup vs the independently typed defaults
+# Parameters written by M_Setup vs the independently typed defaults
 # --------------------------------------------------------------------------
 def test_parameter_sheets_match_regulatory_defaults(lo_default_run):
     got = ref.params_from_workbook(lo_default_run)
@@ -179,23 +188,23 @@ INVALID_ROWS = {
 def lo_variant_run(lo_default_path, tmp_path_factory):
     wb = openpyxl.load_workbook(lo_default_path)
     ws = wb["Control"]
-    for row in ws.iter_rows(min_row=1):
+    for row in ws.iter_rows(min_row=1, min_col=FIRST_COL):
         if row[0].value in ("GIRR_SPECIFIED_CCY_DISCRETION", "FX_SPECIFIED_PAIR_DISCRETION", "FX_CURVATURE_DIVISOR"):
             row[1].value = True
     for sheet, rows in INVALID_ROWS.items():
         ws = wb[sheet]
-        r = 2
-        while ws.cell(r, 1).value not in (None, "") or ws.cell(r, 2).value not in (None, ""):
+        r = FIRST_DATA_ROW
+        while ws.cell(r, FIRST_COL).value not in (None, "") or ws.cell(r, FIRST_COL + 1).value not in (None, ""):
             r += 1
         for values in rows:
-            for c, v in enumerate(values, start=1):
+            for c, v in enumerate(values, start=FIRST_COL):
                 ws.cell(r, c).value = v
             r += 1
     folder = tmp_path_factory.mktemp("lo-variant")
     source = folder / "variant-in.xlsx"
     wb.save(source)
     out = folder / "variant-out.xlsx"
-    errors = lo_runner.run(out, ["modMain.RunAllSilent"], input_book=source)
+    errors = lo_runner.run(out, ["M_Main.RunFRTB_Silent"], input_book=source)
     assert errors == [], errors
     return openpyxl.load_workbook(out, data_only=True)
 
@@ -219,6 +228,7 @@ def test_variant_run_applies_discretions(lo_variant_run, lo_default_run):
         return {(r[0], r[1], r[2]): r[3] for r in sheet_rows(wb, "Out_RiskClass")}[(rc, comp, "MEDIUM")]
 
     # Specified currency and pair discretions lower the GIRR and FX delta charges
+    # (all sample FX currencies are specified against EUR, directly or as crosses)
     assert cap(lo_variant_run, "GIRR", "DELTA") < cap(lo_default_run, "GIRR", "DELTA")
     assert cap(lo_variant_run, "FX", "DELTA") == pytest.approx(cap(lo_default_run, "FX", "DELTA") / math.sqrt(2))
 
@@ -230,11 +240,11 @@ def test_empty_inputs_give_zero_capital(lo_default_path, tmp_path):
     wb = openpyxl.load_workbook(lo_default_path)
     for sheet in ("In_Delta", "In_Vega", "In_Curvature", "In_DRC", "In_RRAO"):
         ws = wb[sheet]
-        ws.delete_rows(2, ws.max_row)
+        ws.delete_rows(FIRST_DATA_ROW, ws.max_row)
     source = tmp_path / "empty-in.xlsx"
     wb.save(source)
     out = tmp_path / "empty-out.xlsx"
-    assert lo_runner.run(out, ["modMain.RunAllSilent"], input_book=source) == []
+    assert lo_runner.run(out, ["M_Main.RunFRTB_Silent"], input_book=source) == []
     result = openpyxl.load_workbook(out, data_only=True)
     summary = {r[0]: r[1] for r in sheet_rows(result, "Out_Summary")}
     assert summary["TOTAL"] == 0 and summary["ERRORS"] == 0

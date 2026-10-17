@@ -1,13 +1,46 @@
-Attribute VB_Name = "modParams"
+Attribute VB_Name = "CORE_Params"
 '==============================================================================
-' modParams
-' Loads the run settings (Control sheet) and every regulatory parameter table
-' (P_* sheets) into module-level storage, and exposes typed accessors.
-' Parameters are never hard-coded here: the P_* sheets are the source the
-' engine uses, and modSetup only writes their default values.
+' MODULE: CORE_Params
+'------------------------------------------------------------------------------
+' PURPOSE
+'   Load the run settings (Control sheet) and every regulatory parameter
+'   table (P_* sheets) into module storage, and expose typed accessors:
+'   risk weights, correlation building blocks, cross-bucket correlations,
+'   liquidity horizons, DRC and RRAO parameters.
+'
+' PUBLIC SURFACE
+'   LoadAllParameters; ReportingCcy, FxCurvatureDivisor,
+'   ScenarioCorrelation, VegaAlpha, VegaRiskWeight; IsValid* vertex and
+'   bucket checks, IsOtherBucket; *RiskWeight; correlation accessors;
+'   BucketGamma; Drc* and RraoRiskWeight.
+'
+' DEPENDENCIES
+'   CORE_Config, CORE_Util.
+'
+' STATE OWNERSHIP
+'   Owns the parameters of the current run (module variables m*), replaced
+'   by every LoadAllParameters call. Parameters are never hard-coded here:
+'   the P_* sheets are the source, and M_Setup only writes their defaults.
+'
+' ERROR POLICY
+'   A missing table or required key raises (CORE_Util); an unknown tenor or
+'   liquidity horizon raises vbObjectError + ERR_APP.
+'
+' COMPATIBILITY
+'   Excel VBA; no references beyond the defaults.
+'
+' UPDATED  2026-10-17
 '==============================================================================
-Option Explicit
 
+'------------------------------------------------------------------------------
+'                              MODULE SETTINGS
+'------------------------------------------------------------------------------
+Option Explicit
+Option Private Module
+
+'------------------------------------------------------------------------------
+'                               MODULE STATE
+'------------------------------------------------------------------------------
 ' Settings
 Private mReportingCcy As String
 Private mGirrSpecifiedOn As Boolean
@@ -487,12 +520,25 @@ Public Function FxRiskWeight(ByVal ccy As String) As Double
     Dim rw As Double
     rw = mFxRW
     If mFxSpecifiedOn Then
-        If KeyExists(mFxSpecPairs, ccy & "/" & mReportingCcy) Or _
-           KeyExists(mFxSpecPairs, mReportingCcy & "/" & ccy) Then
-            rw = rw / mFxSpecDivisor
-        End If
+        If IsSpecifiedFxPair(ccy, mReportingCcy) Then rw = rw / mFxSpecDivisor
     End If
     FxRiskWeight = rw
+End Function
+
+
+' A pair is specified when it is listed, or when it is a first-order cross
+' of two currencies that are each listed against USD (MAR21.88, fn 23).
+Private Function IsSpecifiedFxPair(ByVal ccyA As String, ByVal ccyB As String) As Boolean
+    If KeyExists(mFxSpecPairs, ccyA & "/" & ccyB) Or KeyExists(mFxSpecPairs, ccyB & "/" & ccyA) Then
+        IsSpecifiedFxPair = True
+    Else
+        IsSpecifiedFxPair = IsUsdPaired(ccyA) And IsUsdPaired(ccyB)
+    End If
+End Function
+
+
+Private Function IsUsdPaired(ByVal ccy As String) As Boolean
+    IsUsdPaired = (ccy = "USD") Or KeyExists(mFxSpecPairs, "USD/" & ccy) Or KeyExists(mFxSpecPairs, ccy & "/USD")
 End Function
 
 '------------------------------------------------------------------------------
@@ -567,7 +613,12 @@ Public Function BucketGamma(ByVal rc As String, ByVal b As String, ByVal c As St
         Case RC_CSR
             ib = CLng(Val(b))
             ic = CLng(Val(c))
-            If mCsrQuality(ib) <> mCsrQuality(ic) Then rating = mCsrGammaRating Else rating = 1#
+            ' Rating factor applies only between two buckets of 1-15 (MAR21.57)
+            If mCsrType(ib) = "NAME" And mCsrType(ic) = "NAME" And mCsrQuality(ib) <> mCsrQuality(ic) Then
+                rating = mCsrGammaRating
+            Else
+                rating = 1#
+            End If
             BucketGamma = rating * mCsrSector(KeyIndex(mCsrGroupIdx, mCsrGroup(ib)), _
                                               KeyIndex(mCsrGroupIdx, mCsrGroup(ic)))
         Case RC_EQ

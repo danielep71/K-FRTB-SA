@@ -1,17 +1,51 @@
-Attribute VB_Name = "modSBM"
+Attribute VB_Name = "CORE_SBM"
 '==============================================================================
-' modSBM
-' Sensitivities-based method (MAR21): delta, vega and curvature capital for
-' GIRR, CSR non-securitization, equity, commodity and FX under the low,
-' medium and high correlation scenarios.
+' MODULE: CORE_SBM
+'------------------------------------------------------------------------------
+' PURPOSE
+'   Calculate the sensitivities-based method (MAR21): delta, vega and
+'   curvature capital for GIRR, CSR non-securitization, equity, commodity
+'   and FX under the low, medium and high correlation scenarios.
 '
-' Flow per component:
-'   1. Read and validate the input sheet, net identical risk factors.
-'   2. Per risk class and bucket: weighted sensitivities and Kb, Sb.
-'   3. Across buckets: aggregate with gamma (alternative Sb when needed).
+'   Flow per component:
+'     1. Read and validate the input sheet, net identical risk factors.
+'     2. Per risk class and bucket: weighted sensitivities, Kb and Sb.
+'     3. Across buckets: aggregate with gamma (alternative Sb when needed).
+'
+' PUBLIC SURFACE
+'   RunSBM; SbmCapital(risk class, component, scenario);
+'   SbmScenarioTotal(scenario).
+'
+' DEPENDENCIES
+'   CORE_Config, CORE_Util, CORE_Params (parameters must be loaded).
+'
+' STATE OWNERSHIP
+'   Owns the netted risk factors of the component being processed and the
+'   capital of the last run. Reads In_Delta, In_Vega and In_Curvature;
+'   writes Out_Buckets and Out_RiskClass and logs rejected rows.
+'
+' ERROR POLICY
+'   Invalid input rows are logged as ERROR and skipped, never counted as
+'   zero. Missing parameters raise from CORE_Params.
+'
+' REFERENCE
+'   Basel Framework MAR21.4-MAR21.101.
+'
+' COMPATIBILITY
+'   Excel VBA; no references beyond the defaults.
+'
+' UPDATED  2026-10-17
 '==============================================================================
-Option Explicit
 
+'------------------------------------------------------------------------------
+'                              MODULE SETTINGS
+'------------------------------------------------------------------------------
+Option Explicit
+Option Private Module
+
+'------------------------------------------------------------------------------
+'                               MODULE STATE
+'------------------------------------------------------------------------------
 ' Netted risk factors of the component being processed
 Private mN As Long
 Private mRC() As String
@@ -54,6 +88,7 @@ Public Sub RunSBM()
     LoadCurvature
     ComputeComponent COMP_CURV
 
+    FormatDataRows GetSheet(SH_OUT_BUCKETS), LAYOUT_FIRST_DATA_ROW, mOutRow, 8, 5, "#,##0", False
     WriteRiskClassOutput
 End Sub
 
@@ -161,16 +196,16 @@ Private Sub LoadDelta()
 
     ResetStore
     Set ws = GetSheet(SH_IN_DELTA)
-    r = 2
-    Do While Not (IsBlank(ws.Cells(r, 1).Value) And IsBlank(ws.Cells(r, 2).Value))
+    r = LAYOUT_FIRST_DATA_ROW
+    Do While Not (IsBlank(TableCell(ws, r, 1).Value) And IsBlank(TableCell(ws, r, 2).Value))
         src = SH_IN_DELTA & " row " & r
-        rc = ToText(ws.Cells(r, 2).Value)
-        bucket = BucketLabel(ws.Cells(r, 3).Value)
-        qual = ToText(ws.Cells(r, 4).Value)
-        subType = ToText(ws.Cells(r, 5).Value)
-        tenor = ToDouble(ws.Cells(r, 6).Value, 0#)
+        rc = ToText(TableCell(ws, r, 2).Value)
+        bucket = BucketLabel(TableCell(ws, r, 3).Value)
+        qual = ToText(TableCell(ws, r, 4).Value)
+        subType = ToText(TableCell(ws, r, 5).Value)
+        tenor = ToDouble(TableCell(ws, r, 6).Value, 0#)
         ok = ValidateCommon(rc, bucket, src)
-        If ok And Not IsNumber(ws.Cells(r, 7).Value) Then
+        If ok And Not IsNumber(TableCell(ws, r, 7).Value) Then
             LogMessage "ERROR", src, "Sensitivity is not numeric; row skipped"
             ok = False
         End If
@@ -222,7 +257,7 @@ Private Sub LoadDelta()
             End If
         End If
         If ok Then
-            AddRiskFactor rc, bucket, qual, subType, tenor, 0#, ToDouble(ws.Cells(r, 7).Value, 0#), 0#
+            AddRiskFactor rc, bucket, qual, subType, tenor, 0#, ToDouble(TableCell(ws, r, 7).Value, 0#), 0#
         End If
         r = r + 1
     Loop
@@ -249,17 +284,17 @@ Private Sub LoadVega()
 
     ResetStore
     Set ws = GetSheet(SH_IN_VEGA)
-    r = 2
-    Do While Not (IsBlank(ws.Cells(r, 1).Value) And IsBlank(ws.Cells(r, 2).Value))
+    r = LAYOUT_FIRST_DATA_ROW
+    Do While Not (IsBlank(TableCell(ws, r, 1).Value) And IsBlank(TableCell(ws, r, 2).Value))
         src = SH_IN_VEGA & " row " & r
-        rc = ToText(ws.Cells(r, 2).Value)
-        bucket = BucketLabel(ws.Cells(r, 3).Value)
-        qual = ToText(ws.Cells(r, 4).Value)
-        subType = ToText(ws.Cells(r, 5).Value)
-        optMat = ToDouble(ws.Cells(r, 6).Value, 0#)
-        undMat = ToDouble(ws.Cells(r, 7).Value, 0#)
+        rc = ToText(TableCell(ws, r, 2).Value)
+        bucket = BucketLabel(TableCell(ws, r, 3).Value)
+        qual = ToText(TableCell(ws, r, 4).Value)
+        subType = ToText(TableCell(ws, r, 5).Value)
+        optMat = ToDouble(TableCell(ws, r, 6).Value, 0#)
+        undMat = ToDouble(TableCell(ws, r, 7).Value, 0#)
         ok = ValidateCommon(rc, bucket, src)
-        If ok And Not IsNumber(ws.Cells(r, 8).Value) Then
+        If ok And Not IsNumber(TableCell(ws, r, 8).Value) Then
             LogMessage "ERROR", src, "Vega sensitivity is not numeric; row skipped"
             ok = False
         End If
@@ -277,13 +312,10 @@ Private Sub LoadVega()
                     End If
                     qual = ""
                     subType = ""
-                Case RC_CSR
-                    If subType = "" Then subType = "BOND"
-                    undMat = 0#
-                Case RC_EQ
+                Case RC_CSR, RC_EQ, RC_COM
+                    ' Vega risk factors are the underlying name and the option
+                    ' maturity: no bond/CDS basis or delivery location (MAR21.94 FAQ)
                     subType = ""
-                    undMat = 0#
-                Case RC_COM
                     undMat = 0#
                 Case RC_FX
                     qual = bucket
@@ -296,7 +328,7 @@ Private Sub LoadVega()
             End If
         End If
         If ok Then
-            AddRiskFactor rc, bucket, qual, subType, optMat, undMat, ToDouble(ws.Cells(r, 8).Value, 0#), 0#
+            AddRiskFactor rc, bucket, qual, subType, optMat, undMat, ToDouble(TableCell(ws, r, 8).Value, 0#), 0#
         End If
         r = r + 1
     Loop
@@ -313,29 +345,29 @@ Private Sub LoadCurvature()
 
     ResetStore
     Set ws = GetSheet(SH_IN_CURV)
-    r = 2
-    Do While Not (IsBlank(ws.Cells(r, 1).Value) And IsBlank(ws.Cells(r, 2).Value))
+    r = LAYOUT_FIRST_DATA_ROW
+    Do While Not (IsBlank(TableCell(ws, r, 1).Value) And IsBlank(TableCell(ws, r, 2).Value))
         src = SH_IN_CURV & " row " & r
-        rc = ToText(ws.Cells(r, 2).Value)
-        bucket = BucketLabel(ws.Cells(r, 3).Value)
-        qual = ToText(ws.Cells(r, 4).Value)
-        subType = ToText(ws.Cells(r, 5).Value)
+        rc = ToText(TableCell(ws, r, 2).Value)
+        bucket = BucketLabel(TableCell(ws, r, 3).Value)
+        qual = ToText(TableCell(ws, r, 4).Value)
+        subType = ToText(TableCell(ws, r, 5).Value)
         ok = ValidateCommon(rc, bucket, src)
-        If ok And (Not IsNumber(ws.Cells(r, 6).Value) Or Not IsNumber(ws.Cells(r, 7).Value)) Then
+        If ok And (Not IsNumber(TableCell(ws, r, 6).Value) Or Not IsNumber(TableCell(ws, r, 7).Value)) Then
             LogMessage "ERROR", src, "CVR up and CVR down must both be numeric; row skipped"
             ok = False
         End If
         If ok Then
-            up = ToDouble(ws.Cells(r, 6).Value, 0#)
-            dn = ToDouble(ws.Cells(r, 7).Value, 0#)
+            up = ToDouble(TableCell(ws, r, 6).Value, 0#)
+            dn = ToDouble(TableCell(ws, r, 7).Value, 0#)
             Select Case rc
                 Case RC_GIRR
                     ' All curves of a currency are shifted together: one risk factor per bucket
                     qual = ""
                     subType = ""
-                Case RC_CSR
-                    If subType = "" Then subType = "BOND"
-                Case RC_EQ
+                Case RC_CSR, RC_EQ, RC_COM
+                    ' One curvature risk factor per issuer or commodity: bond and
+                    ' CDS curves, and delivery locations, are not separate (MAR21.100)
                     subType = ""
                 Case RC_FX
                     qual = bucket
@@ -418,32 +450,45 @@ Private Function MaturityCorrelation(ByVal ta As Double, ByVal tb As Double) As 
     End If
 End Function
 
+' Delta correlation restricted to the dimension that vega and curvature risk
+' factors share with delta: the name for CSR and equity, the commodity for
+' commodity (MAR21.94 and MAR21.100 with their FAQs).
+Private Function UnderlyingCorrelation(ByVal rc As String, ByVal bucket As String, _
+                                       ByVal i As Long, ByVal j As Long) As Double
+    If mQual(i) = mQual(j) Then
+        UnderlyingCorrelation = 1#
+    Else
+        Select Case rc
+            Case RC_CSR: UnderlyingCorrelation = CsrNameCorrelation(bucket)
+            Case RC_EQ: UnderlyingCorrelation = EqNameCorrelation(bucket)
+            Case RC_COM: UnderlyingCorrelation = ComCommodityCorrelation(bucket)
+            Case Else: UnderlyingCorrelation = 1#
+        End Select
+    End If
+End Function
+
+
 ' Vega (MAR21.93-95): min(rho_option_maturity x rho_underlying, 1).
 Private Function VegaCorrelation(ByVal rc As String, ByVal bucket As String, _
                                  ByVal i As Long, ByVal j As Long) As Double
     Dim rhoUnd As Double
-    Select Case rc
-        Case RC_GIRR: rhoUnd = MaturityCorrelation(mT2(i), mT2(j))
-        Case RC_CSR: rhoUnd = CsrIssuerCorrelation(bucket, i, j)
-        Case RC_EQ: rhoUnd = EqIssuerCorrelation(bucket, i, j)
-        Case RC_COM: rhoUnd = ComUnderlyingCorrelation(bucket, i, j)
-        Case Else: rhoUnd = 1#
-    End Select
+    If rc = RC_GIRR Then
+        rhoUnd = MaturityCorrelation(mT2(i), mT2(j))
+    Else
+        rhoUnd = UnderlyingCorrelation(rc, bucket, i, j)
+    End If
     VegaCorrelation = MinD(MaturityCorrelation(mT1(i), mT1(j)) * rhoUnd, 1#)
 End Function
 
-' Curvature (MAR21.100): square of the delta correlation without tenor.
+
+' Curvature (MAR21.100): square of the underlying delta correlation.
 Private Function CurvatureCorrelation(ByVal rc As String, ByVal bucket As String, _
                                       ByVal i As Long, ByVal j As Long) As Double
     Dim rho As Double
-    Select Case rc
-        Case RC_CSR: rho = CsrIssuerCorrelation(bucket, i, j)
-        Case RC_EQ: rho = EqIssuerCorrelation(bucket, i, j)
-        Case RC_COM: rho = ComUnderlyingCorrelation(bucket, i, j)
-        Case Else: rho = 1#
-    End Select
+    rho = UnderlyingCorrelation(rc, bucket, i, j)
     CurvatureCorrelation = rho * rho
 End Function
+
 
 Private Function PairCorrelation(ByVal comp As Long, ByVal rc As String, ByVal bucket As String, _
                                  ByVal i As Long, ByVal j As Long, ByVal scen As Long) As Double
@@ -674,9 +719,10 @@ End Function
 Private Sub ResetBucketOutput()
     Dim ws As Object
     Set ws = GetSheet(SH_OUT_BUCKETS)
-    ws.Cells.Clear
-    ws.Range("A1:H1").Value = Array("RiskClass", "Component", "Scenario", "Bucket", "Kb", "Sb", "RiskFactors", "Note")
-    mOutRow = 1
+    ClearTableArea ws
+    WriteTableHeader ws, LAYOUT_HEADER_ROW, _
+        Array("RiskClass", "Component", "Scenario", "Bucket", "Kb", "Sb", "RiskFactors", "Note"), COLOR_OUTPUT_HEADER
+    mOutRow = LAYOUT_HEADER_ROW
 End Sub
 
 Private Sub WriteBucketRow(ByVal rc As String, ByVal comp As Long, ByVal scen As Long, ByVal bucket As String, _
@@ -684,33 +730,35 @@ Private Sub WriteBucketRow(ByVal rc As String, ByVal comp As Long, ByVal scen As
     Dim ws As Object
     Set ws = GetSheet(SH_OUT_BUCKETS)
     mOutRow = mOutRow + 1
-    ws.Cells(mOutRow, 1).Value = rc
-    ws.Cells(mOutRow, 2).Value = ComponentName(comp)
-    ws.Cells(mOutRow, 3).Value = ScenarioName(scen)
-    ws.Cells(mOutRow, 4).Value = bucket
-    ws.Cells(mOutRow, 5).Value = kb
-    ws.Cells(mOutRow, 6).Value = sb
-    ws.Cells(mOutRow, 7).Value = nRF
-    ws.Cells(mOutRow, 8).Value = note
+    TableCell(ws, mOutRow, 1).Value = rc
+    TableCell(ws, mOutRow, 2).Value = ComponentName(comp)
+    TableCell(ws, mOutRow, 3).Value = ScenarioName(scen)
+    TableCell(ws, mOutRow, 4).Value = bucket
+    TableCell(ws, mOutRow, 5).Value = kb
+    TableCell(ws, mOutRow, 6).Value = sb
+    TableCell(ws, mOutRow, 7).Value = nRF
+    TableCell(ws, mOutRow, 8).Value = note
 End Sub
 
 Private Sub WriteRiskClassOutput()
     Dim ws As Object, r As Long, i As Long, c As Long, s As Long
     Set ws = GetSheet(SH_OUT_CLASS)
-    ws.Cells.Clear
-    ws.Range("A1:F1").Value = Array("RiskClass", "Component", "Scenario", "Capital", "Buckets", "AltSbUsed")
-    r = 1
+    ClearTableArea ws
+    WriteTableHeader ws, LAYOUT_HEADER_ROW, _
+        Array("RiskClass", "Component", "Scenario", "Capital", "Buckets", "AltSbUsed"), COLOR_OUTPUT_HEADER
+    r = LAYOUT_HEADER_ROW
     For i = 1 To RC_COUNT
         For c = 1 To COMP_COUNT
             For s = 1 To SCEN_COUNT
                 r = r + 1
-                ws.Cells(r, 1).Value = RiskClassCode(i)
-                ws.Cells(r, 2).Value = ComponentName(c)
-                ws.Cells(r, 3).Value = ScenarioName(s)
-                ws.Cells(r, 4).Value = mCapital(i, c, s)
-                ws.Cells(r, 5).Value = mBucketCount(i, c)
-                ws.Cells(r, 6).Value = IIf(mAltUsed(i, c, s), "Y", "N")
+                TableCell(ws, r, 1).Value = RiskClassCode(i)
+                TableCell(ws, r, 2).Value = ComponentName(c)
+                TableCell(ws, r, 3).Value = ScenarioName(s)
+                TableCell(ws, r, 4).Value = mCapital(i, c, s)
+                TableCell(ws, r, 5).Value = mBucketCount(i, c)
+                TableCell(ws, r, 6).Value = IIf(mAltUsed(i, c, s), "Y", "N")
             Next s
         Next c
     Next i
+    FormatDataRows ws, LAYOUT_FIRST_DATA_ROW, r, 6, 4, "#,##0", False
 End Sub

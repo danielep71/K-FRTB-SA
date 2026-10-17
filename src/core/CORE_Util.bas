@@ -1,24 +1,65 @@
-Attribute VB_Name = "modUtil"
+Attribute VB_Name = "CORE_Util"
 '==============================================================================
-' modUtil
-' Sheet access, tagged parameter tables, key lookup, numeric helpers and the
-' run log. No regulatory logic lives here.
+' MODULE: CORE_Util
+'------------------------------------------------------------------------------
+' PURPOSE
+'   Provide sheet access, tagged parameter tables, keyed lookups, value
+'   conversions, table formatting in the workbook palette and the run log.
+'   No regulatory logic lives here.
 '
-' Parameter sheets hold blocks introduced by a tag cell in column A, such as
-' "[GIRR_RW]". The row below the tag is the header; data rows follow until the
-' first blank cell in column A.
+' PUBLIC SURFACE
+'   Sheets: SheetExists, GetSheet, TableCell, ClearTableArea.
+'   Tagged tables: FindTagRow, ReadTable, ReadKeyValues, KVNumber, KVText,
+'   KVBool. A tagged table starts with a heading cell in column C whose text
+'   begins with "[TAG]"; the next row is the header and data rows follow
+'   until the first blank cell in column C.
+'   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
+'   Conversions: IsBlank, ToDouble, IsNumber, ToBool, ToText, BucketLabel,
+'   MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList, InNumberList.
+'   Sorting: BucketLess, SortLabels.
+'   Formatting: WriteTableHeader, FormatDataRows.
+'   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
+'
+' DEPENDENCIES
+'   CORE_Config for sheet names, layout and palette.
+'
+' STATE OWNERSHIP
+'   Owns the log cursor and the error and warning counters of the current
+'   run (mLogRow, mErrorCount, mWarningCount); ResetLog resets them.
+'
+' ERROR POLICY
+'   GetSheet and ReadTable raise vbObjectError + ERR_APP for a missing sheet
+'   or table. Formatting is cosmetic: a host that rejects a format property
+'   leaves the cell unformatted instead of stopping the run.
+'
+' COMPATIBILITY
+'   Excel VBA; also runs in LibreOffice Calc with VBA support for the
+'   automated reconciliation. No references beyond the defaults.
+'
+' UPDATED  2026-10-17
 '==============================================================================
-Option Explicit
-
-Public Const ERR_APP As Long = 1000
-Private Const TAG_SCAN_ROWS As Long = 1000
-
-Private mLogRow As Long
-Private mErrorCount As Long
-Private mWarningCount As Long
 
 '------------------------------------------------------------------------------
-' Sheets
+'                              MODULE SETTINGS
+'------------------------------------------------------------------------------
+Option Explicit
+Option Private Module
+
+'------------------------------------------------------------------------------
+'                              MODULE CONSTANTS
+'------------------------------------------------------------------------------
+Public Const ERR_APP As Long = 2048                          'Offset from vbObjectError
+Private Const TAG_SCAN_ROWS As Long = 1000                   'Rows searched for a table tag
+
+'------------------------------------------------------------------------------
+'                              MODULE STATE
+'------------------------------------------------------------------------------
+Private mLogRow As Long                                      'Last row written on the Log sheet
+Private mErrorCount As Long                                  'ERROR lines of the current run
+Private mWarningCount As Long                                'WARN lines of the current run
+
+'------------------------------------------------------------------------------
+'                                  SHEETS
 '------------------------------------------------------------------------------
 Public Function SheetExists(ByVal sheetName As String) As Boolean
     Dim ws As Object
@@ -30,30 +71,42 @@ Public Function SheetExists(ByVal sheetName As String) As Boolean
     SheetExists = Not (ws Is Nothing)
 End Function
 
+
 Public Function GetSheet(ByVal sheetName As String) As Object
     If Not SheetExists(sheetName) Then
-        Err.Raise vbObjectError + ERR_APP, "GetSheet", "Sheet not found: " & sheetName
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.GetSheet", "Sheet not found: " & sheetName
     End If
     Set GetSheet = ThisWorkbook.Worksheets(sheetName)
 End Function
 
-Public Sub ClearSheet(ByVal sheetName As String)
-    GetSheet(sheetName).Cells.Clear
+
+' Cell in column k of a table that starts in LAYOUT_FIRST_COL (k = 1 is column C).
+Public Function TableCell(ByVal ws As Object, ByVal r As Long, ByVal k As Long) As Object
+    Set TableCell = ws.Cells(r, LAYOUT_FIRST_COL + k - 1)
+End Function
+
+
+' Clears everything from the table header row down, keeping the banner rows.
+Public Sub ClearTableArea(ByVal ws As Object)
+    ws.Range(ws.Cells(LAYOUT_HEADER_ROW, 1), ws.Cells(ws.Rows.Count, 60)).Clear
 End Sub
 
 '------------------------------------------------------------------------------
-' Tagged tables
+'                              TAGGED TABLES
 '------------------------------------------------------------------------------
 Public Function FindTagRow(ByVal ws As Object, ByVal tag As String) As Long
     Dim r As Long
+    Dim marker As String
+    marker = "[" & UCase$(tag) & "]"
     FindTagRow = 0
     For r = 1 To TAG_SCAN_ROWS
-        If UCase$(Trim$(CStr(ws.Cells(r, 1).Value))) = "[" & UCase$(tag) & "]" Then
+        If Left$(UCase$(Trim$(CStr(ws.Cells(r, LAYOUT_FIRST_COL).Value))), Len(marker)) = marker Then
             FindTagRow = r
             Exit Function
         End If
     Next r
 End Function
+
 
 ' Returns the data rows of a tagged table as a 1-based 2D array
 ' (rows x columns) and sets nRows/nCols. Raises an error if the tag is missing.
@@ -65,16 +118,16 @@ Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
     Set ws = GetSheet(sheetName)
     tagRow = FindTagRow(ws, tag)
     If tagRow = 0 Then
-        Err.Raise vbObjectError + ERR_APP, "ReadTable", _
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.ReadTable", _
                   "Table [" & tag & "] not found on sheet " & sheetName
     End If
 
     nCols = 0
-    Do While Trim$(CStr(ws.Cells(tagRow + 1, nCols + 1).Value)) <> ""
+    Do While Trim$(CStr(TableCell(ws, tagRow + 1, nCols + 1).Value)) <> ""
         nCols = nCols + 1
     Loop
     nRows = 0
-    Do While Trim$(CStr(ws.Cells(tagRow + 2 + nRows, 1).Value)) <> ""
+    Do While Trim$(CStr(TableCell(ws, tagRow + 2 + nRows, 1).Value)) <> ""
         nRows = nRows + 1
     Loop
 
@@ -86,14 +139,14 @@ Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
     ReDim data(1 To nRows, 1 To nCols)
     For r = 1 To nRows
         For c = 1 To nCols
-            data(r, c) = ws.Cells(tagRow + 1 + r, c).Value
+            data(r, c) = TableCell(ws, tagRow + 1 + r, c).Value
         Next c
     Next r
     ReadTable = data
 End Function
 
-' Reads a two-column [TAG] Key | Value table into a Collection keyed by
-' upper-case key.
+
+' Reads a [TAG] Key | Value table into a Collection keyed by upper-case key.
 Public Function ReadKeyValues(ByVal sheetName As String, ByVal tag As String) As Collection
     Dim t As Variant, nRows As Long, nCols As Long, r As Long
     Dim col As New Collection
@@ -111,15 +164,17 @@ Public Function ReadKeyValues(ByVal sheetName As String, ByVal tag As String) As
     Set ReadKeyValues = col
 End Function
 
+
 ' Value of a required key; raises an error when missing.
 Public Function KVNumber(ByVal col As Collection, ByVal key As String, ByVal source As String) As Double
     Dim v As Variant
     If Not KeyExists(col, key) Then
-        Err.Raise vbObjectError + ERR_APP, "KVNumber", "Missing parameter " & key & " (" & source & ")"
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.KVNumber", "Missing parameter " & key & " (" & source & ")"
     End If
     v = col.Item(UCase$(key))
     KVNumber = ToDouble(v, 0#)
 End Function
+
 
 Public Function KVText(ByVal col As Collection, ByVal key As String, ByVal defaultValue As String) As String
     If KeyExists(col, key) Then
@@ -128,6 +183,7 @@ Public Function KVText(ByVal col As Collection, ByVal key As String, ByVal defau
         KVText = defaultValue
     End If
 End Function
+
 
 Public Function KVBool(ByVal col As Collection, ByVal key As String, ByVal defaultValue As Boolean) As Boolean
     If KeyExists(col, key) Then
@@ -138,7 +194,7 @@ Public Function KVBool(ByVal col As Collection, ByVal key As String, ByVal defau
 End Function
 
 '------------------------------------------------------------------------------
-' Collections used as key -> value maps (keys are case-insensitive)
+'                    COLLECTIONS AS KEY -> VALUE MAPS
 '------------------------------------------------------------------------------
 Public Function KeyExists(ByVal col As Collection, ByVal key As String) As Boolean
     Dim v As Variant
@@ -149,6 +205,7 @@ Public Function KeyExists(ByVal col As Collection, ByVal key As String) As Boole
 Missing:
     KeyExists = False
 End Function
+
 
 ' Index stored under key, or 0 when the key is absent.
 Public Function KeyIndex(ByVal col As Collection, ByVal key As String) As Long
@@ -161,12 +218,13 @@ Missing:
     KeyIndex = 0
 End Function
 
+
 Public Sub AddKey(ByVal col As Collection, ByVal key As String, ByVal value As Variant)
     col.Add value, UCase$(key)
 End Sub
 
 '------------------------------------------------------------------------------
-' Conversions and numerics
+'                          CONVERSIONS AND NUMERICS
 '------------------------------------------------------------------------------
 Public Function IsBlank(ByVal v As Variant) As Boolean
     If IsEmpty(v) Then
@@ -177,6 +235,7 @@ Public Function IsBlank(ByVal v As Variant) As Boolean
         IsBlank = (Trim$(CStr(v)) = "")
     End If
 End Function
+
 
 ' Converts a cell value to Double. Strings are parsed with Val so that "0.5"
 ' is read the same way under every regional setting.
@@ -190,6 +249,7 @@ Public Function ToDouble(ByVal v As Variant, ByVal defaultValue As Double) As Do
     End If
 End Function
 
+
 Public Function IsNumber(ByVal v As Variant) As Boolean
     If IsBlank(v) Or IsError(v) Then
         IsNumber = False
@@ -199,6 +259,7 @@ Public Function IsNumber(ByVal v As Variant) As Boolean
         IsNumber = IsNumeric(v)
     End If
 End Function
+
 
 Public Function ToBool(ByVal v As Variant, ByVal defaultValue As Boolean) As Boolean
     Dim s As String
@@ -221,6 +282,7 @@ Public Function ToBool(ByVal v As Variant, ByVal defaultValue As Boolean) As Boo
     End Select
 End Function
 
+
 Public Function ToText(ByVal v As Variant) As String
     If IsBlank(v) Or IsError(v) Then
         ToText = ""
@@ -228,6 +290,7 @@ Public Function ToText(ByVal v As Variant) As String
         ToText = UCase$(Trim$(CStr(v)))
     End If
 End Function
+
 
 ' Bucket label: integers for numbered risk classes, upper-case text otherwise.
 Public Function BucketLabel(ByVal v As Variant) As String
@@ -238,22 +301,27 @@ Public Function BucketLabel(ByVal v As Variant) As String
     End If
 End Function
 
+
 Public Function MaxD(ByVal a As Double, ByVal b As Double) As Double
     If a > b Then MaxD = a Else MaxD = b
 End Function
+
 
 Public Function MinD(ByVal a As Double, ByVal b As Double) As Double
     If a < b Then MinD = a Else MinD = b
 End Function
 
+
 Public Function NearlyEqual(ByVal a As Double, ByVal b As Double) As Boolean
     NearlyEqual = (Abs(a - b) <= 0.0000001 * MaxD(1#, MaxD(Abs(a), Abs(b))))
 End Function
+
 
 ' Locale-independent key for a maturity or tenor in years.
 Public Function TenorKey(ByVal t As Double) As String
     TenorKey = CStr(CLng(Round(t * 10000#, 0)))
 End Function
+
 
 ' Parses "0.25,0.5,1" into a 1-based Double array; returns the count.
 Public Function ParseNumberList(ByVal s As String, ByRef values() As Double) As Long
@@ -275,6 +343,7 @@ Public Function ParseNumberList(ByVal s As String, ByRef values() As Double) As 
     ParseNumberList = n
 End Function
 
+
 Public Function InNumberList(ByVal x As Double, ByRef values() As Double, ByVal n As Long) As Boolean
     Dim i As Long
     InNumberList = False
@@ -287,7 +356,7 @@ Public Function InNumberList(ByVal x As Double, ByRef values() As Double, ByVal 
 End Function
 
 '------------------------------------------------------------------------------
-' Sorting of bucket labels (numeric when both labels are numbers)
+'          SORTING OF BUCKET LABELS (NUMERIC WHEN BOTH ARE NUMBERS)
 '------------------------------------------------------------------------------
 Public Function BucketLess(ByVal a As String, ByVal b As String) As Boolean
     If IsNumeric(a) And IsNumeric(b) Then
@@ -296,6 +365,7 @@ Public Function BucketLess(ByVal a As String, ByVal b As String) As Boolean
         BucketLess = (a < b)
     End If
 End Function
+
 
 Public Sub SortLabels(ByRef labels() As String, ByVal n As Long)
     Dim i As Long, j As Long, tmp As String
@@ -312,35 +382,95 @@ Public Sub SortLabels(ByRef labels() As String, ByVal n As Long)
 End Sub
 
 '------------------------------------------------------------------------------
-' Run log
+'                    TABLE FORMATTING IN THE WORKBOOK PALETTE
+'------------------------------------------------------------------------------
+' Writes a header row starting at column C and formats it: white bold text
+' on headerColor (COLOR_INPUT_HEADER for inputs, COLOR_OUTPUT_HEADER for
+' outputs).
+Public Sub WriteTableHeader(ByVal ws As Object, ByVal r As Long, ByVal headers As Variant, _
+                            ByVal headerColor As Long)
+    Dim i As Long, k As Long
+    k = 0
+    For i = LBound(headers) To UBound(headers)
+        k = k + 1
+        TableCell(ws, r, k).Value = headers(i)
+    Next i
+    On Error Resume Next
+    With ws.Range(TableCell(ws, r, 1), TableCell(ws, r, k))
+        .Font.Bold = True
+        .Font.Color = COLOR_WHITE
+        .Interior.Color = headerColor
+        .VerticalAlignment = -4108                           'xlCenter
+        .HorizontalAlignment = -4108
+        .WrapText = True
+    End With
+    TableCell(ws, r, 1).HorizontalAlignment = -4131          'xlLeft for the key column
+    ws.Rows(r).RowHeight = 30
+    On Error GoTo 0
+End Sub
+
+
+' Formats rows r1..r2 of a table of nCols columns: thin grey borders, 10 pt,
+' an optional number format for columns firstNumCol..nCols, and the input
+' fill when the cells are meant to be edited.
+Public Sub FormatDataRows(ByVal ws As Object, ByVal r1 As Long, ByVal r2 As Long, ByVal nCols As Long, _
+                          ByVal firstNumCol As Long, ByVal numberFormat As String, ByVal isInput As Boolean)
+    If r2 < r1 Then Exit Sub
+    On Error Resume Next
+    With ws.Range(TableCell(ws, r1, 1), TableCell(ws, r2, nCols))
+        .Font.Size = 10
+        .Borders.LineStyle = 1                               'xlContinuous
+        .Borders.Color = COLOR_GRID
+        If isInput Then .Interior.Color = COLOR_INPUT_CELL
+    End With
+    If firstNumCol > 0 And numberFormat <> "" Then
+        ws.Range(TableCell(ws, r1, firstNumCol), TableCell(ws, r2, nCols)).NumberFormat = numberFormat
+    End If
+    On Error GoTo 0
+End Sub
+
+'------------------------------------------------------------------------------
+'                                 RUN LOG
 '------------------------------------------------------------------------------
 Public Sub ResetLog()
     Dim ws As Object
     Set ws = GetSheet(SH_LOG)
-    ws.Cells.Clear
-    ws.Cells(1, 1).Value = "Level"
-    ws.Cells(1, 2).Value = "Source"
-    ws.Cells(1, 3).Value = "Message"
-    mLogRow = 1
+    ClearTableArea ws
+    WriteTableHeader ws, LAYOUT_HEADER_ROW, Array("Level", "Source", "Message"), COLOR_OUTPUT_HEADER
+    mLogRow = LAYOUT_HEADER_ROW
     mErrorCount = 0
     mWarningCount = 0
 End Sub
 
+
 Public Sub LogMessage(ByVal level As String, ByVal source As String, ByVal message As String)
     Dim ws As Object
-    If mLogRow < 1 Then mLogRow = 1
+    If mLogRow < LAYOUT_HEADER_ROW Then mLogRow = LAYOUT_HEADER_ROW
     Set ws = GetSheet(SH_LOG)
     mLogRow = mLogRow + 1
-    ws.Cells(mLogRow, 1).Value = level
-    ws.Cells(mLogRow, 2).Value = source
-    ws.Cells(mLogRow, 3).Value = message
+    TableCell(ws, mLogRow, 1).Value = level
+    TableCell(ws, mLogRow, 2).Value = source
+    TableCell(ws, mLogRow, 3).Value = message
+    FormatDataRows ws, mLogRow, mLogRow, 3, 0, "", False
+    On Error Resume Next
+    Select Case level
+        Case "ERROR"
+            TableCell(ws, mLogRow, 1).Interior.Color = COLOR_FAIL_FILL
+            TableCell(ws, mLogRow, 1).Font.Color = COLOR_FAIL_TEXT
+        Case "WARN"
+            TableCell(ws, mLogRow, 1).Interior.Color = COLOR_WARN_FILL
+            TableCell(ws, mLogRow, 1).Font.Color = COLOR_WARN_TEXT
+    End Select
+    On Error GoTo 0
     If level = "ERROR" Then mErrorCount = mErrorCount + 1
     If level = "WARN" Then mWarningCount = mWarningCount + 1
 End Sub
 
+
 Public Function LogErrorCount() As Long
     LogErrorCount = mErrorCount
 End Function
+
 
 Public Function LogWarningCount() As Long
     LogWarningCount = mWarningCount

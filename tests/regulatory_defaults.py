@@ -1,9 +1,9 @@
-"""Regulatory default parameters typed independently of modSetup.bas.
+"""Regulatory default parameters typed independently of src/workbook/M_Setup.bas.
 
 Used to spot-check the parameter sheets the VBA setup writes and to build
 self-contained parameter sets for hand-calculated tests. Values follow the
-Basel Framework MAR21-MAR23 as transcribed for this prototype; they still
-need review against the applicable regulatory text.
+Basel Framework MAR21-MAR23 (in force 1 January 2023), checked against the
+BIS text on 2026-10-17; review them against the regulation that applies.
 """
 
 from __future__ import annotations
@@ -21,20 +21,21 @@ CSR_BUCKETS = {
     7: ("IG", "7", "NAME", 0.015), 8: ("IG", "8", "NAME", 0.025), 9: ("HY", "1", "NAME", 0.02),
     10: ("HY", "2", "NAME", 0.04), 11: ("HY", "3", "NAME", 0.12), 12: ("HY", "4", "NAME", 0.07),
     13: ("HY", "5", "NAME", 0.085), 14: ("HY", "6", "NAME", 0.055), 15: ("HY", "7", "NAME", 0.05),
-    16: ("NA", "OTHER", "OTHER", 0.12), 17: ("IG", "17", "INDEX", 0.015), 18: ("HY", "18", "INDEX", 0.05),
+    16: ("NA", "16", "OTHER", 0.12), 17: ("IG", "17", "INDEX", 0.015), 18: ("HY", "18", "INDEX", 0.05),
 }
 
-# Upper triangle of the CSR sector correlation table, groups 1..8, 17, 18
-CSR_SECTOR_GROUPS = ["1", "2", "3", "4", "5", "6", "7", "8", "17", "18"]
+# Upper triangle of MAR21.57 Table 5 (sector of buckets 1/9 .. 7/15, 8, 16, 17, 18)
+CSR_SECTOR_GROUPS = ["1", "2", "3", "4", "5", "6", "7", "8", "16", "17", "18"]
 CSR_SECTOR_UPPER = [
-    [1, 0.75, 0.10, 0.20, 0.25, 0.20, 0.15, 0.10, 0, 0.45],
-    [1, 0.05, 0.15, 0.20, 0.15, 0.10, 0.10, 0, 0.45],
-    [1, 0.05, 0.15, 0.20, 0.05, 0.20, 0, 0.45],
-    [1, 0.20, 0.25, 0.05, 0.05, 0, 0.45],
-    [1, 0.25, 0.05, 0.15, 0, 0.45],
-    [1, 0.05, 0.20, 0, 0.45],
-    [1, 0.05, 0, 0.45],
-    [1, 0, 0.45],
+    [1, 0.75, 0.10, 0.20, 0.25, 0.20, 0.15, 0.10, 0, 0.45, 0.45],
+    [1, 0.05, 0.15, 0.20, 0.15, 0.10, 0.10, 0, 0.45, 0.45],
+    [1, 0.05, 0.15, 0.20, 0.05, 0.20, 0, 0.45, 0.45],
+    [1, 0.20, 0.25, 0.05, 0.05, 0, 0.45, 0.45],
+    [1, 0.25, 0.05, 0.15, 0, 0.45, 0.45],
+    [1, 0.05, 0.20, 0, 0.45, 0.45],
+    [1, 0.05, 0, 0.45, 0.45],
+    [1, 0, 0.45, 0.45],
+    [1, 0, 0],
     [1, 0.75],
     [1],
 ]
@@ -88,8 +89,9 @@ def csr_sector() -> dict:
 
 def build_params() -> Params:
     p = Params()
+    # Equity large cap and indices (1-8, 12, 13): 20 days; small cap and other (9-11): 60 days
     p.vega_lh = [("GIRR", "*", 60), ("CSR_NS", "*", 120), ("EQ", "*", 20), ("EQ", "9", 60), ("EQ", "10", 60),
-                 ("EQ", "11", 60), ("EQ", "13", 60), ("COM", "*", 120), ("FX", "*", 40)]
+                 ("EQ", "11", 60), ("COM", "*", 120), ("FX", "*", 40)]
     p.vertices = {
         "GIRR_TENORS": [0.25, 0.5, 1, 2, 3, 5, 10, 15, 20, 30],
         "CSR_TENORS": [0.5, 1, 3, 5, 10],

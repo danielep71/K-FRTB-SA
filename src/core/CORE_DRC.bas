@@ -1,13 +1,50 @@
-Attribute VB_Name = "modDRC"
+Attribute VB_Name = "CORE_DRC"
 '==============================================================================
-' modDRC
-' Default risk charge for non-securitizations (MAR22):
-'   gross JTD -> maturity scaling -> obligor netting by seniority ->
-'   hedge benefit ratio and risk-weighted bucket charge -> sum of buckets.
+' MODULE: CORE_DRC
+'------------------------------------------------------------------------------
+' PURPOSE
+'   Calculate the default risk capital for non-securitizations: gross
+'   jump-to-default, maturity scaling, obligor netting by seniority, hedge
+'   benefit ratio and risk-weighted bucket charge, summed over buckets.
+'
+' PUBLIC SURFACE
+'   RunDRC; DrcTotal.
+'
+' DEPENDENCIES
+'   CORE_Config, CORE_Util, CORE_Params (parameters must be loaded).
+'
+' STATE OWNERSHIP
+'   Owns the total of the last run. Reads In_DRC; writes Out_DRC and logs
+'   rejected rows.
+'
+' ERROR POLICY
+'   Invalid rows are logged as ERROR and skipped; inconsistent obligor
+'   attributes are logged as WARN.
+'
+' REFERENCE
+'   Basel Framework MAR22.10-MAR22.26.
+'
+' COMPATIBILITY
+'   Excel VBA; no references beyond the defaults.
+'
+' UPDATED  2026-10-17
 '==============================================================================
-Option Explicit
 
-Private mTotal As Double
+'------------------------------------------------------------------------------
+'                              MODULE SETTINGS
+'------------------------------------------------------------------------------
+Option Explicit
+Option Private Module
+
+'------------------------------------------------------------------------------
+'                              MODULE CONSTANTS
+'------------------------------------------------------------------------------
+Private Const DRC_BUCKET_COL As Long = 8                     'Bucket table: 8th table column (J)
+
+'------------------------------------------------------------------------------
+'                               MODULE STATE
+'------------------------------------------------------------------------------
+Private mTotal As Double                                     'DRC of the last run
 
 Public Function DrcTotal() As Double
     DrcTotal = mTotal
@@ -37,8 +74,8 @@ Public Sub RunDRC()
 
     ' Count rows
     n = 0
-    r = 2
-    Do While Not (IsBlank(ws.Cells(r, 1).Value) And IsBlank(ws.Cells(r, 2).Value))
+    r = LAYOUT_FIRST_DATA_ROW
+    Do While Not (IsBlank(TableCell(ws, r, 1).Value) And IsBlank(TableCell(ws, r, 2).Value))
         n = n + 1
         r = r + 1
     Loop
@@ -50,12 +87,12 @@ Public Sub RunDRC()
 
     ' 1. Gross JTD per position (MAR22.10-22.12) and maturity scaling (MAR22.17)
     j = 0
-    For r = 2 To n + 1
+    For r = LAYOUT_FIRST_DATA_ROW To LAYOUT_FIRST_DATA_ROW + n - 1
         src = SH_IN_DRC & " row " & r
-        obligor = ToText(ws.Cells(r, 2).Value)
-        bucket = ToText(ws.Cells(r, 3).Value)
-        quality = ToText(ws.Cells(r, 4).Value)
-        seniority = ToText(ws.Cells(r, 5).Value)
+        obligor = ToText(TableCell(ws, r, 2).Value)
+        bucket = ToText(TableCell(ws, r, 3).Value)
+        quality = ToText(TableCell(ws, r, 4).Value)
+        seniority = ToText(TableCell(ws, r, 5).Value)
         ok = True
         If obligor = "" Then
             LogMessage "ERROR", src, "Obligor is required; row skipped"
@@ -66,7 +103,7 @@ Public Sub RunDRC()
         ElseIf DrcSeniorityRank(seniority) = 0 Then
             LogMessage "ERROR", src, "Unknown seniority '" & seniority & "'; row skipped"
             ok = False
-        ElseIf Not IsNumber(ws.Cells(r, 6).Value) Or Not IsNumber(ws.Cells(r, 7).Value) Then
+        ElseIf Not IsNumber(TableCell(ws, r, 6).Value) Or Not IsNumber(TableCell(ws, r, 7).Value) Then
             LogMessage "ERROR", src, "Notional and market value must be numeric; row skipped"
             ok = False
         Else
@@ -77,11 +114,11 @@ Public Sub RunDRC()
             End If
         End If
         If ok Then
-            notional = ToDouble(ws.Cells(r, 6).Value, 0#)
-            mv = ToDouble(ws.Cells(r, 7).Value, 0#)
-            maturity = ToDouble(ws.Cells(r, 8).Value, DrcMaxMaturity())
-            If IsNumber(ws.Cells(r, 9).Value) Then
-                lgd = ToDouble(ws.Cells(r, 9).Value, 0#)
+            notional = ToDouble(TableCell(ws, r, 6).Value, 0#)
+            mv = ToDouble(TableCell(ws, r, 7).Value, 0#)
+            maturity = ToDouble(TableCell(ws, r, 8).Value, DrcMaxMaturity())
+            If IsNumber(TableCell(ws, r, 9).Value) Then
+                lgd = ToDouble(TableCell(ws, r, 9).Value, 0#)
             Else
                 lgd = DrcLGD(seniority, found)
             End If
@@ -170,8 +207,7 @@ Public Sub RunDRC()
 
     Dim wsOut As Object
     Set wsOut = GetSheet(SH_OUT_DRC)
-    wsOut.Range("I1:N1").Value = Array("Bucket", "NetLong", "NetShort", "HBR", "WeightedLong", "WeightedShort")
-    wsOut.Cells(1, 15).Value = "DRC"
+    WriteBucketHeader wsOut
     For i = 1 To nB
         If bLong(i) + bShort(i) > 0# Then
             hbr = bLong(i) / (bLong(i) + bShort(i))
@@ -180,14 +216,15 @@ Public Sub RunDRC()
         End If
         drcB = MaxD(bWLong(i) - hbr * bWShort(i), 0#)
         mTotal = mTotal + drcB
-        wsOut.Cells(i + 1, 9).Value = DrcBucketName(i)
-        wsOut.Cells(i + 1, 10).Value = bLong(i)
-        wsOut.Cells(i + 1, 11).Value = bShort(i)
-        wsOut.Cells(i + 1, 12).Value = hbr
-        wsOut.Cells(i + 1, 13).Value = bWLong(i)
-        wsOut.Cells(i + 1, 14).Value = bWShort(i)
-        wsOut.Cells(i + 1, 15).Value = drcB
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 0).Value = DrcBucketName(i)
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 1).Value = bLong(i)
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 2).Value = bShort(i)
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 3).Value = hbr
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 4).Value = bWLong(i)
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 5).Value = bWShort(i)
+        TableCell(wsOut, LAYOUT_HEADER_ROW + i, DRC_BUCKET_COL + 6).Value = drcB
     Next i
+    FormatBucketRows wsOut, nB
 End Sub
 
 Private Sub WriteDrcOutput(ByVal nObl As Long, ByRef oName() As String, ByRef oBucket() As String, _
@@ -195,16 +232,59 @@ Private Sub WriteDrcOutput(ByVal nObl As Long, ByRef oName() As String, ByRef oB
                            ByRef oLong() As Double, ByRef oShort() As Double)
     Dim ws As Object, o As Long
     Set ws = GetSheet(SH_OUT_DRC)
-    ws.Cells.Clear
-    ws.Range("A1:F1").Value = Array("Obligor", "Bucket", "CreditQuality", "RW", "NetLong", "NetShort")
+    ClearTableArea ws
+    WriteTableHeader ws, LAYOUT_HEADER_ROW, _
+        Array("Obligor", "Bucket", "CreditQuality", "RW", "NetLong", "NetShort"), COLOR_OUTPUT_HEADER
     For o = 1 To nObl
-        ws.Cells(o + 1, 1).Value = oName(o)
-        ws.Cells(o + 1, 2).Value = oBucket(o)
-        ws.Cells(o + 1, 3).Value = oQuality(o)
-        ws.Cells(o + 1, 4).Value = oRW(o)
-        ws.Cells(o + 1, 5).Value = oLong(o)
-        ws.Cells(o + 1, 6).Value = oShort(o)
+        TableCell(ws, LAYOUT_HEADER_ROW + o, 1).Value = oName(o)
+        TableCell(ws, LAYOUT_HEADER_ROW + o, 2).Value = oBucket(o)
+        TableCell(ws, LAYOUT_HEADER_ROW + o, 3).Value = oQuality(o)
+        TableCell(ws, LAYOUT_HEADER_ROW + o, 4).Value = oRW(o)
+        TableCell(ws, LAYOUT_HEADER_ROW + o, 5).Value = oLong(o)
+        TableCell(ws, LAYOUT_HEADER_ROW + o, 6).Value = oShort(o)
     Next o
+    FormatDataRows ws, LAYOUT_FIRST_DATA_ROW, LAYOUT_HEADER_ROW + nObl, 6, 5, "#,##0", False
+    On Error Resume Next
+    If nObl > 0 Then
+        ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, 4), TableCell(ws, LAYOUT_HEADER_ROW + nObl, 4)).NumberFormat = "0.0%"
+    End If
+    On Error GoTo 0
+End Sub
+
+
+' The bucket table sits to the right of the obligor table, from column
+' DRC_BUCKET_COL of the table area (column J).
+Private Sub WriteBucketHeader(ByVal ws As Object)
+    Dim headers As Variant, i As Long
+    headers = Array("Bucket", "NetLong", "NetShort", "HBR", "WeightedLong", "WeightedShort", "DRC")
+    For i = 0 To 6
+        TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL + i).Value = headers(i)
+    Next i
+    On Error Resume Next
+    With ws.Range(TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL + 6))
+        .Font.Bold = True
+        .Font.Color = COLOR_WHITE
+        .Interior.Color = COLOR_OUTPUT_HEADER
+        .VerticalAlignment = -4108
+        .HorizontalAlignment = -4108
+        .WrapText = True
+    End With
+    On Error GoTo 0
+End Sub
+
+
+Private Sub FormatBucketRows(ByVal ws As Object, ByVal nB As Long)
+    If nB < 1 Then Exit Sub
+    On Error Resume Next
+    With ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL + 6))
+        .Font.Size = 10
+        .Borders.LineStyle = 1
+        .Borders.Color = COLOR_GRID
+        .NumberFormat = "#,##0"
+    End With
+    ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL + 3), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL + 3)).NumberFormat = "0.0000"
+    ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL)).NumberFormat = "@"
+    On Error GoTo 0
 End Sub
 
 Private Function MaxL(ByVal a As Long, ByVal b As Long) As Long

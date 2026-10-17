@@ -208,6 +208,7 @@ def test_vega_risk_weights(p):
     assert ref.vega_rw(p, "FX", "USD") == approx(1.0)
     assert ref.vega_rw(p, "EQ", "8") == approx(0.55 * math.sqrt(2))
     assert ref.vega_rw(p, "EQ", "12") == approx(0.55 * math.sqrt(2))
+    assert ref.vega_rw(p, "EQ", "13") == approx(0.55 * math.sqrt(2))  # indices count as large cap (FAQ)
     assert ref.vega_rw(p, "EQ", "9") == approx(1.0)
     assert ref.vega_rw(p, "COM", "2") == approx(1.0)
 
@@ -325,3 +326,66 @@ def test_drc_buckets_do_not_offset(p):
 def test_rrao(p):
     rows = [["1", "EXOTIC", 5_000_000], ["2", "OTHER", 20_000_000], ["3", "UNKNOWN", 1_000]]
     assert ref.rrao(p, rows) == approx(50_000 + 20_000)
+
+
+# --------------------------------------------------------------------------
+# Points confirmed against the BIS text (MAR21.57 Table 5, MAR21.88, MAR21.94, MAR21.100)
+# --------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "b, c, expected",
+    [
+        ("1", "2", 0.75),  # same rating, sectors 1 and 2
+        ("1", "9", 0.50),  # same sector, IG vs HY within 1-15
+        ("2", "11", 0.5 * 0.05),  # rating x sector
+        ("8", "12", 0.5 * 0.05),  # covered bonds (IG) vs HY bucket
+        ("1", "17", 0.45),  # no rating factor outside 1-15
+        ("12", "18", 0.45),
+        ("17", "18", 0.75),
+    ],
+)
+def test_csr_cross_bucket_gamma(p, b, c, expected):
+    assert ref.gamma(p, "CSR_NS", b, c) == approx(expected)
+    assert ref.gamma(p, "CSR_NS", c, b) == approx(expected)
+
+
+def test_csr_sector_table_bucket_16_column(p):
+    assert all(p.csr_sector[("16", g)] == 0 for g in ["1", "2", "3", "4", "5", "6", "7", "8", "17", "18"])
+
+
+def test_fx_first_order_crosses(p):
+    p.fx_specified_on = True
+    rows = [["1", "FX", c, c, None, None, 1_000] for c in ("AUD", "NZD", "PLN")]
+    rw = {f.bucket: f.rw for f in ref.delta_risk_factors(p, rows)}
+    assert rw["AUD"] == approx(0.15 / math.sqrt(2))  # EUR/AUD: cross of USD/EUR and USD/AUD
+    assert rw["NZD"] == approx(0.15 / math.sqrt(2))
+    assert rw["PLN"] == approx(0.15)
+
+
+def test_csr_vega_uses_name_correlation_only(p):
+    rows = [
+        ["1", "CSR_NS", 1, "ITALY", "BOND", 1, None, 100_000],
+        ["2", "CSR_NS", 1, "ITALY", "CDS", 1, None, -40_000],
+        ["3", "CSR_NS", 1, "SPAIN", "BOND", 3, None, 50_000],
+    ]
+    rfs = ref.vega_risk_factors(p, rows)
+    assert len(rfs) == 2  # bond and CDS vega of one issuer are one risk factor
+    capital, _, _ = ref.sbm_component(p, "VEGA", rfs)
+    rho = 0.35 * math.exp(-0.01 * 2 / 1)  # name x option maturity, no basis or tenor
+    a, b = 60_000.0, 50_000.0
+    assert capital["CSR_NS"]["MEDIUM"] == approx(math.sqrt(a * a + b * b + 2 * rho * a * b))
+
+
+def test_csr_and_commodity_curvature_risk_factors(p):
+    rows = [
+        ["1", "CSR_NS", 1, "ITALY", "BOND", 10_000, -2_000],
+        ["2", "CSR_NS", 1, "ITALY", "CDS", -4_000, 1_000],
+        ["3", "COM", 2, "BRENT", "ROTTERDAM", 5_000, 0],
+        ["4", "COM", 2, "BRENT", "CUSHING", 1_000, 0],
+        ["5", "COM", 2, "WTI", "CUSHING", 3_000, 0],
+    ]
+    rfs = ref.curvature_risk_factors(p, rows)
+    assert len([f for f in rfs if f.rc == "CSR_NS"]) == 1  # bond and CDS curves together
+    capital, _, _ = ref.sbm_component(p, "CURVATURE", rfs)
+    assert capital["CSR_NS"]["MEDIUM"] == approx(6_000)
+    rho = 0.95**2  # commodity correlation squared; delivery location is not a curvature dimension
+    assert capital["COM"]["MEDIUM"] == approx(math.sqrt(6_000**2 + 3_000**2 + 2 * rho * 6_000 * 3_000))
