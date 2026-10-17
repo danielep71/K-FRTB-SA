@@ -48,8 +48,11 @@ checkboxes complete when that evidence exists.
 
 These are **manual triage rules**, not automatic issue-metadata enforcement.
 The label workflows manage the catalogue only: they do not assign issues,
-choose priorities or milestones, or close issues. Issue forms are tracked in
-issue #6; full branch governance is tracked in issue #4.
+choose priorities or milestones, or close issues. The bug form defaults to
+P2, and feature/documentation forms to P3; all assign danielep71. Milestones
+and metadata confirmation remain manual, and API-created issues bypass form
+defaults. [Governance](GOVERNANCE.md) explains default-branch activation and
+the contribution workflow; issue #6 tracks live activation verification.
 
 ## Reusable triage searches
 

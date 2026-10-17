@@ -1,4 +1,8 @@
-# FRTB-SA
+# 🧭 FRTB-SA
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Stage: repository setup](https://img.shields.io/badge/stage-repository_setup-1D76DB)](docs/Milestones/v0.0.1.md)
+[![Development: release/v0.0.1](https://img.shields.io/badge/development-release%2Fv0.0.1-217346)](https://github.com/danielep71/MKT-FTRB-SA/tree/release/v0.0.1)
 
 A market risk project intended to support transparent implementation,
 benchmarking, and validation of the **Fundamental Review of the Trading Book
@@ -67,6 +71,8 @@ See [branch governance](docs/GOVERNANCE.md) for the integration procedure.
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
 | Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
 | Label usage, issue priorities, and metadata checks | [Labels and triage](docs/LABELS.md) |
+| Participation and conduct reporting | [Code of conduct](CODE_OF_CONDUCT.md) |
+| Security support and private reporting | [Security policy](SECURITY.md) |
 | How to contribute | [Contributing](CONTRIBUTING.md) |
 | Detailed setup purpose and completion criteria | [v0.0.1 guide](docs/Milestones/v0.0.1.md) |
 | Development branches and integration | [Governance](docs/GOVERNANCE.md) |
