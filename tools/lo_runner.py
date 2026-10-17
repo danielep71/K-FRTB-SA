@@ -59,8 +59,11 @@ def module_source(path: Path) -> str:
     """
     lines = path.read_text(encoding="cp1252").splitlines()
     # LibreOffice VBA compatibility omits this VBA intrinsic constant.
-    body = [ln.replace("vbObjectError", "(-2147221504)")
+    body = [ln.replace("vbObjectError", "LoVbObjectError")
             for ln in lines if not ln.startswith("Attribute ")]
+    declaration = "Private Const LoVbObjectError As Long = -2147221504"
+    explicit = next(i for i, line in enumerate(body) if line.strip() == "Option Explicit")
+    body.insert(explicit + 1, declaration)
     probe = [
         "",
         f"Public Function {probe_name(path.stem)}() As Long",
