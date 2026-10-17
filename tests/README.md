@@ -12,6 +12,7 @@ never copied from the VBA under test.
 | `test_reference.py` | Hand-calculated checks of the reference |
 | `test_vba_engine.py` | Headless LibreOffice runs of the VBA reconciled with the reference |
 | `test_tooling.py` | VBA lint and freshness of the embedded expected values |
+| `test_template.py` | The committed template matches a fresh build and a build from it runs and reconciles |
 | `conftest.py` | Shared LibreOffice fixtures |
 | `requirements.txt` | Pinned Python test dependencies |
 

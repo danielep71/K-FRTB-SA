@@ -1,10 +1,11 @@
-"""Regenerate the expected results embedded in src/workbook/M_Setup.bas.
+"""Regenerate the expected results embedded in src/modules/M_Setup.bas.
 
 The expected values for the sample portfolio come from the independent
 Python reference (tests/frtb_reference.py), never from the VBA engine
 itself. The script builds the workbook headless in LibreOffice (setup only,
 so parameters and sample inputs are exactly what M_Setup writes), computes
-the reference results and rewrites the generated block of WriteExpectedRows.
+the reference results and rewrites the generated block of WriteExpectedRows;
+when the block changes, it also rebuilds src/workbook/FRTB_Template.xlsx.
 
 Usage:
     python3 tools/update_expected.py          # rewrite M_Setup.bas
@@ -28,7 +29,7 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 import frtb_reference as ref  # noqa: E402
 import lo_runner  # noqa: E402
 
-SETUP = REPO_ROOT / "src" / "workbook" / "M_Setup.bas"
+SETUP = REPO_ROOT / "src" / "modules" / "M_Setup.bas"
 BEGIN = "    ' BEGIN GENERATED EXPECTED VALUES"
 END = "    ' END GENERATED EXPECTED VALUES"
 SUMMARY_ITEMS = ("SBM_LOW", "SBM_MEDIUM", "SBM_HIGH", "SBM", "DRC_NONSEC", "RRAO", "TOTAL")
@@ -87,8 +88,16 @@ def main(argv) -> int:
             return 1
         print("M_Setup.bas expected values are up to date")
         return 0
+    if new_text == text:
+        print("M_Setup.bas expected values already current")
+        return 0
     SETUP.write_text(new_text, encoding="cp1252", newline="")
     print("M_Setup.bas updated")
+    # The template carries the expected values too: rebuild it from the new source
+    import build_template  # noqa: PLC0415
+
+    build_template.build(build_template.TEMPLATE)
+    print("src/workbook/FRTB_Template.xlsx rebuilt")
     return 0
 
 

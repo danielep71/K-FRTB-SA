@@ -12,7 +12,7 @@
 [![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#quick-start)
 [![Framework](https://img.shields.io/badge/Framework-Basel_MAR21--MAR23-1f3a5f?style=for-the-badge)](docs/methodology.md)
 [![Status](https://img.shields.io/badge/Status-Prototype_0.1.0-D93F0B?style=for-the-badge)](#status)
-[![Reconciliation](https://img.shields.io/badge/Reconciliation-58_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
+[![Reconciliation](https://img.shields.io/badge/Reconciliation-60_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
 [![Excel evidence](https://img.shields.io/badge/Excel_evidence-pending-6E7781?style=for-the-badge)](docs/validation.md#not-validated)
 [![License](https://img.shields.io/badge/License-MIT-2ea44f?style=for-the-badge)](LICENSE)
 
@@ -67,8 +67,10 @@
 > is validated for regulatory use ([validation](docs/validation.md)).
 
 > [!NOTE]
-> The workbook is **not stored in the repository**. It is built from the
-> exported VBA source by `tools/Build-Workbook.ps1`, so every line of
+> The macro-enabled workbook is **not stored in the repository**.
+> `tools/Build-Workbook.ps1` builds it from the macro-free template
+> `src/workbook/FRTB_Template.xlsx` and the exported VBA in `src/modules`, and
+> the template itself is generated from those modules, so every line of
 > calculation code and every default parameter is reviewable in a pull request.
 
 ## ✨ What this project is

@@ -67,5 +67,6 @@ platform and coverage decisions in [Scope](docs/SCOPE.md).
   `tools\Build-Workbook.ps1 -RunTests` as described in the
   [workbook guide](docs/workbook-guide.md#building-the-workbook-windows-excel).
 
-The allowed template path remains a reservation until a reviewed template is
-committed.
+The macro-free template `src/workbook/FRTB_Template.xlsx` is generated from
+`src/modules` (`python3 tools/build_template.py`); see the
+[workbook guide](docs/workbook-guide.md#source-of-truth).

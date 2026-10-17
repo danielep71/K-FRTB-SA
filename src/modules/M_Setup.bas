@@ -6,10 +6,15 @@ Attribute VB_Name = "M_Setup"
 '   Build the workbook from an empty one: every sheet with the K-FRTB-SA
 '   frame (brand bar, title bar, subtitle, tab color), the default
 '   regulatory parameters (Basel MAR21-MAR23), a synthetic sample portfolio,
-'   the buttons and the expected results of the regression test.
+'   the buttons and the expected results of the regression test. The
+'   macro-free template src/workbook/FRTB_Template.xlsx is this build saved
+'   without VBA; FinishWorkbook adds what a template cannot hold.
 '
 ' PUBLIC SURFACE
-'   BuildWorkbook: rebuild every sheet (overwrites the inputs).
+'   BuildWorkbook: rebuild every sheet (overwrites the inputs), then
+'   FinishWorkbook.
+'   FinishWorkbook: add the sheet buttons and window settings to a workbook
+'   opened from the template.
 '   ResetParameters: rewrite the P_* sheets with the defaults.
 '   LoadSampleData: rewrite the In_* sheets with the sample portfolio.
 '   ManagedSheets: the sheet names in workbook order.
@@ -70,8 +75,17 @@ Public Sub BuildWorkbook()
     WriteParameters
     WriteSampleData
     WriteExpectedResults
-    ApplyWindowSettings
+    SetAlerts True
+    FinishWorkbook
+End Sub
 
+
+' Buttons and window settings are not kept by a macro-free template: the
+' build from the template imports the modules and calls this procedure.
+Public Sub FinishWorkbook()
+    SetAlerts False
+    AddWorkbookButtons
+    ApplyWindowSettings
     On Error Resume Next
     ThisWorkbook.Worksheets(SH_README).Activate
     On Error GoTo 0
@@ -414,7 +428,6 @@ End Function
 Private Sub BuildControl()
     Dim ws As Object, r As Long
     Set ws = GetSheet(SH_CONTROL)
-    RemoveButtons ws
     ApplyFrame ws, "Control", "Run settings and actions.", KIND_INPUT, 6
     SetWidths ws, Array(34, 14, 95, 16)
     r = PutTable(ws, LAYOUT_HEADER_ROW, "SETTINGS", "Run settings", Array("Code", "Value", "Description", "Reference"))
@@ -426,21 +439,30 @@ Private Sub BuildControl()
     On Error Resume Next
     ws.Range(TableCell(ws, r, 2), TableCell(ws, r + 3, 2)).HorizontalAlignment = -4108
     On Error GoTo 0
+End Sub
+
+
+' Removes and recreates the buttons of Control and Results.
+Private Sub AddWorkbookButtons()
+    Dim ws As Object
+    Set ws = GetSheet(SH_CONTROL)
+    RemoveButtons ws
     AddButton ws, LAYOUT_FIRST_COL + 2, 0, "Run FRTB-SA", "RunFRTB"
     AddButton ws, LAYOUT_FIRST_COL + 2, 1, "Clear outputs", "ClearOutputs"
     AddButton ws, LAYOUT_FIRST_COL + 2, 2, "Run regression test", "Test_RunRegression"
+    Set ws = GetSheet(SH_RESULTS)
+    RemoveButtons ws
+    AddButton ws, LAYOUT_FIRST_COL + 5, 0, "Run FRTB-SA", "RunFRTB"
 End Sub
 
 
 Private Sub BuildOutputSheets()
     Dim ws As Object
     Set ws = GetSheet(SH_RESULTS)
-    RemoveButtons ws
     ApplyFrame ws, "Results", "Capital by risk class, component and correlation scenario (MAR21.7), reporting currency.", _
         KIND_OUTPUT, 9
     SetWidths ws, Array(26, 14, 16, 16, 16)
     ResultsPlaceholder ws
-    AddButton ws, LAYOUT_FIRST_COL + 5, 0, "Run FRTB-SA", "RunFRTB"
 
     Set ws = GetSheet(SH_OUT_SUMMARY)
     ApplyFrame ws, "Out_Summary", "Key results of the last run, read by the regression test and automation.", KIND_OUTPUT, 5

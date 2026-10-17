@@ -1,6 +1,6 @@
 # 🗂️ Workbook Guide
 
-[![Model: source first](https://img.shields.io/badge/model-source--first-0969da)](#source-of-truth)
+[![Model: template plus source](https://img.shields.io/badge/model-template%20%2B%20source-0969da)](#source-of-truth)
 [![Build: Excel COM](https://img.shields.io/badge/build-Excel%20COM-217346)](#building-the-workbook-windows-excel)
 [![Layout: workbook frame](https://img.shields.io/badge/layout-workbook%20frame-1f3864)](#sheets)
 
@@ -12,18 +12,25 @@ what is checked by the [validation record](validation.md).
 
 ## 🧩 Source of truth
 
-The exported VBA modules are the source of truth. The `.xlsm` workbook is a
-build output: it is not committed (`/dist/` is ignored) and is rebuilt from
-the modules. `M_Setup` creates every sheet, writes the default parameters and
-the synthetic sample portfolio, and embeds the expected results of the
-regression test. Building from source is a documented deviation from the
-[template-based build](REPOSITORY_STRUCTURE.md#conditional-excelvba-policy):
-`tools/Build-Workbook.ps1 -Template` saves the macro-free template for review.
+The exported VBA modules are the source of truth. The macro-free template
+`src/workbook/FRTB_Template.xlsx` holds the sheets, styles, default
+parameters, sample portfolio and expected results that `M_Setup.BuildWorkbook`
+produces, without a VBA project, buttons or personal document properties.
+The `.xlsm` workbook is a build output: it is not committed (`/dist/` is
+ignored) and is built from the template plus the modules, following the
+[template-based build](REPOSITORY_STRUCTURE.md#conditional-excelvba-policy).
+
+The template is generated, never edited by hand: `python3
+tools/build_template.py` rebuilds it headless in LibreOffice, and
+`tools/update_expected.py` rebuilds it whenever the expected values change.
+`tests/test_template.py` fails when the committed template differs from a
+fresh build of the modules or carries VBA, controls or personal properties.
+`tools/Build-Workbook.ps1 -Template` produces the same template through Excel.
 
 ```text
 src/
-  core/        calculation engine, Option Private Module (CORE_*)
-  workbook/    sheet-button macros, workbook builder, developer export (M_*)
+  modules/     VBA modules: engine (CORE_*, Option Private Module) and workbook macros (M_*)
+  workbook/    macro-free template FRTB_Template.xlsx
 tests/
   modules/     VBA test modules imported into development builds (TEST_*)
   *.py         independent reference, reconciliation and tooling tests
@@ -33,20 +40,21 @@ docs/          methodology, workbook guide, validation, assets
 
 | Module | Responsibility |
 | --- | --- |
-| `src/core/CORE_Config` | Product name, sheet names, layout, palette, risk class codes, components, scenarios |
-| `src/core/CORE_Util` | Sheet access, tagged parameter tables, conversions, table formatting, run log |
-| `src/core/CORE_Params` | Control settings and `P_*` parameters; risk weight and correlation accessors |
-| `src/core/CORE_SBM` | Delta, vega and curvature: validation, netting, bucket and cross-bucket aggregation |
-| `src/core/CORE_DRC` | Default risk charge for non-securitizations |
-| `src/core/CORE_RRAO` | Residual risk add-on |
-| `src/workbook/M_Main` | `RunFRTB`, `RunFRTB_Silent`, `ClearOutputs`; Results and Out_Summary |
-| `src/workbook/M_Setup` | `BuildWorkbook`, `ResetParameters`, `LoadSampleData` |
-| `src/workbook/M_Dev` | `Dev_ExportModules`: export the modules back to their folders |
+| `src/modules/CORE_Config` | Product name, sheet names, layout, palette, risk class codes, components, scenarios |
+| `src/modules/CORE_Util` | Sheet access, tagged parameter tables, conversions, table formatting, run log |
+| `src/modules/CORE_Params` | Control settings and `P_*` parameters; risk weight and correlation accessors |
+| `src/modules/CORE_SBM` | Delta, vega and curvature: validation, netting, bucket and cross-bucket aggregation |
+| `src/modules/CORE_DRC` | Default risk charge for non-securitizations |
+| `src/modules/CORE_RRAO` | Residual risk add-on |
+| `src/modules/M_Main` | `RunFRTB`, `RunFRTB_Silent`, `ClearOutputs`; Results and Out_Summary |
+| `src/modules/M_Setup` | `BuildWorkbook`, `FinishWorkbook`, `ResetParameters`, `LoadSampleData` |
+| `src/modules/M_Dev` | `Dev_ExportModules`: export the modules back to their folders |
 | `tests/modules/TEST_Regression` | `Test_RunRegression`, `Test_RunRegression_Silent` |
 
 Each module opens with a banner (purpose, public surface, dependencies, state
-ownership, error policy, compatibility); `tools/vba_lint.py` checks the banner, the `CORE_`/`TEST_` prefixes and
-`Option Private Module` in core.
+ownership, error policy, compatibility); `tools/vba_lint.py` checks the banner,
+the `CORE_`, `M_` and `TEST_` prefixes and `Option Private Module` in `CORE_`
+modules.
 
 <a id="building-the-workbook-windows-excel"></a>
 
@@ -60,16 +68,20 @@ ownership, error policy, compatibility); `tools/vba_lint.py` checks the banner, 
    powershell -ExecutionPolicy Bypass -File tools\Build-Workbook.ps1 -RunTests
    ```
 
-   The script imports `src\core`, `src\workbook` and `tests\modules` into a
-   new workbook, runs `BuildWorkbook`, the calculation and the regression
-   test, and saves `dist\K-FRTB-SA.xlsm`. `-Production` leaves out the test
-   modules; `-Template` saves the freshly built, macro-free workbook as
-   `dist\FRTB_Template.xlsx` instead; `-Force` overwrites an existing file.
+   The script opens a copy of `src\workbook\FRTB_Template.xlsx`, imports
+   `src\modules` and `tests\modules`, runs `FinishWorkbook` (sheet buttons
+   and window settings), the calculation and the regression test, and saves
+   `dist\K-FRTB-SA.xlsm`. `-FromSource` builds every sheet from the modules
+   (`BuildWorkbook`) instead of the template; `-Production` leaves out the
+   test modules; `-Template` saves a source-built, macro-free template as
+   `dist\FRTB_Template.xlsx` for comparison with the committed one; `-Force`
+   overwrites an existing file.
 3. Open the workbook and run **Debug → Compile VBAProject**.
 
-Manual alternative: in a new workbook open the VBA editor (Alt+F11), use
-**File > Import File** for every `.bas` file of the three folders, run
-`BuildWorkbook` (Alt+F8), then save as `.xlsm`.
+Manual alternative: open a copy of `src\workbook\FRTB_Template.xlsx`, open
+the VBA editor (Alt+F11), use **File > Import File** for every `.bas` file of
+`src\modules` and `tests\modules`, run `FinishWorkbook` (Alt+F8), then save
+as `.xlsm`.
 
 <a id="sheets"></a>
 
@@ -115,10 +127,11 @@ logged on `Log`; check the error count on `Results` after every run.
 ## 🔁 Changing the VBA
 
 1. Edit the modules in the VBA editor of a development build.
-2. Run `Dev_ExportModules` to write them back to `src\core`, `src\workbook`
-   and `tests\modules` (the workbook must sit in the repository root or in
+2. Run `Dev_ExportModules` to write them back to `src\modules` and
+   `tests\modules` (the workbook must sit in the repository root or in
    `dist\`).
 3. On a machine with LibreOffice and Python, run the checks in
    [validation](validation.md). If the sample portfolio, parameters or engine
    logic changed, regenerate the expected values with
-   `python3 tools/update_expected.py` and review the diff.
+   `python3 tools/update_expected.py` (which also rebuilds the template) and
+   review the diff. A layout change needs `python3 tools/build_template.py`.

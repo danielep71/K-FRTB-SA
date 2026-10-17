@@ -19,6 +19,16 @@ Unreleased describe integrated work, not a published version.
 
 - Integration branch `release/v0.1.0` for the SA prototype milestone (#20).
 
+- Macro-free workbook template `src/workbook/FRTB_Template.xlsx`, generated
+  from the modules by `tools/build_template.py` and checked by
+  `tests/test_template.py`; Excel builds start from it and
+  `M_Setup.FinishWorkbook` adds buttons and window settings (#30).
+
+### Changed
+
+- All prototype VBA modules moved from `src/core` and `src/workbook` to
+  `src/modules`; `src/workbook` now holds only the template (#30).
+
 - Purposeful source, tests, documentation, tooling, and workbook-reservation
   READMEs; repository structure, source/generated-file and evidence policies,
   conditional VBA round-trip requirements, and local setup instructions (#5).

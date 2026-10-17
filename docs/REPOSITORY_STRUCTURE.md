@@ -11,8 +11,8 @@ assuming an engine runtime.
 | Path | Purpose today and intended content |
 | --- | --- |
 | `src/` | Production source boundary |
-| `src/core/` | Prototype calculation engine, exported VBA (`CORE_*`, issue #20) |
-| `src/workbook/` | Prototype workbook glue (`M_*`) and the reserved workbook-template location; no template exists |
+| `src/modules/` | Prototype VBA modules: calculation engine (`CORE_*`) and workbook macros (`M_*`), issues #20 and #30 |
+| `src/workbook/` | Macro-free workbook template `FRTB_Template.xlsx`, generated from `src/modules` (#30) |
 | `tests/` | Verification source: independent Python reference, reconciliation and tooling tests |
 | `tests/modules/` | VBA test modules imported into development builds (`TEST_*`) |
 | `docs/` | Authoritative versioned scope, governance, structure, methodology, validation, and milestone documentation |
@@ -107,9 +107,13 @@ No synchronizer, exporter, workbook, Excel harness, or runtime gate is
 implemented at setup time. Add them through scoped implementation issues when
 the platform is selected.
 
-**Prototype deviation (issue #20).** The v0.1.0 prototype follows rules 1, 3
-and 4 in intent, with two documented differences: the workbook is built from
-exported source by `M_Setup.BuildWorkbook` instead of from a committed
-template (`tools/Build-Workbook.ps1 -Template` saves one for review), and the
-only runtime executed so far is LibreOffice Calc in VBA-compatibility mode,
-which is not Excel host evidence. See [validation](validation.md).
+**Prototype implementation (issues #20, #30).** Exported modules live in
+`src/modules` and `tests/modules`; the committed template at the approved
+path is generated from them by `tools/build_template.py` (LibreOffice) or
+`tools/Build-Workbook.ps1 -Template` (Excel), and `tests/test_template.py`
+checks that it matches a fresh build and carries no VBA project, controls or
+personal properties. Excel builds start from the template and
+`M_Setup.FinishWorkbook` adds the buttons and window settings. Remaining gap:
+the only runtime executed so far is LibreOffice Calc in VBA-compatibility
+mode, which is not Excel host evidence (#28); the Excel round trip and its
+digests belong to #28 and #30. See [validation](validation.md).

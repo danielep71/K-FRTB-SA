@@ -5,10 +5,11 @@ prototype (issue #20). None of them holds calculation logic.
 
 | Tool | Purpose |
 | --- | --- |
-| `Build-Workbook.ps1` | Builds `dist\K-FRTB-SA.xlsm` (or, with `-Template`, the macro-free `dist\FRTB_Template.xlsx`) from the VBA source through Excel COM on Windows |
+| `Build-Workbook.ps1` | Builds `dist\K-FRTB-SA.xlsm` from the template and the VBA modules through Excel COM on Windows (`-FromSource` without the template; `-Template` saves a source-built template) |
+| `build_template.py` | Rebuilds (or `--check`s) the macro-free template `src/workbook/FRTB_Template.xlsx` headless in LibreOffice |
 | `lo_runner.py` | Runs the VBA modules headless in LibreOffice Calc and saves the result as `.xlsx` |
 | `vba_lint.py` | Static checks approximating Excel's compile checks and the module conventions |
-| `update_expected.py` | Regenerates (or `--check`s) the expected values embedded in `M_Setup` from the independent reference |
+| `update_expected.py` | Regenerates (or `--check`s) the expected values embedded in `M_Setup` from the independent reference, and rebuilds the template when they change |
 
 [Validation](../docs/validation.md) lists their prerequisites (Python 3,
 LibreOffice Calc with the Python UNO bridge, the pinned packages in

@@ -1,32 +1,39 @@
 <#
 .SYNOPSIS
-    Builds the FRTB-SA prototype workbook (.xlsm) from the VBA sources.
+    Builds the FRTB-SA prototype workbook (.xlsm) from the template and the VBA sources.
 
 .DESCRIPTION
-    Starts Excel through COM, creates a new workbook, imports the modules of
-    src\core, src\workbook and (unless -Production) tests\modules, runs
-    M_Setup.BuildWorkbook to create the sheets, parameters and sample data,
-    and saves the result as a macro-enabled workbook. With -RunTests it also
-    runs the calculation and the in-workbook regression test and fails when
-    the test does not pass.
+    Starts Excel through COM and opens a copy of the macro-free template
+    src\workbook\FRTB_Template.xlsx, imports the modules of src\modules and
+    (unless -Production) tests\modules, runs M_Setup.FinishWorkbook to add the
+    sheet buttons and window settings, and saves the result as a
+    macro-enabled workbook. With -RunTests it also runs the calculation and
+    the in-workbook regression test and fails when the test does not pass.
+
+    -FromSource builds every sheet from the modules instead
+    (M_Setup.BuildWorkbook in a new workbook); -Template does the same and
+    saves the result as a macro-free template for review.
 
     Requirements: Windows with desktop Excel, and "Trust access to the VBA
     project object model" enabled (File > Options > Trust Center > Trust
     Center Settings > Macro Settings).
 
 .PARAMETER OutputPath
-    Target .xlsm path. Defaults to dist\K-FRTB-SA.xlsm under the
-    repository root.
+    Target path. Defaults to dist\K-FRTB-SA.xlsm, or dist\FRTB_Template.xlsx
+    with -Template, under the repository root.
 
 .PARAMETER RunTests
     Run RunFRTB_Silent and Test_RunRegression_Silent after the build and check
     the result on the Test_Expected sheet.
 
+.PARAMETER FromSource
+    Build every sheet from the modules (M_Setup.BuildWorkbook) instead of
+    starting from the template.
+
 .PARAMETER Template
-    Save the built workbook as a macro-free template instead, by default
-    dist\FRTB_Template.xlsx, with personal information removed. Review it
-    before copying it to the reserved path src\workbook\FRTB_Template.xlsx.
-    Cannot be combined with -RunTests.
+    Build from source and save a macro-free template, without sheet buttons
+    and with personal information removed. Review it before replacing
+    src\workbook\FRTB_Template.xlsx. Cannot be combined with -RunTests.
 
 .PARAMETER Production
     Leave out the test modules of tests\modules (the "Run regression test"
@@ -42,6 +49,7 @@
 param(
     [string]$OutputPath,
     [switch]$RunTests,
+    [switch]$FromSource,
     [switch]$Production,
     [switch]$Template,
     [switch]$Force
@@ -51,7 +59,8 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$sourceDirs = @((Join-Path $repoRoot 'src\core'), (Join-Path $repoRoot 'src\workbook'))
+$templatePath = Join-Path $repoRoot 'src\workbook\FRTB_Template.xlsx'
+$sourceDirs = @(Join-Path $repoRoot 'src\modules')
 if (-not $Production) {
     $sourceDirs += (Join-Path $repoRoot 'tests\modules')
 }
@@ -60,6 +69,10 @@ if ($Production -and $RunTests) {
 }
 if ($Template -and $RunTests) {
     throw '-Template saves the workbook before any run; do not combine it with -RunTests'
+}
+$buildFromSource = $FromSource -or $Template
+if (-not $buildFromSource -and -not (Test-Path $templatePath)) {
+    throw "Template not found: $templatePath (use -FromSource to build without it)"
 }
 if (-not $OutputPath) {
     if ($Template) {
@@ -79,7 +92,8 @@ if ($modules.Count -eq 0) {
 }
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $OutputPath) | Out-Null
 
-# The VBA editor expects CRLF line endings; normalize into a temporary folder
+# The VBA editor expects CRLF line endings; normalize into a temporary folder.
+# The template is copied there too, so the committed file is never modified.
 $staging = Join-Path ([System.IO.Path]::GetTempPath()) ("frtb-sa-build-" + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $staging | Out-Null
 $encoding = [System.Text.Encoding]::GetEncoding(1252)
@@ -96,7 +110,14 @@ try {
     $excel = New-Object -ComObject Excel.Application
     $excel.Visible = $false
     $excel.DisplayAlerts = $false
-    $workbook = $excel.Workbooks.Add()
+    if ($buildFromSource) {
+        $workbook = $excel.Workbooks.Add()
+    } else {
+        $templateCopy = Join-Path $staging 'FRTB_Template.xlsx'
+        Copy-Item -Path $templatePath -Destination $templateCopy
+        $workbook = $excel.Workbooks.Open($templateCopy)
+        Write-Host "Opened a copy of $templatePath"
+    }
 
     try {
         $components = $workbook.VBProject.VBComponents
@@ -109,8 +130,13 @@ try {
     }
 
     $prefix = "'" + $workbook.Name + "'!"
-    [void]$excel.Run($prefix + 'BuildWorkbook')
-    Write-Host 'Workbook layout, parameters and sample data created'
+    if ($buildFromSource) {
+        [void]$excel.Run($prefix + 'BuildWorkbook')
+        Write-Host 'Workbook layout, parameters and sample data created from source'
+    } else {
+        [void]$excel.Run($prefix + 'FinishWorkbook')
+        Write-Host 'Buttons and window settings added to the template'
+    }
 
     if ($RunTests) {
         [void]$excel.Run($prefix + 'RunFRTB_Silent')
@@ -123,6 +149,10 @@ try {
     }
 
     if ($Template) {
+        # A template holds no buttons: FinishWorkbook adds them at build time
+        foreach ($sheet in $workbook.Worksheets) {
+            foreach ($shape in @($sheet.Shapes)) { $shape.Delete() }
+        }
         # 51 = xlOpenXMLWorkbook: the saved file carries no VBA project
         $workbook.RemovePersonalInformation = $true
         $workbook.SaveAs($OutputPath, 51)

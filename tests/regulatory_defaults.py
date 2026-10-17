@@ -1,4 +1,4 @@
-"""Regulatory default parameters typed independently of src/workbook/M_Setup.bas.
+"""Regulatory default parameters typed independently of src/modules/M_Setup.bas.
 
 Used to spot-check the parameter sheets the VBA setup writes and to build
 self-contained parameter sets for hand-calculated tests. Values follow the
