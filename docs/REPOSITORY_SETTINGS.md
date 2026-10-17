@@ -42,10 +42,11 @@ match `release/**`, including the `release/v0.0.1` name. See
 retention/fast-forward; the separate deletion rule has no bypass. Task branches
 can be deleted automatically after merge.
 
-**Required status checks are pending issue #7.** The label checks are
+**Required status-check enforcement remains pending issue #2.** The label checks are
 path-filtered and cannot serve as a universal repository-integrity gate.
-Do not require a nonexistent check or one that skips ordinary PRs. After #7
-passes on a representative PR, add its actual stable check name and GitHub
+The #7 workflow provides the unconditional **Repository integrity** check;
+[Repository checks](CI.md) records branch-installation prerequisites and
+GitHub Actions app identity. After its representative PR passes, add that name and GitHub
 Actions identity to main and release rules, require main to be up to date,
 and record the resulting settings/evidence in issue #2.
 
@@ -72,8 +73,8 @@ and record the resulting settings/evidence in issue #2.
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup enabled for detected GitHub Actions; setup run succeeded |
-| Dependabot version updates | No configuration | Issue #7 owns configuration and integration-branch targeting |
-| Dependabot security update PRs | Off | Remain off pending the dependency-update policy in #7 |
+| Dependabot version updates | No configuration | Configuration added under #7; activates after default-branch integration; targets in CI.md |
+| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; see CI.md and #2 |
 
 [CodeQL setup evidence](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39070451926).
 The detected language at setup was **GitHub Actions**, not an FRTB calculation

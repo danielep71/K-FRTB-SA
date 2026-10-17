@@ -23,8 +23,8 @@ controls and pending integrity/review configuration.
   Assign issues to danielep71. Reserve P1 for confirmed calculation bugs.
 - Update affected documentation and CHANGELOG.md alongside implementation.
 - Run checks appropriate to the change and inspect the hosted results before
-  merging. The existing label commands are documented in README.md; the
-  universal integrity entry point is pending issue #7.
+  merging. Run `python tools/check_repository.py` after installing the pinned
+  `.github/requirements.txt` dependency; see docs/CI.md for coverage and limits.
 - Keep incomplete acceptance criteria open and link evidence when completing
   them. Distinguish static checks from runtime and independent validation.
 - Read docs/SCOPE.md before changing functional scope. The engine platform and
