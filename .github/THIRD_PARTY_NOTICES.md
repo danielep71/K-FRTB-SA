@@ -24,5 +24,6 @@ workflow path filters cover both scripts; trusted reconciliation retains
 before/after snapshots and a post-sync drift report. The catalogue is unchanged.
 
 The root `.editorconfig` and `.gitattributes` are copied unchanged. The root
-`.gitignore` removes the SACCR-specific workbook exception and its issue #58
-reference; all other ignore rules are unchanged.
+`.gitignore` replaces the SACCR-specific workbook exception and its issue #58
+reference with the approved `/src/workbook/FRTB_Template.xlsx` exception;
+all other ignore rules are unchanged.
