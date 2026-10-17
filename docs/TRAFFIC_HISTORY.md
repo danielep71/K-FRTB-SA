@@ -90,7 +90,9 @@ After credential configuration and main integration, open Actions →
 **Export repository traffic** → **Run workflow**, select main and run it.
 Verify the successful run summary and the resulting history commit. Inspect
 failure logs for missing/expired permissions, absent branch, malformed data,
-or concurrent updates. Re-run after fixing the cause; never reset the branch
+or concurrent updates. An existing zero-byte CSV is corrupt and fails header
+validation before any Git write; restore valid history rather than treating
+it as a new collection. Re-run after fixing the cause; never reset the branch
 to make a failed publish pass. No automated issue or external message is sent.
 
 This is operational analytics. Static tests, traffic counts, and successful

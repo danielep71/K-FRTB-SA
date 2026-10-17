@@ -9,7 +9,8 @@ Unreleased describe integrated work, not a published version.
 
 - Owner-requested persistent traffic-history branch, daily/manual main-only
   collection, offline tooling checks, operational documentation, and an
-  explicit analytics credential/first-run prerequisite (#23).
+  explicit analytics credential/first-run prerequisite (#23). The collector
+  rejects malformed rows and existing empty history before publication.
 
 - Bug, feature, and documentation issue forms with owner/type/priority defaults;
   one PR merge checklist; conduct and security policies with reporting routes;

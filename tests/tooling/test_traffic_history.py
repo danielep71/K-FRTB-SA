@@ -98,6 +98,14 @@ class TrafficTests(unittest.TestCase):
                 traffic.publish(writer, "owner/repo", snapshot)
             self.assertTrue(all(method == "GET" for method, _, _ in writer.calls))
 
+    def test_empty_existing_history_is_not_treated_as_missing(self):
+        writer = Writer("")
+        snapshot = {**fixture(), "collected_at_utc": "2026-10-18T00:00:00+00:00"}
+        with self.assertRaisesRegex(ValueError, "CSV header"):
+            traffic.publish(writer, "owner/repo", snapshot)
+        self.assertTrue(all(method == "GET" for method, _, _ in writer.calls))
+        self.assertTrue(traffic.merge_daily(None, fixture()).startswith("date,views,"))
+
     def test_atomic_snapshot_and_expected_parent(self):
         writer = Writer()
         snapshot = {**fixture(), "collected_at_utc": "2026-10-18T00:00:00+00:00"}
