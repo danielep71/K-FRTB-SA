@@ -116,10 +116,27 @@ Input sheets are read from row 6 down to the first row whose `ID` and
 `RiskClass` (or second) column are both blank. Invalid rows are skipped and
 logged on `Log`; check the error count on `Results` after every run.
 
+### Numbers
+
+A number entered as a number is used as stored. A number stored as text
+(a text-formatted cell or pasted text) is read in one form only, the same
+under every regional setting: an optional sign, digits with an optional `.`
+decimal point and an optional exponent, with spaces around it at most, for
+example `1500`, `-0.25`, `.5`, `1.5E3`. Any other text is not a number:
+`0,5`, `1,000`, `12abc`, `55%`, `&H10`, `1D3`. True/false values, dates and
+magnitudes beyond 1E+307 or below 1E-307 are not numbers either.
+
+* In an input row, a value that is not a number rejects the row; the `Log`
+  lists it with the reason. It is never read as zero or truncated.
+* In a `P_*` parameter or a `P_General` list, a value that is missing or not
+  a number stops the run. Every output sheet is cleared, `Results` shows
+  "Run failed" and the `Log` names the sheet, table and key or data row.
+
 ## ▶️ Running
 
-* **Run FRTB-SA** (`RunFRTB`) recalculates everything and rewrites the output
-  sheets and the log.
+* **Run FRTB-SA** (`RunFRTB`) clears the output sheets, recalculates
+  everything and rewrites the output sheets and the log. A run that fails
+  leaves the outputs empty and the reason on `Results` and `Log`.
 * **Run regression test** (`Test_RunRegression`) compares the last run with
   `Test_Expected`. It is meaningful only with the sample data and default
   parameters and settings: run `LoadSampleData` and `RunFRTB` first.

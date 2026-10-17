@@ -99,7 +99,9 @@ need to **check** an FRTB-SA number:
   visible on `Out_DRC`;
 - every rejected input row is listed on `Log` with the reason, never counted
   as zero;
-- every parameter sits on an editable `P_*` sheet next to its MAR paragraph.
+- every parameter sits on an editable `P_*` sheet next to its MAR paragraph,
+  and one that is missing or not a number stops the run instead of becoming
+  zero.
 
 | Area | Status |
 | --- | --- |
@@ -123,7 +125,7 @@ need to **check** an FRTB-SA number:
 | Discretions | sqrt(2) for specified GIRR currencies and FX pairs (with first-order crosses), FX curvature divisor 1.5 |
 | DRC | Non-securitization JTD, maturity scaling, obligor netting by seniority, hedge benefit ratio per bucket |
 | RRAO | Exotic (1.0%) and other (0.1%) residual risks |
-| Input validation | Unknown risk classes, buckets, tenors, sub-types, ratings and seniorities, non-numeric amounts and the reporting currency as an FX bucket are rejected and logged |
+| Input validation | Unknown risk classes, buckets, tenors, sub-types, ratings and seniorities, non-numeric amounts (text numbers are read in one locale-independent form, see the [workbook guide](docs/workbook-guide.md#numbers)) and the reporting currency as an FX bucket are rejected and logged; invalid parameters stop the run |
 | Parameters | Eight `P_*` sheets with MAR references, checked against the BIS Basel Framework on 2026-10-17 |
 | Testing | Hand-calculated formula tests, an independent Python reference, headless LibreOffice runs of the VBA, an in-workbook regression test and a static VBA lint |
 | Deployment | Plain exported VBA; no add-in, COM component, DLL or extra VBA reference |

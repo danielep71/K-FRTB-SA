@@ -23,8 +23,9 @@ Attribute VB_Name = "CORE_Params"
 '   the P_* sheets are the source, and M_Setup only writes their defaults.
 '
 ' ERROR POLICY
-'   A missing table or required key raises (CORE_Util); an unknown tenor or
-'   liquidity horizon raises vbObjectError + ERR_APP.
+'   A missing table, or a required key or table value that is missing or
+'   not a number, raises ERR_APP (CORE_Util), and so does an unknown tenor
+'   or liquidity horizon. The run stops before any capital is written.
 '
 ' COMPATIBILITY
 '   Excel VBA; no references beyond the defaults.
@@ -169,14 +170,14 @@ Private Sub LoadGeneral()
     For r = 1 To nR
         mLHClass(r) = ToText(t(r, 1))
         mLHBucket(r) = BucketLabel(t(r, 2))
-        mLHValue(r) = ToDouble(t(r, 3), 0#)
+        mLHValue(r) = TableNumber(t, r, 3, SH_P_GENERAL, "VEGA_LH")
     Next r
 
     Set kv = ReadKeyValues(SH_P_GENERAL, "VERTICES")
-    mGirrTenorN = ParseNumberList(KVText(kv, "GIRR_TENORS", ""), mGirrTenors)
-    mCsrTenorN = ParseNumberList(KVText(kv, "CSR_TENORS", ""), mCsrTenors)
-    mComTenorN = ParseNumberList(KVText(kv, "COM_TENORS", ""), mComTenors)
-    mVegaMatN = ParseNumberList(KVText(kv, "VEGA_MATURITIES", ""), mVegaMats)
+    mGirrTenorN = ParseNumberList(KVText(kv, "GIRR_TENORS", ""), mGirrTenors, "GIRR_TENORS (" & SH_P_GENERAL & ")")
+    mCsrTenorN = ParseNumberList(KVText(kv, "CSR_TENORS", ""), mCsrTenors, "CSR_TENORS (" & SH_P_GENERAL & ")")
+    mComTenorN = ParseNumberList(KVText(kv, "COM_TENORS", ""), mComTenors, "COM_TENORS (" & SH_P_GENERAL & ")")
+    mVegaMatN = ParseNumberList(KVText(kv, "VEGA_MATURITIES", ""), mVegaMats, "VEGA_MATURITIES (" & SH_P_GENERAL & ")")
 End Sub
 
 Private Sub LoadGirr()
@@ -187,8 +188,8 @@ Private Sub LoadGirr()
     ReDim mGirrRWTenor(1 To nR)
     ReDim mGirrRWValue(1 To nR)
     For r = 1 To nR
-        mGirrRWTenor(r) = ToDouble(t(r, 1), 0#)
-        mGirrRWValue(r) = ToDouble(t(r, 2), 0#)
+        mGirrRWTenor(r) = TableNumber(t, r, 1, SH_P_GIRR, "GIRR_RW")
+        mGirrRWValue(r) = TableNumber(t, r, 2, SH_P_GIRR, "GIRR_RW")
     Next r
 
     Set kv = ReadKeyValues(SH_P_GIRR, "GIRR_PARAMS")
@@ -215,18 +216,19 @@ Private Sub LoadCsr()
     t = ReadTable(SH_P_CSR, "CSR_BUCKETS", nR, nC)
     mCsrN = 0
     For r = 1 To nR
-        If ToDouble(t(r, 1), 0#) > mCsrN Then mCsrN = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_CSR, "CSR_BUCKETS"))
+        If b > mCsrN Then mCsrN = b
     Next r
     ReDim mCsrQuality(1 To mCsrN)
     ReDim mCsrGroup(1 To mCsrN)
     ReDim mCsrType(1 To mCsrN)
     ReDim mCsrRW(1 To mCsrN)
     For r = 1 To nR
-        b = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_CSR, "CSR_BUCKETS"))
         mCsrQuality(b) = ToText(t(r, 3))
         mCsrGroup(b) = BucketLabel(t(r, 4))
         mCsrType(b) = ToText(t(r, 5))
-        mCsrRW(b) = ToDouble(t(r, 6), 0#)
+        mCsrRW(b) = TableNumber(t, r, 6, SH_P_CSR, "CSR_BUCKETS")
     Next r
 
     Set kv = ReadKeyValues(SH_P_CSR, "CSR_PARAMS")
@@ -245,7 +247,7 @@ Private Sub LoadCsr()
     ReDim mCsrSector(1 To nR, 1 To nR)
     For r = 1 To nR
         For c = 1 To nR
-            mCsrSector(r, c) = ToDouble(t(r, c + 1), 0#)
+            mCsrSector(r, c) = TableNumber(t, r, c + 1, SH_P_CSR, "CSR_GAMMA_SECTOR")
         Next c
     Next r
 End Sub
@@ -256,18 +258,19 @@ Private Sub LoadEquity()
     t = ReadTable(SH_P_EQ, "EQ_BUCKETS", nR, nC)
     mEqN = 0
     For r = 1 To nR
-        If ToDouble(t(r, 1), 0#) > mEqN Then mEqN = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_EQ, "EQ_BUCKETS"))
+        If b > mEqN Then mEqN = b
     Next r
     ReDim mEqType(1 To mEqN)
     ReDim mEqRWSpot(1 To mEqN)
     ReDim mEqRWRepo(1 To mEqN)
     ReDim mEqRhoName(1 To mEqN)
     For r = 1 To nR
-        b = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_EQ, "EQ_BUCKETS"))
         mEqType(b) = ToText(t(r, 3))
-        mEqRWSpot(b) = ToDouble(t(r, 4), 0#)
-        mEqRWRepo(b) = ToDouble(t(r, 5), 0#)
-        mEqRhoName(b) = ToDouble(t(r, 6), 0#)
+        mEqRWSpot(b) = TableNumber(t, r, 4, SH_P_EQ, "EQ_BUCKETS")
+        mEqRWRepo(b) = TableNumber(t, r, 5, SH_P_EQ, "EQ_BUCKETS")
+        mEqRhoName(b) = TableNumber(t, r, 6, SH_P_EQ, "EQ_BUCKETS")
     Next r
 
     Set kv = ReadKeyValues(SH_P_EQ, "EQ_PARAMS")
@@ -276,9 +279,9 @@ Private Sub LoadEquity()
     t = ReadTable(SH_P_EQ, "EQ_GAMMA", nR, nC)
     ReDim mEqGamma(1 To mEqN, 1 To mEqN)
     For r = 1 To nR
-        b = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_EQ, "EQ_GAMMA"))
         For c = 1 To mEqN
-            mEqGamma(b, c) = ToDouble(t(r, c + 1), 0#)
+            mEqGamma(b, c) = TableNumber(t, r, c + 1, SH_P_EQ, "EQ_GAMMA")
         Next c
     Next r
 End Sub
@@ -289,14 +292,15 @@ Private Sub LoadCommodity()
     t = ReadTable(SH_P_COM, "COM_BUCKETS", nR, nC)
     mComN = 0
     For r = 1 To nR
-        If ToDouble(t(r, 1), 0#) > mComN Then mComN = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_COM, "COM_BUCKETS"))
+        If b > mComN Then mComN = b
     Next r
     ReDim mComRW(1 To mComN)
     ReDim mComRhoCty(1 To mComN)
     For r = 1 To nR
-        b = CLng(ToDouble(t(r, 1), 0#))
-        mComRW(b) = ToDouble(t(r, 3), 0#)
-        mComRhoCty(b) = ToDouble(t(r, 4), 0#)
+        b = CLng(TableNumber(t, r, 1, SH_P_COM, "COM_BUCKETS"))
+        mComRW(b) = TableNumber(t, r, 3, SH_P_COM, "COM_BUCKETS")
+        mComRhoCty(b) = TableNumber(t, r, 4, SH_P_COM, "COM_BUCKETS")
     Next r
 
     Set kv = ReadKeyValues(SH_P_COM, "COM_PARAMS")
@@ -306,9 +310,9 @@ Private Sub LoadCommodity()
     t = ReadTable(SH_P_COM, "COM_GAMMA", nR, nC)
     ReDim mComGamma(1 To mComN, 1 To mComN)
     For r = 1 To nR
-        b = CLng(ToDouble(t(r, 1), 0#))
+        b = CLng(TableNumber(t, r, 1, SH_P_COM, "COM_GAMMA"))
         For c = 1 To mComN
-            mComGamma(b, c) = ToDouble(t(r, c + 1), 0#)
+            mComGamma(b, c) = TableNumber(t, r, c + 1, SH_P_COM, "COM_GAMMA")
         Next c
     Next r
 End Sub
@@ -334,15 +338,15 @@ Private Sub LoadDrc()
     Set mDrcRW = New Collection
     t = ReadTable(SH_P_DRC, "DRC_RW", nR, nC)
     For r = 1 To nR
-        AddKey mDrcRW, ToText(t(r, 1)), ToDouble(t(r, 2), 0#)
+        AddKey mDrcRW, ToText(t(r, 1)), TableNumber(t, r, 2, SH_P_DRC, "DRC_RW")
     Next r
 
     Set mDrcLGD = New Collection
     Set mDrcRank = New Collection
     t = ReadTable(SH_P_DRC, "DRC_SENIORITY", nR, nC)
     For r = 1 To nR
-        AddKey mDrcRank, ToText(t(r, 1)), CLng(ToDouble(t(r, 2), 0#))
-        AddKey mDrcLGD, ToText(t(r, 1)), ToDouble(t(r, 3), 0#)
+        AddKey mDrcRank, ToText(t(r, 1)), CLng(TableNumber(t, r, 2, SH_P_DRC, "DRC_SENIORITY"))
+        AddKey mDrcLGD, ToText(t(r, 1)), TableNumber(t, r, 3, SH_P_DRC, "DRC_SENIORITY")
     Next r
 
     Set mDrcBuckets = New Collection
@@ -363,7 +367,7 @@ Private Sub LoadRrao()
     Set mRraoRW = New Collection
     t = ReadTable(SH_P_RRAO, "RRAO_RW", nR, nC)
     For r = 1 To nR
-        AddKey mRraoRW, ToText(t(r, 1)), ToDouble(t(r, 2), 0#)
+        AddKey mRraoRW, ToText(t(r, 1)), TableNumber(t, r, 2, SH_P_RRAO, "RRAO_RW")
     Next r
 End Sub
 
@@ -417,7 +421,7 @@ Public Function VegaRiskWeight(ByVal rc As String, ByVal bucket As String) As Do
         Next r
     End If
     If Not found Then
-        Err.Raise vbObjectError + ERR_APP, "VegaRiskWeight", "No liquidity horizon for " & rc & " bucket " & bucket
+        Err.Raise ERR_APP, "VegaRiskWeight", "No liquidity horizon for " & rc & " bucket " & bucket
     End If
     VegaRiskWeight = MinD(mVegaRWSigma * Sqr(lh / 10#), 1#)
 End Function
@@ -448,7 +452,7 @@ Public Function IsValidBucket(ByVal rc As String, ByVal bucket As String) As Boo
         Case RC_GIRR, RC_FX
             IsValidBucket = (Len(bucket) = 3)
         Case RC_CSR, RC_EQ, RC_COM
-            If Not IsNumeric(bucket) Then Exit Function
+            If Not IsNumericText(bucket) Then Exit Function
             b = CLng(Val(bucket))
             If b < 1 Then Exit Function
             Select Case rc
@@ -492,7 +496,7 @@ Public Function GirrRiskWeight(ByVal ccy As String, ByVal subType As String, ByV
         End If
     Next r
     If rw < 0# Then
-        Err.Raise vbObjectError + ERR_APP, "GirrRiskWeight", "No GIRR risk weight for tenor " & tenor
+        Err.Raise ERR_APP, "GirrRiskWeight", "No GIRR risk weight for tenor " & tenor
     End If
     If mGirrSpecifiedOn Then
         If KeyExists(mGirrSpecCcy, ccy) Or ccy = mReportingCcy Then rw = rw / mGirrSpecDivisor

@@ -13,6 +13,7 @@ residual risk add-on. References are to the Basel Framework (MAR21-MAR23).
 from __future__ import annotations
 
 import math
+import re
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass, field
 
@@ -60,14 +61,47 @@ class Params:
     rrao_rw: dict = field(default_factory=dict)
 
 
+# Numeric text: optional sign, digits with an optional "." and an optional
+# exponent, spaces around it at most; nothing else (no commas, grouping,
+# "inf", "nan", "_" or trailing text). Magnitudes beyond 1E+307 or below
+# 1E-307 are rejected. Booleans and dates are not numbers.
+_NUMERIC_TEXT = re.compile(r"[+-]?(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d{1,4}))?", re.ASCII)
+
+
+def _number(v):
+    """Value of a number or numeric text, or None when it is not a number."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    if not isinstance(v, str):
+        return None
+    s = v.strip(" ")
+    m = _NUMERIC_TEXT.fullmatch(s)
+    if not m or not (m.group(1) or m.group(2)):
+        return None
+    whole, frac = m.group(1).lstrip("0"), m.group(2) or ""
+    if whole or frac.strip("0"):
+        lead = len(whole) - 1 if whole else -(len(frac) - len(frac.lstrip("0")) + 1)
+        if not -307 <= lead + int(m.group(3) or 0) <= 307:
+            return None
+    return float(s)
+
+
+def _param(v) -> float:
+    x = _number(v)
+    if x is None:
+        raise ValueError(f"parameter is not a number: {v!r}")
+    return x
+
+
 def _label(v) -> str:
     """Bucket label; a non-integral number matches no bucket instead of being rounded."""
     if v is None:
         return ""
     s = str(v).strip().upper()
-    try:
-        x = float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else float(s)
-    except ValueError:
+    x = _number(v)
+    if x is None:
         return s
     return str(int(x)) if x == int(x) else f"NON-INTEGER {s}"
 
@@ -77,21 +111,12 @@ def _text(v) -> str:
 
 
 def _num(v, default=0.0) -> float:
-    if v is None or (isinstance(v, str) and v.strip() == ""):
-        return default
-    return float(v)
+    x = _number(v)
+    return default if x is None else x
 
 
 def _is_num(v) -> bool:
-    if isinstance(v, bool) or v is None:
-        return False
-    if isinstance(v, (int, float)):
-        return True
-    try:
-        float(str(v).strip())
-        return True
-    except ValueError:
-        return False
+    return _number(v) is not None
 
 
 def _blank_or_num(v) -> bool:
@@ -143,57 +168,57 @@ def params_from_workbook(wb) -> Params:
 
     t = _tables(wb["P_General"])
     kv = _kv(t, "CORR_SCENARIOS")
-    p.high_mult, p.low_mult = float(kv["HIGH_MULTIPLIER"]), float(kv["LOW_MULTIPLIER"])
+    p.high_mult, p.low_mult = _param(kv["HIGH_MULTIPLIER"]), _param(kv["LOW_MULTIPLIER"])
     kv = _kv(t, "VEGA")
-    p.vega_rw_sigma, p.vega_alpha = float(kv["RW_SIGMA"]), float(kv["ALPHA"])
-    p.vega_lh = [(_text(r[0]), _label(r[1]), float(r[2])) for r in t["VEGA_LH"][1]]
-    p.vertices = {k: [float(x) for x in str(v).split(",") if x.strip()] for k, v in _kv(t, "VERTICES").items()}
+    p.vega_rw_sigma, p.vega_alpha = _param(kv["RW_SIGMA"]), _param(kv["ALPHA"])
+    p.vega_lh = [(_text(r[0]), _label(r[1]), _param(r[2])) for r in t["VEGA_LH"][1]]
+    p.vertices = {k: [_param(x) for x in str(v).split(",") if x.strip()] for k, v in _kv(t, "VERTICES").items()}
 
     t = _tables(wb["P_GIRR"])
-    p.girr_rw = {float(r[0]): float(r[1]) for r in t["GIRR_RW"][1]}
-    p.girr = {k: float(v) for k, v in _kv(t, "GIRR_PARAMS").items()}
+    p.girr_rw = {_param(r[0]): _param(r[1]) for r in t["GIRR_RW"][1]}
+    p.girr = {k: _param(v) for k, v in _kv(t, "GIRR_PARAMS").items()}
     p.girr_specified = {_text(r[0]) for r in t["GIRR_SPECIFIED_CCY"][1]}
 
     t = _tables(wb["P_CSR"])
     for r in t["CSR_BUCKETS"][1]:
-        p.csr_buckets[_label(r[0])] = {"quality": _text(r[2]), "group": _label(r[3]), "type": _text(r[4]), "rw": float(r[5])}
-    p.csr = {k: float(v) for k, v in _kv(t, "CSR_PARAMS").items()}
+        p.csr_buckets[_label(r[0])] = {"quality": _text(r[2]), "group": _label(r[3]), "type": _text(r[4]), "rw": _param(r[5])}
+    p.csr = {k: _param(v) for k, v in _kv(t, "CSR_PARAMS").items()}
     header, rows = t["CSR_GAMMA_SECTOR"]
     cols = [_label(h) for h in header[1:]]
     for r in rows:
         for c, v in zip(cols, r[1:]):
-            p.csr_sector[(_label(r[0]), c)] = float(v)
+            p.csr_sector[(_label(r[0]), c)] = _param(v)
 
     t = _tables(wb["P_EQ"])
     for r in t["EQ_BUCKETS"][1]:
-        p.eq_buckets[_label(r[0])] = {"type": _text(r[2]), "rw_spot": float(r[3]), "rw_repo": float(r[4]), "rho": float(r[5])}
-    p.eq = {k: float(v) for k, v in _kv(t, "EQ_PARAMS").items()}
+        p.eq_buckets[_label(r[0])] = {"type": _text(r[2]), "rw_spot": _param(r[3]), "rw_repo": _param(r[4]), "rho": _param(r[5])}
+    p.eq = {k: _param(v) for k, v in _kv(t, "EQ_PARAMS").items()}
     header, rows = t["EQ_GAMMA"]
     for r in rows:
         for c, v in zip(header[1:], r[1:]):
-            p.eq_gamma[(_label(r[0]), _label(c))] = float(v)
+            p.eq_gamma[(_label(r[0]), _label(c))] = _param(v)
 
     t = _tables(wb["P_COM"])
     for r in t["COM_BUCKETS"][1]:
-        p.com_buckets[_label(r[0])] = {"rw": float(r[2]), "rho": float(r[3])}
-    p.com = {k: float(v) for k, v in _kv(t, "COM_PARAMS").items()}
+        p.com_buckets[_label(r[0])] = {"rw": _param(r[2]), "rho": _param(r[3])}
+    p.com = {k: _param(v) for k, v in _kv(t, "COM_PARAMS").items()}
     header, rows = t["COM_GAMMA"]
     for r in rows:
         for c, v in zip(header[1:], r[1:]):
-            p.com_gamma[(_label(r[0]), _label(c))] = float(v)
+            p.com_gamma[(_label(r[0]), _label(c))] = _param(v)
 
     t = _tables(wb["P_FX"])
-    p.fx = {k: float(v) for k, v in _kv(t, "FX_PARAMS").items()}
+    p.fx = {k: _param(v) for k, v in _kv(t, "FX_PARAMS").items()}
     p.fx_pairs = {_text(r[0]) for r in t["FX_SPECIFIED_PAIRS"][1]}
 
     t = _tables(wb["P_DRC"])
-    p.drc_rw = {_text(r[0]): float(r[1]) for r in t["DRC_RW"][1]}
-    p.drc_seniority = {_text(r[0]): (int(r[1]), float(r[2])) for r in t["DRC_SENIORITY"][1]}
-    p.drc = {k: float(v) for k, v in _kv(t, "DRC_PARAMS").items()}
+    p.drc_rw = {_text(r[0]): _param(r[1]) for r in t["DRC_RW"][1]}
+    p.drc_seniority = {_text(r[0]): (int(_param(r[1])), _param(r[2])) for r in t["DRC_SENIORITY"][1]}
+    p.drc = {k: _param(v) for k, v in _kv(t, "DRC_PARAMS").items()}
     p.drc_buckets = [_text(r[0]) for r in t["DRC_BUCKETS"][1]]
 
     t = _tables(wb["P_RRAO"])
-    p.rrao_rw = {_text(r[0]): float(r[1]) for r in t["RRAO_RW"][1]}
+    p.rrao_rw = {_text(r[0]): _param(r[1]) for r in t["RRAO_RW"][1]}
     return p
 
 
@@ -289,7 +314,7 @@ def delta_risk_factors(p: Params, rows):
             q, sub, t = b, "", 0.0
         if not q:
             continue
-        rfs.append(RF(rc, b, q, sub, t, 0.0, float(r[6])))
+        rfs.append(RF(rc, b, q, sub, t, 0.0, _num(r[6])))
     rfs = _net(rfs)
     for f in rfs:
         f.rw = delta_rw(p, f)
@@ -360,7 +385,7 @@ def vega_risk_factors(p: Params, rows):
                 q, sub = b, ""
             if not q:
                 continue
-        rfs.append(RF(rc, b, q, sub, topt, tund, float(r[7])))
+        rfs.append(RF(rc, b, q, sub, topt, tund, _num(r[7])))
     rfs = _net(rfs)
     for f in rfs:
         f.rw = vega_rw(p, f.rc, f.bucket)
@@ -374,7 +399,7 @@ def curvature_risk_factors(p: Params, rows):
         rc, b, q, sub = _text(r[1]), _label(r[2]), _text(r[3]), _text(r[4])
         if rc not in RISK_CLASSES or not _bucket_valid(p, rc, b) or not (_is_num(r[5]) and _is_num(r[6])):
             continue
-        up, dn = float(r[5]), float(r[6])
+        up, dn = _num(r[5]), _num(r[6])
         if rc == "GIRR":
             q, sub = "", ""
         elif rc in ("CSR_NS", "EQ", "COM"):
@@ -605,9 +630,9 @@ def drc(p: Params, rows):
             continue
         if not (_is_num(r[5]) and _is_num(r[6])) or not (_blank_or_num(r[7]) and _blank_or_num(r[8])):
             continue
-        notional, mv = float(r[5]), float(r[6])
+        notional, mv = _num(r[5]), _num(r[6])
         maturity = _num(r[7], p.drc["MAX_MATURITY"])
-        lgd = float(r[8]) if _is_num(r[8]) else p.drc_seniority[sen][1]
+        lgd = _num(r[8]) if _is_num(r[8]) else p.drc_seniority[sen][1]
         jtd = lgd * notional + (mv - notional)
         jtd = max(jtd, 0.0) if notional >= 0 else min(jtd, 0.0)
         w = min(max(maturity, p.drc["MIN_MATURITY"]), p.drc["MAX_MATURITY"]) / p.drc["MAX_MATURITY"]
@@ -657,8 +682,8 @@ def rrao(p: Params, rows) -> float:
     total = 0.0
     for r in rows:
         cat = _text(r[1])
-        if cat in p.rrao_rw and _is_num(r[2]) and float(r[2]) >= 0:
-            total += p.rrao_rw[cat] * float(r[2])
+        if cat in p.rrao_rw and _is_num(r[2]) and _num(r[2]) >= 0:
+            total += p.rrao_rw[cat] * _num(r[2])
     return total
 
 

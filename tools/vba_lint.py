@@ -45,6 +45,7 @@ BUILTINS = {
     "lbound", "lcase", "lcase$", "left", "left$", "len", "log", "mid", "mid$", "msgbox", "now",
     "replace", "rgb", "right", "right$", "round", "sgn", "split", "sqr", "thisworkbook", "trim",
     "trim$", "typename", "ubound", "ucase", "ucase$", "val", "vartype", "join", "instr",
+    "ascw", "vbbyte", "vbinteger", "vblong", "vbsingle", "vbdouble", "vbcurrency",
     "vbboolean", "vbcritical", "vbcrlf", "vbdirectory", "vbexclamation", "vbinformation",
     "vbobjecterror", "vbstring", "vbnullstring", "vbyesno", "vbyes", "vbno",
 }

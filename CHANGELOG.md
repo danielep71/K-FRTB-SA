@@ -12,6 +12,15 @@ Unreleased describe integrated work, not a published version.
   `prune: false`. Used-label protection also applies to direct CLI runs;
   offline regression fixtures cover the guard without live deletions, including
   exact matching and bounded association scans for comma-containing names (#25).
+- Prototype numbers (#41): a required parameter, parameter-table value or
+  vertex list entry that is missing or not a number now stops the run with
+  the sheet, table and key or row named, instead of becoming zero. Numeric
+  text is validated and converted with one locale-independent grammar, so
+  text such as `0,5`, `1,000` or `12abc` is rejected rather than truncated
+  on any host; booleans and dates are no longer numbers. Every run clears
+  the output sheets first, so a failed run leaves no earlier capital. The
+  application error number is a literal because LibreOffice does not define
+  `vbObjectError`. Sample results are unchanged.
 
 ### Added
 

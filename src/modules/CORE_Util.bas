@@ -10,12 +10,13 @@ Attribute VB_Name = "CORE_Util"
 ' PUBLIC SURFACE
 '   Sheets: SheetExists, GetSheet, TableCell, ClearTableArea.
 '   Tagged tables: FindTagRow, ReadTable, ReadKeyValues, KVNumber, KVText,
-'   KVBool. A tagged table starts with a heading cell in column C whose text
-'   begins with "[TAG]"; the next row is the header and data rows follow
-'   until the first blank cell in column C.
+'   KVBool, TableNumber. A tagged table starts with a heading cell in
+'   column C whose text begins with "[TAG]"; the next row is the header and
+'   data rows follow until the first blank cell in column C.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
-'   Conversions: IsBlank, ToDouble, IsNumber, ToBool, ToText, BucketLabel,
-'   MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList, InNumberList.
+'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, IsNumericText,
+'   ToBool, ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey,
+'   ParseNumberList, InNumberList.
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
@@ -28,9 +29,11 @@ Attribute VB_Name = "CORE_Util"
 '   run (mLogRow, mErrorCount, mWarningCount); ResetLog resets them.
 '
 ' ERROR POLICY
-'   GetSheet and ReadTable raise vbObjectError + ERR_APP for a missing sheet
-'   or table. Formatting is cosmetic: a host that rejects a format property
-'   leaves the cell unformatted instead of stopping the run.
+'   GetSheet and ReadTable raise ERR_APP for a missing sheet or table;
+'   KVNumber, TableNumber and ParseNumberList raise it for a parameter that
+'   is missing or not a number. Formatting is cosmetic: a host that rejects
+'   a format property leaves the cell unformatted instead of stopping the
+'   run.
 '
 ' COMPATIBILITY
 '   Excel VBA; also runs in LibreOffice Calc with VBA support for the
@@ -48,7 +51,9 @@ Option Private Module
 '------------------------------------------------------------------------------
 '                              MODULE CONSTANTS
 '------------------------------------------------------------------------------
-Public Const ERR_APP As Long = 2048                          'Offset from vbObjectError
+' vbObjectError (&H80040000) + 2048, written as a literal because LibreOffice's
+' VBA support does not define vbObjectError.
+Public Const ERR_APP As Long = -2147219456
 Private Const TAG_SCAN_ROWS As Long = 1000                   'Rows searched for a table tag
 
 '------------------------------------------------------------------------------
@@ -74,7 +79,7 @@ End Function
 
 Public Function GetSheet(ByVal sheetName As String) As Object
     If Not SheetExists(sheetName) Then
-        Err.Raise vbObjectError + ERR_APP, "CORE_Util.GetSheet", "Sheet not found: " & sheetName
+        Err.Raise ERR_APP, "CORE_Util.GetSheet", "Sheet not found: " & sheetName
     End If
     Set GetSheet = ThisWorkbook.Worksheets(sheetName)
 End Function
@@ -118,7 +123,7 @@ Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
     Set ws = GetSheet(sheetName)
     tagRow = FindTagRow(ws, tag)
     If tagRow = 0 Then
-        Err.Raise vbObjectError + ERR_APP, "CORE_Util.ReadTable", _
+        Err.Raise ERR_APP, "CORE_Util.ReadTable", _
                   "Table [" & tag & "] not found on sheet " & sheetName
     End If
 
@@ -165,14 +170,44 @@ Public Function ReadKeyValues(ByVal sheetName As String, ByVal tag As String) As
 End Function
 
 
-' Value of a required key; raises an error when missing.
+' Value of a required numeric key; raises an error when it is missing or not
+' a number, so that a typing error never becomes a zero parameter.
 Public Function KVNumber(ByVal col As Collection, ByVal key As String, ByVal source As String) As Double
-    Dim v As Variant
+    Dim v As Variant, x As Double
     If Not KeyExists(col, key) Then
-        Err.Raise vbObjectError + ERR_APP, "CORE_Util.KVNumber", "Missing parameter " & key & " (" & source & ")"
+        Err.Raise ERR_APP, "CORE_Util.KVNumber", "Missing parameter " & key & " (" & source & ")"
     End If
     v = col.Item(UCase$(key))
-    KVNumber = ToDouble(v, 0#)
+    If Not TryNumber(v, x) Then
+        Err.Raise ERR_APP, "CORE_Util.KVNumber", _
+            "Parameter " & key & " is not a number (" & source & "): " & DescribeValue(v)
+    End If
+    KVNumber = x
+End Function
+
+
+' Number in data row r, column c of a table returned by ReadTable; raises an
+' error naming the sheet, table, row and column when it is not a number.
+Public Function TableNumber(ByRef t As Variant, ByVal r As Long, ByVal c As Long, _
+                            ByVal sheetName As String, ByVal tag As String) As Double
+    Dim x As Double
+    If Not TryNumber(t(r, c), x) Then
+        Err.Raise ERR_APP, "CORE_Util.TableNumber", _
+            "[" & tag & "] data row " & r & ", column " & c & " is not a number (" & sheetName & "): " & _
+            DescribeValue(t(r, c))
+    End If
+    TableNumber = x
+End Function
+
+
+Private Function DescribeValue(ByVal v As Variant) As String
+    If IsError(v) Then
+        DescribeValue = "an error value"
+    ElseIf IsBlank(v) Then
+        DescribeValue = "blank"
+    Else
+        DescribeValue = "'" & CStr(v) & "'"
+    End If
 End Function
 
 
@@ -237,27 +272,128 @@ Public Function IsBlank(ByVal v As Variant) As Boolean
 End Function
 
 
-' Converts a cell value to Double. Strings are parsed with Val so that "0.5"
-' is read the same way under every regional setting.
+' NUMBERS AND NUMERIC TEXT
+'   IsNumber and ToDouble share one contract (TryNumber). A number stored as
+'   a number is accepted as stored. A number stored as text is accepted only
+'   in one form, the same under every regional setting: an optional sign,
+'   digits with an optional "." decimal point and an optional exponent
+'   ("1.5E-3"), with spaces around it at most. Commas, digit grouping,
+'   currency signs, "&H" literals and trailing text are rejected, never
+'   truncated, so "0,5" is never read as 0 or 5. Booleans, dates, errors and
+'   blanks are not numbers, and neither are magnitudes beyond 1E+307 or
+'   below 1E-307.
+
+' Converts a value to Double; returns defaultValue for anything IsNumber
+' rejects. Validate with IsNumber first where a rejection must be reported.
 Public Function ToDouble(ByVal v As Variant, ByVal defaultValue As Double) As Double
-    If IsBlank(v) Or IsError(v) Then
-        ToDouble = defaultValue
-    ElseIf VarType(v) = vbString Then
-        ToDouble = Val(Trim$(CStr(v)))
+    Dim x As Double
+    If TryNumber(v, x) Then
+        ToDouble = x
     Else
-        ToDouble = CDbl(v)
+        ToDouble = defaultValue
     End If
 End Function
 
 
 Public Function IsNumber(ByVal v As Variant) As Boolean
-    If IsBlank(v) Or IsError(v) Then
-        IsNumber = False
-    ElseIf VarType(v) = vbString Then
-        IsNumber = IsNumeric(Trim$(CStr(v)))
-    Else
-        IsNumber = IsNumeric(v)
+    Dim x As Double
+    IsNumber = TryNumber(v, x)
+End Function
+
+
+Public Function IsNumericText(ByVal s As String) As Boolean
+    Dim x As Double
+    IsNumericText = ParseNumericText(s, x)
+End Function
+
+
+Private Function TryNumber(ByVal v As Variant, ByRef x As Double) As Boolean
+    x = 0#
+    Select Case VarType(v)
+        Case vbString
+            TryNumber = ParseNumericText(CStr(v), x)
+        Case vbByte, vbInteger, vbLong, vbSingle, vbDouble, vbCurrency, 14, 20  '14 Decimal, 20 LongLong
+            x = CDbl(v)
+            TryNumber = True
+        Case Else
+            TryNumber = False
+    End Select
+End Function
+
+
+' Checks the numeric-text form character by character, then converts with
+' Val, which reads "." as the decimal point on every host. The magnitude
+' check keeps Val away from overflow.
+Private Function ParseNumericText(ByVal s As String, ByRef x As Double) As Boolean
+    Dim i As Long, n As Long, c As Long
+    Dim digits As Long                                       'all mantissa digits
+    Dim intDigits As Long                                    'significant digits before the point
+    Dim leadZeros As Long                                    'zeros after the point before the first nonzero digit
+    Dim nonZero As Boolean                                   'a nonzero mantissa digit was seen
+    Dim expSign As Long, expValue As Long, expDigits As Long
+    Dim magnitude As Long                                    'decimal exponent of the leading digit
+
+    ParseNumericText = False
+    x = 0#
+    s = Trim$(s)
+    n = Len(s)
+    If n = 0 Then Exit Function
+    i = 1
+    c = AscW(Mid$(s, 1, 1))
+    If c = 43 Or c = 45 Then i = 2                           '+ or -
+    Do While i <= n
+        c = AscW(Mid$(s, i, 1))
+        If c < 48 Or c > 57 Then Exit Do
+        digits = digits + 1
+        If c > 48 Then nonZero = True
+        If nonZero Then intDigits = intDigits + 1
+        i = i + 1
+    Loop
+    If i <= n Then
+        If Mid$(s, i, 1) = "." Then
+            i = i + 1
+            Do While i <= n
+                c = AscW(Mid$(s, i, 1))
+                If c < 48 Or c > 57 Then Exit Do
+                digits = digits + 1
+                If Not nonZero Then
+                    If c = 48 Then leadZeros = leadZeros + 1 Else nonZero = True
+                End If
+                i = i + 1
+            Loop
+        End If
     End If
+    If digits = 0 Then Exit Function
+    expSign = 1
+    If i <= n Then
+        If UCase$(Mid$(s, i, 1)) <> "E" Then Exit Function
+        i = i + 1
+        If i <= n Then
+            c = AscW(Mid$(s, i, 1))
+            If c = 43 Or c = 45 Then
+                If c = 45 Then expSign = -1
+                i = i + 1
+            End If
+        End If
+        Do While i <= n
+            c = AscW(Mid$(s, i, 1))
+            If c < 48 Or c > 57 Then Exit Do
+            expDigits = expDigits + 1
+            If expDigits > 4 Then Exit Function
+            expValue = expValue * 10 + (c - 48)
+            i = i + 1
+        Loop
+        If expDigits = 0 Then Exit Function
+    End If
+    If i <= n Then Exit Function
+    If nonZero Then
+        If intDigits > 0 Then magnitude = intDigits - 1 Else magnitude = -(leadZeros + 1)
+        magnitude = magnitude + expSign * expValue
+        If magnitude > 307 Or magnitude < -307 Then Exit Function
+        If Left$(s, 1) = "+" Then s = Mid$(s, 2)
+        x = Val(s)
+    End If
+    ParseNumericText = True
 End Function
 
 
@@ -338,9 +474,10 @@ Public Function TenorKey(ByVal t As Double) As String
 End Function
 
 
-' Parses "0.25,0.5,1" into a 1-based Double array; returns the count.
-Public Function ParseNumberList(ByVal s As String, ByRef values() As Double) As Long
-    Dim parts As Variant, i As Long, n As Long
+' Parses "0.25,0.5,1" into a 1-based Double array; returns the count. Raises
+' an error naming the source when an element is not numeric text.
+Public Function ParseNumberList(ByVal s As String, ByRef values() As Double, ByVal source As String) As Long
+    Dim parts As Variant, i As Long, n As Long, x As Double
     n = 0
     If Trim$(s) = "" Then
         ReDim values(1 To 1)
@@ -351,8 +488,12 @@ Public Function ParseNumberList(ByVal s As String, ByRef values() As Double) As 
     ReDim values(1 To UBound(parts) - LBound(parts) + 1)
     For i = LBound(parts) To UBound(parts)
         If Trim$(CStr(parts(i))) <> "" Then
+            If Not ParseNumericText(CStr(parts(i)), x) Then
+                Err.Raise ERR_APP, "CORE_Util.ParseNumberList", _
+                    "Not a number in the list " & source & ": '" & Trim$(CStr(parts(i))) & "'"
+            End If
             n = n + 1
-            values(n) = Val(Trim$(CStr(parts(i))))
+            values(n) = x
         End If
     Next i
     ParseNumberList = n
@@ -374,8 +515,8 @@ End Function
 '          SORTING OF BUCKET LABELS (NUMERIC WHEN BOTH ARE NUMBERS)
 '------------------------------------------------------------------------------
 Public Function BucketLess(ByVal a As String, ByVal b As String) As Boolean
-    If IsNumeric(a) And IsNumeric(b) Then
-        BucketLess = (Val(a) < Val(b))
+    If IsNumericText(a) And IsNumericText(b) Then
+        BucketLess = (ToDouble(a, 0#) < ToDouble(b, 0#))
     Else
         BucketLess = (a < b)
     End If

@@ -254,3 +254,127 @@ def test_empty_inputs_give_zero_capital(lo_default_path, tmp_path):
     assert summary["TOTAL"] == 0 and summary["ERRORS"] == 0
     assert all(r[3] == 0 for r in sheet_rows(result, "Out_RiskClass"))
     assert sheet_rows(result, "Out_Buckets") == []
+
+
+# --------------------------------------------------------------------------
+# Numbers stored as text: one locale-independent form for inputs and parameters
+# --------------------------------------------------------------------------
+TEXT_NUMBER_ROWS = {
+    "In_Delta": [
+        ["N1", "EQ", 8, "A", "SPOT", None, "1.5E3"],
+        ["N2", "EQ", 8, "B", "SPOT", None, " +2000 "],
+        ["N3", "EQ", 8, "C", "SPOT", None, ".5e4"],
+        ["N4", "GIRR", "EUR", "ESTR", "YIELD", "5", "-1e3"],
+        ["B1", "EQ", 8, "A", "SPOT", None, "0,5"],
+        ["B2", "EQ", 8, "A", "SPOT", None, "1,000"],
+        ["B3", "EQ", 8, "A", "SPOT", None, "12abc"],
+        ["B4", "EQ", 8, "A", "SPOT", None, "1e999"],
+        ["B5", "EQ", 8, "A", "SPOT", None, "&H10"],
+        ["B6", "EQ", 8, "A", "SPOT", None, "1d3"],
+        ["B7", "GIRR", "EUR", "ESTR", "YIELD", "0,25", 1000],
+        ["B8", "EQ", 8, "A", "SPOT", None, "55%"],
+    ],
+    "In_DRC": [["B9", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, "0,5", None]],
+    "In_RRAO": [["B10", "OTHER", "1,000"]],
+}
+
+
+def _append_rows(wb, rows_by_sheet):
+    """Append rows below each input table; return {row id: log source}."""
+    sources = {}
+    for sheet, rows in rows_by_sheet.items():
+        ws = wb[sheet]
+        r = FIRST_DATA_ROW
+        while ws.cell(r, FIRST_COL).value not in (None, "") or ws.cell(r, FIRST_COL + 1).value not in (None, ""):
+            r += 1
+        for values in rows:
+            for c, v in enumerate(values, start=FIRST_COL):
+                ws.cell(r, c).value = v
+            sources[values[0]] = f"{sheet} row {r}"
+            r += 1
+    return sources
+
+
+def _run_variant(wb, folder):
+    source, out = folder / "in.xlsx", folder / "out.xlsx"
+    wb.save(source)
+    errors = lo_runner.run(out, ["M_Main.RunFRTB_Silent"], input_book=source)
+    assert errors == [], errors
+    return openpyxl.load_workbook(out, data_only=True)
+
+
+@pytest.fixture(scope="module")
+def lo_text_number_run(lo_default_path, tmp_path_factory):
+    wb = openpyxl.load_workbook(lo_default_path)
+    sources = _append_rows(wb, TEXT_NUMBER_ROWS)
+    return _run_variant(wb, tmp_path_factory.mktemp("lo-text-numbers")), sources
+
+
+def test_numeric_text_inputs_reconcile_with_reference(lo_text_number_run, lo_default_run):
+    result, _ = lo_text_number_run
+    assert reconcile(result) == []
+    eq = {r[0]: r[1] for r in sheet_rows(result, "Out_Summary")}["TOTAL"]
+    assert eq != {r[0]: r[1] for r in sheet_rows(lo_default_run, "Out_Summary")}["TOTAL"]
+
+
+def test_ambiguous_numeric_text_inputs_are_rejected(lo_text_number_run):
+    result, sources = lo_text_number_run
+    errors = log_rows(result, "ERROR")
+    invalid = {sources[k] for k in sources if k.startswith("B")}
+    assert sorted(r[1] for r in errors) == sorted(invalid), errors
+
+
+def test_numeric_text_grammar():
+    accepted = {"1.5E3": 1500.0, " +2000 ": 2000.0, ".5e4": 5000.0, "-1e3": -1000.0, "5.": 5.0, "0e9999": 0.0, "9.9E307": 9.9e307}
+    for text, value in accepted.items():
+        assert ref._number(text) == value, text
+    for text in ["0,5", "1,000", "12abc", "1e999", "1e-400", "&H10", "1d3", "inf", "nan", "1_000", "", " ", ".", "+", "1e", "1e+", "1.2.3", "1 2", "\t1"]:
+        assert ref._number(text) is None, text
+    assert ref._number(True) is None and ref._number(7) == 7.0
+
+
+def _set_param(wb, sheet, tag, key, column, value):
+    """Set column (1 = first table column) of the row whose first cell is key in table [tag]."""
+    ws = wb[sheet]
+    in_table = False
+    for row in ws.iter_rows(min_col=FIRST_COL):
+        first = row[0].value
+        if isinstance(first, str) and first.startswith("["):
+            in_table = first.startswith(f"[{tag}]")
+            continue
+        if in_table and first is not None and str(first).strip().upper() == str(key).upper():
+            row[column - 1].value = value
+            return
+    raise KeyError((sheet, tag, key))
+
+
+INVALID_PARAMETERS = {
+    "kv-text": ("P_GIRR", "GIRR_PARAMS", "THETA", 2, "abc", "Parameter THETA is not a number (P_GIRR): 'abc'"),
+    "kv-blank": ("P_DRC", "DRC_PARAMS", "MAX_MATURITY", 2, None, "Parameter MAX_MATURITY is not a number (P_DRC): blank"),
+    "table-comma": ("P_CSR", "CSR_BUCKETS", 1, 6, "0,5", "[CSR_BUCKETS] data row 1, column 6 is not a number (P_CSR): '0,5'"),
+    "table-percent": ("P_EQ", "EQ_BUCKETS", 1, 4, "55%", "[EQ_BUCKETS] data row 1, column 4 is not a number (P_EQ): '55%'"),
+    "list": ("P_General", "VERTICES", "GIRR_TENORS", 2, "0.25,0.5,1,2,3,5,10,15,20,3O", "GIRR_TENORS (P_General): '3O'"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(INVALID_PARAMETERS))
+def test_invalid_parameter_stops_the_run(case, lo_default_path, tmp_path):
+    sheet, tag, key, column, value, message = INVALID_PARAMETERS[case]
+    wb = openpyxl.load_workbook(lo_default_path)
+    _set_param(wb, sheet, tag, key, column, value)
+    result = _run_variant(wb, tmp_path)
+    errors = log_rows(result, "ERROR")
+    assert len(errors) == 1 and errors[0][1] == "RunFRTB" and message in errors[0][2], errors
+    assert str(result["Results"].cell(5, FIRST_COL).value).startswith("Run failed (see the Log sheet): ")
+    for out in ("Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC"):
+        assert sheet_rows(result, out) == [], out
+
+
+def test_numeric_text_parameter_is_accepted(lo_default_path, lo_default_run, tmp_path):
+    wb = openpyxl.load_workbook(lo_default_path)
+    _set_param(wb, "P_GIRR", "GIRR_PARAMS", "THETA", 2, " 3E-2 ")
+    result = _run_variant(wb, tmp_path)
+    assert log_rows(result, "ERROR") == []
+    assert reconcile(result) == []
+    totals = [{r[0]: r[1] for r in sheet_rows(wb_, "Out_Summary")}["TOTAL"] for wb_ in (result, lo_default_run)]
+    assert totals[0] == pytest.approx(totals[1])
