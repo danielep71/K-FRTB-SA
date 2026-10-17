@@ -33,8 +33,10 @@ LibreOffice Calc and the Python UNO bridge (`python3-uno` on Debian/Ubuntu)
 are required for the reconciliation tests; without them those tests are
 skipped unless `REQUIRE_LIBREOFFICE=1` is set. The `Prototype checks`
 workflow runs the same commands on pull requests into `main` and `release/**`
-that change `src/`, `tests/`, `tools/` or the workflow itself; other pull
-requests get only the universal repository checks.
+that change `src/`, `tests/`, `tools/`, `.github/requirements.txt` or the
+workflow itself. The universal `Repository integrity` check runs on every
+pull request; other workflows, such as the label checks, have path filters
+of their own.
 
 The separate universal [Repository integrity](CI.md) job covers repository
 maintenance and its offline tests. Its PyYAML dependency is installed from

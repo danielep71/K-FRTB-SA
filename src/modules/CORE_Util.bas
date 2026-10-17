@@ -14,8 +14,9 @@ Attribute VB_Name = "CORE_Util"
 '   begins with "[TAG]"; the next row is the header and data rows follow
 '   until the first blank cell in column C.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
-'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool, ToText, BucketLabel,
-'   MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList, InNumberList.
+'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool,
+'   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
+'   InNumberList.
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
@@ -165,13 +166,17 @@ Public Function ReadKeyValues(ByVal sheetName As String, ByVal tag As String) As
 End Function
 
 
-' Value of a required key; raises an error when missing.
+' Value of a required key; raises an error when missing or nonnumeric.
 Public Function KVNumber(ByVal col As Collection, ByVal key As String, ByVal source As String) As Double
     Dim v As Variant
     If Not KeyExists(col, key) Then
         Err.Raise vbObjectError + ERR_APP, "CORE_Util.KVNumber", "Missing parameter " & key & " (" & source & ")"
     End If
     v = col.Item(UCase$(key))
+    If Not IsNumber(v) Then
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.KVNumber", _
+                  "Invalid numeric parameter " & key & " (" & source & ")"
+    End If
     KVNumber = ToDouble(v, 0#)
 End Function
 
@@ -227,7 +232,7 @@ End Sub
 '                          CONVERSIONS AND NUMERICS
 '------------------------------------------------------------------------------
 Public Function IsBlank(ByVal v As Variant) As Boolean
-    If IsEmpty(v) Then
+    If IsEmpty(v) Or IsNull(v) Then
         IsBlank = True
     ElseIf IsError(v) Then
         IsBlank = False
@@ -237,27 +242,75 @@ Public Function IsBlank(ByVal v As Variant) As Boolean
 End Function
 
 
-' Converts a cell value to Double. Strings are parsed with Val so that "0.5"
-' is read the same way under every regional setting.
+' Numeric cells retain their value. Text must match the complete invariant
+' decimal grammar (optional sign, dot and E exponent); no grouping or comma.
+' Blank/error optional values retain the caller's explicit default.
 Public Function ToDouble(ByVal v As Variant, ByVal defaultValue As Double) As Double
+    Dim parsed As Double
     If IsBlank(v) Or IsError(v) Then
         ToDouble = defaultValue
-    ElseIf VarType(v) = vbString Then
-        ToDouble = Val(Trim$(CStr(v)))
+    ElseIf TryNumber(v, parsed) Then
+        ToDouble = parsed
     Else
-        ToDouble = CDbl(v)
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.ToDouble", _
+                  "Invalid numeric value; use a numeric cell or dot-decimal text"
     End If
 End Function
 
 
 Public Function IsNumber(ByVal v As Variant) As Boolean
-    If IsBlank(v) Or IsError(v) Then
-        IsNumber = False
-    ElseIf VarType(v) = vbString Then
-        IsNumber = IsNumeric(Trim$(CStr(v)))
+    Dim parsed As Double
+    IsNumber = TryNumber(v, parsed)
+End Function
+
+
+' Shared validation/conversion path, independent of the host's text locale.
+Private Function TryNumber(ByVal v As Variant, ByRef parsed As Double) As Boolean
+    Dim s As String, pos As Long, digits As Long, ch As String
+    On Error GoTo Invalid
+    If IsEmpty(v) Or IsNull(v) Or IsError(v) Then Exit Function
+    If VarType(v) = vbBoolean Or VarType(v) = vbDate Then Exit Function
+    If VarType(v) = vbString Then
+        s = Trim$(CStr(v))
+        If Len(s) = 0 Then Exit Function
+        pos = 1
+        ch = Mid$(s, pos, 1)
+        If ch = "+" Or ch = "-" Then pos = pos + 1
+        digits = ReadDigits(s, pos)
+        If Mid$(s, pos, 1) = "." Then
+            pos = pos + 1
+            digits = digits + ReadDigits(s, pos)
+        End If
+        If digits = 0 Then Exit Function
+        If UCase$(Mid$(s, pos, 1)) = "E" Then
+            pos = pos + 1
+            ch = Mid$(s, pos, 1)
+            If ch = "+" Or ch = "-" Then pos = pos + 1
+            If ReadDigits(s, pos) = 0 Then Exit Function
+        End If
+        If pos <> Len(s) + 1 Then Exit Function
+        parsed = Val(s)
     Else
-        IsNumber = IsNumeric(v)
+        If Not IsNumeric(v) Then Exit Function
+        parsed = CDbl(v)
     End If
+    TryNumber = True
+    Exit Function
+Invalid:
+    Err.Clear
+    TryNumber = False
+End Function
+
+
+Private Function ReadDigits(ByVal s As String, ByRef pos As Long) As Long
+    Dim first As Long, ch As String
+    first = pos
+    Do While pos <= Len(s)
+        ch = Mid$(s, pos, 1)
+        If ch < "0" Or ch > "9" Then Exit Do
+        pos = pos + 1
+    Loop
+    ReadDigits = pos - first
 End Function
 
 
