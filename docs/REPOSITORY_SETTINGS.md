@@ -42,14 +42,21 @@ match `release/**`, including the `release/v0.0.1` name. See
 retention/fast-forward; the separate deletion rule has no bypass. Task branches
 can be deleted automatically after merge.
 
-**Required status checks are pending issue #7.** The label checks are
+**Required status-check enforcement remains pending issue #2.** The label checks are
 path-filtered and cannot serve as a universal repository-integrity gate.
-Do not require a nonexistent check or one that skips ordinary PRs. After #7
-passes on a representative PR, add its actual stable check name and GitHub
+The #7 workflow provides the unconditional **Repository integrity** check;
+[Repository checks](CI.md) records branch-installation prerequisites and
+GitHub Actions app identity. After its representative PR passes, add that name and GitHub
 Actions identity to main and release rules, require main to be up to date,
 and record the resulting settings/evidence in issue #2.
 
 ## Actions permissions
+
+The prototype integration branch `release/v0.1.0` was approved separately
+for milestone v0.1.0 and is covered by the same release/** protections.
+Shared maintenance content is synchronized there under #31; setup work
+continues on release/v0.0.1. This is a content synchronization, not a claim
+that a squash merge advances main's ancestry in the prototype branch.
 
 - All actions/reusable workflows are allowed, but **full-length
   commit SHA pinning is now enforced** in repository settings.
@@ -72,8 +79,8 @@ and record the resulting settings/evidence in issue #2.
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup enabled for detected GitHub Actions; setup run succeeded |
-| Dependabot version updates | No configuration | Issue #7 owns configuration and integration-branch targeting |
-| Dependabot security update PRs | Off | Remain off pending the dependency-update policy in #7 |
+| Dependabot version updates | No configuration | Configuration added under #7; activates after default-branch integration; targets in CI.md |
+| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; see CI.md and #2 |
 
 [CodeQL setup evidence](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39070451926).
 The detected language at setup was **GitHub Actions**, not an FRTB calculation
@@ -98,3 +105,16 @@ merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`, the release branch
 was fast-forwarded to it, and the post-integration CodeQL run passed.
 [Governance](GOVERNANCE.md) defines the ongoing verification procedure;
 issue #4 supplies contribution, milestone, and closeout guidance.
+
+## Traffic analytics
+
+The owner authorized traffic-history collection under issue #23.
+[Traffic history](TRAFFIC_HISTORY.md) owns the workflow, dedicated data-branch
+protection, analytics environment and credential contract. A real successful
+collection is required before reporting the feature operational; branch or
+workflow presence alone is insufficient.
+
+Traffic ruleset **25321321** is active for `traffic-history`, blocks deletion
+and non-fast-forward updates, and has no bypass actors. The `analytics`
+environment is restricted to branch `main` (no tags). Verified October 18,
+2026 Europe/Rome; TRAFFIC_TOKEN and successful collection remain pending #23.

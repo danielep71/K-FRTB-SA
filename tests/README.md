@@ -21,6 +21,13 @@ project. Each hand-calculated case states its inputs and the MAR formula it
 works through; tolerances are in the tests. Do not put disposable run output
 here; use ignored root `test-results/`.
 
+`tooling/` contains offline repository-integrity and traffic-collector tests.
+The universal entry point `python tools/check_repository.py` runs them with
+the existing label commands; [Repository checks](../docs/CI.md) defines its
+maintenance-only coverage. The prototype pytest environment installs both
+`.github/requirements.txt` and `tests/requirements.txt` so these tests can also
+be collected without relying on incidental OS packages.
+
 The label scripts listed in [Tooling](../tools/README.md) keep their own
 self-tests. [Scope](../docs/SCOPE.md) owns validation principles,
 [Repository structure](../docs/REPOSITORY_STRUCTURE.md) owns placement and

@@ -16,6 +16,7 @@ on:
       - tests/**
       - tools/**
       - .github/workflows/prototype-checks.yml
+      - .github/requirements.txt
   workflow_dispatch:
 
 permissions:
@@ -51,7 +52,7 @@ jobs:
       - name: Install pinned Python test dependencies
         run: |
           /usr/bin/python3 -m venv --system-site-packages .venv
-          .venv/bin/python -m pip install --disable-pip-version-check -r tests/requirements.txt
+          .venv/bin/python -m pip install --disable-pip-version-check -r tests/requirements.txt -r .github/requirements.txt
 
       - name: Static lint of the VBA modules
         run: .venv/bin/python tools/vba_lint.py

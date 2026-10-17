@@ -1,7 +1,7 @@
 # Roadmap
 
 This roadmap separates the existing setup milestone from proposed functional
-phases. Phases below v0.0.1 have no assigned version, date, or release promise;
+phases. Proposed phases beyond the approved milestones have no assigned version, date, or release promise;
 create their milestones only after the owner approves scope and dependencies.
 
 ## v0.0.1 — Repository setup
@@ -22,7 +22,9 @@ authoritative for current progress.
 | [#7](https://github.com/danielep71/MKT-FTRB-SA/issues/7) | Universal repository-integrity checks and dependency updates |
 | [#8](https://github.com/danielep71/MKT-FTRB-SA/issues/8) | Release baseline and evidence-based setup closeout |
 
-Exit criteria belong to #8. Closing this milestone does not publish a release,
+Setup maintenance CI and label pruning are implemented (#7/#25); traffic
+credentials and first collection are explicitly deferred in #23. Protection
+check enforcement remains #2. Exit criteria belong to #8. Closing this milestone does not publish a release,
 create a version tag, establish an approved engine platform, or certify an
 FRTB-SA implementation.
 
@@ -34,6 +36,12 @@ integration branch `release/v0.1.0`.
 | Issue | Deliverable |
 | --- | --- |
 | [#20](https://github.com/danielep71/MKT-FTRB-SA/issues/20) | Excel VBA workbook prototype: SBM (delta, vega, curvature) for five risk classes, DRC non-securitization, RRAO, independent Python reference and reconciliation |
+
+| [#28](https://github.com/danielep71/MKT-FTRB-SA/issues/28) | Excel host build, compile, execution and evidence |
+| [#29](https://github.com/danielep71/MKT-FTRB-SA/issues/29) | Remaining methodology interpretations |
+| [#30](https://github.com/danielep71/MKT-FTRB-SA/issues/30) | Committed template and modules layout; remaining Excel round trip |
+| [#31](https://github.com/danielep71/MKT-FTRB-SA/issues/31) | Shared setup/prototype synchronization and branch guidance |
+| [#32](https://github.com/danielep71/MKT-FTRB-SA/issues/32) | Milestone guide, evaluation and evidence closeout |
 
 The prototype explores phases 1-4 below in one pass to inform the
 architecture decision; it does not complete their gates.

@@ -31,8 +31,19 @@ not change live GitHub labels. The scripts stay at their existing authoritative
 paths under `.github/scripts/`; do not duplicate them here.
 [Labels](../docs/LABELS.md) owns live verification and trusted reconciliation.
 
-The universal validation entry point, hosted integrity workflow, and dependency
-update configuration are pending issue #7. No `tools/check.py` or other
-universal runner exists yet. Do not report an absent gate as green.
+## 🧪 Universal maintenance check
+
+Install `.github/requirements.txt`, then run `python tools/check_repository.py`.
+It checks tracked configuration, whitespace and local Markdown targets, and
+calls the existing label scripts and offline maintenance tests. Coverage and
+dependency-update policy are in [Repository checks](../docs/CI.md).
+
+## 📈 Traffic tooling
+
+`traffic_history.py` collects aggregate traffic only from trusted main in the
+analytics environment; [Traffic history](../docs/TRAFFIC_HISTORY.md) owns the
+contract and credential readiness. Its offline tests run without credentials
+through the universal gate. Traffic credentials and first collection remain
+explicitly deferred in #23.
 Generated output and durable evidence follow
 [Repository structure](../docs/REPOSITORY_STRUCTURE.md).

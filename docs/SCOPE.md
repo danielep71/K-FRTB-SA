@@ -2,64 +2,56 @@
 
 ## Current stage
 
-FRTB-SA is at the repository setup stage. Existing files provide label tooling,
-documentation, and repository controls. They do not contain a market risk
-calculation engine. v0.0.1 is a setup milestone, not a functional release or
-an implementation of a regulatory framework.
+Repository setup (v0.0.1) and the SA prototype (v0.1.0) are separate active
+workstreams. Main contains the setup controls; release/v0.1.0 contains the
+Excel/VBA prototype, its committed macro-free template and independent
+Python reference. No functional release or regulatory certification has been
+published. The prototype has run in LibreOffice Calc VBA-compatibility mode;
+desktop Excel build, compilation, execution and export evidence remain #28.
 
-The intended outcome is a transparent, testable implementation that supports
-market risk analysis and independent validation. Proposed users include risk
-practitioners, developers, validators, researchers, and educators.
+The intended outcome is transparent, testable market risk calculation for
+practitioners, developers, validators, researchers and educators.
 
-## Planned functional coverage
+## Prototype coverage and boundaries
 
-| Workstream | Intended scope | Current boundary |
+| Workstream | Implemented prototype scope | Remaining boundary |
 | --- | --- | --- |
-| SBM | Sensitivity inputs, risk classification, weighting, correlations, and aggregation, including delta, vega, and curvature where applicable | No formulas, risk-class coverage, or input conventions implemented |
-| DRC | Explicit default-risk inputs, classification, netting, weighting, and aggregation | Instrument coverage and treatment decisions remain to be specified |
-| RRAO | Explicit eligibility/classification rules, input data, and add-on calculation | No eligibility rules or calculation implemented |
-| Reconciliation and validation | Traceable intermediate results, independent expected values, and reproducible evidence | No engine outputs or benchmark claims |
+| SBM | GIRR, CSR non-securitization, equity, commodity and FX; delta, vega, curvature; three correlation scenarios | CSR securitization and CTP excluded; sensitivities/CVRs are inputs, not priced here |
+| DRC | Non-securitization JTD, maturity scaling, seniority netting and bucket aggregation | Securitization DRC excluded; open input/interpretation decisions in #29 |
+| RRAO | Gross notional with exotic/other residual-risk weights | Eligibility remains an input contract, not an instrument classifier |
+| Validation | Independently derived Python reference, hand-calculated cases and LibreOffice reconciliation | Excel evidence, remaining methodology decisions and production-scale performance are not established |
 
-This table describes intentions, not promised coverage. Each workstream must
-be decomposed into issues with observable input/output contracts and evidence
-requirements before implementation. Instrument and risk-class coverage must
-be documented incrementally rather than presented as complete from the start.
+Coverage and data contracts are detailed in [methodology](methodology.md),
+[workbook guide](workbook-guide.md) and [validation](validation.md). Each
+increment needs observable input/output contracts, rejection behavior and
+independently specified expected values; prototype coverage is not complete
+regulatory applicability.
 
 ## Platform and environment
 
-**Decision pending: the engine implementation platform has not been approved.**
-Do not infer Excel/VBA support from repository file-type conventions or the
-reserved workbook-template path. Excel/VBA, operating-system support, workbook/add-in packaging, and
-any other engine runtime remain uncommitted until an architecture decision is
-recorded. There is currently no supported engine environment or distributable.
+**Excel/VBA is approved for the prototype; the long-term platform decision
+remains open.** The owner approved a committed macro-free template under
+src/workbook and production/workbook modules under src/modules (#30/#34).
+This is no approval of production support, an Excel-certified host matrix or
+public workbook distribution. Windows desktop Excel/PowerShell is the target
+build path; its evidence is still pending. LibreOffice execution is a
+distinct compatibility runtime.
 
-The maintenance scripts already in the repository run with Node.js and its
-built-in fetch support. They have no npm dependencies. These scripts manage
-repository labels; they are not a prototype of the calculation engine.
-
-| Decision needed before functional implementation | Required record |
+| Decision or evidence | Current record and remaining work |
 | --- | --- |
-| Engine language, runtime, and supported platforms | Architecture decision with rationale and setup instructions |
-| Basel baseline and initial jurisdiction profile | Versioned applicability/source register |
-| Initial products and risk classes | Explicit coverage matrix and excluded cases |
-| Inputs, units, signs, identifiers, and outputs | Reviewed data contract and validation behavior |
-| Expected-value provenance and tolerances | Independently derived benchmark catalogue |
-| Runtime evidence and release packaging | Reproducible execution and release procedure |
+| Long-term engine language/runtime and supported platforms | Owner architecture decision informed by prototype evaluation (#32) |
+| Basel baseline and initial jurisdiction profile | Basel MAR21-MAR23 prototype baseline in methodology; no jurisdiction profile selected |
+| Initial products/risk classes | Prototype coverage above; excluded classes rejected |
+| Inputs, units, signs, identifiers and outputs | Workbook guide and methodology; remaining interpretations in #29 |
+| Expected-value provenance/tolerances | Independent Python reference, hand-calculated cases and validation record |
+| Host execution/export and release packaging | Excel #28, round trip #30, setup release procedure #8 and prototype closeout #32 |
 
-The [setup structure](REPOSITORY_STRUCTURE.md) defines source/test/tool
-boundaries without selecting a runtime. [Governance](GOVERNANCE.md) establishes
-`release/v0.0.1` as the integration branch and owns the contribution model.
-The owner created [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
-for subsequent prototype work; its platform and coverage decisions remain open.
-Until they are made, structure work must not imply unsupported runtime capability.
-
-At the owner's request, the v0.1.0 prototype (issue #20) is written in
-Excel/VBA, built from exported source, to evaluate that approach. It covers
-SBM for GIRR, CSR non-securitization, equity, commodity and FX, DRC for
-non-securitizations and RRAO, following the Basel MAR21-MAR23 baseline
-recorded in the [methodology](methodology.md). This is a prototype scope,
-not the architecture decision: Excel runtime evidence is still missing, and
-the open interpretations listed in the methodology still need decisions.
+Maintenance tooling uses Node built-ins and Python with a pinned CI parser;
+the prototype test environment has its own packages. These are documented in
+[Repository checks](CI.md) and do not select the long-term engine platform.
+[Governance](GOVERNANCE.md) assigns setup work to release/v0.0.1 and prototype
+work to release/v0.1.0; source and evidence placement follow the
+[structure policy](REPOSITORY_STRUCTURE.md).
 
 ## Source and validation policy
 
@@ -105,8 +97,8 @@ production exports. Future fixtures must document their origin and usage
 rights. A regulatory example must be cited and its redistribution conditions
 respected.
 
-The current setup provides no calculation service and supports no regulatory
+The prototype is an evaluation tool and supports no regulatory
 reporting or production capital determination. Internal-model calculations,
 pricing engines, live market-data ingestion, regulatory reporting templates,
-and website publication are outside the present setup scope. Additional
+and website publication are outside the approved prototype scope. Additional
 capabilities require their own explicit scope and validation work.

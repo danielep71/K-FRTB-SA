@@ -1,0 +1,2 @@
+# Repository configuration validation only; independent of prototype packages.
+PyYAML==6.0.3
