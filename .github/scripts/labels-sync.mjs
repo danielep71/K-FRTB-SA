@@ -232,6 +232,17 @@ export function planChanges(desiredLabels, liveLabels, { prune = true } = {}) {
   return changes;
 }
 
+export async function assertUnusedDeletions(changes, listAssociations) {
+  for (const change of changes) {
+    if (change.action !== "delete") continue;
+    const associations = await listAssociations(change.currentName);
+    if (!Array.isArray(associations)) throw new Error("GitHub issue associations response is not an array");
+    if (associations.length > 0) {
+      throw new Error(`Refusing to prune used label ${JSON.stringify(change.currentName)}; migrate its issue/PR associations first`);
+    }
+  }
+}
+
 function parseArguments(argv) {
   const parsed = {
     manifest: DEFAULT_MANIFEST,
@@ -565,6 +576,39 @@ async function runSelfTest(manifestPath, policyPath) {
   domainPolicy.label_domains = ["example"];
   assert.deepEqual(resolvePolicySelection(domainPolicy, overlay), { profile: "library", domains: ["example"] });
 
+  // Association fixtures use the same policy resolution and plan as reconciliation.
+  const associationChecks = [];
+  const usedAssociations = async name => {
+    associationChecks.push(name);
+    return [{ number: 25 }];
+  };
+  const overlaySelection = resolvePolicySelection(domainPolicy, selectedOverlay);
+  const overlayDesired = resolveDesired(selectedOverlay, overlaySelection);
+  const retainedOverlay = structuredClone(overlayDesired);
+  retainedOverlay.find(label => label.name === "example").color = "000000";
+  await assertUnusedDeletions(
+    planChanges(overlayDesired, retainedOverlay, { prune: selectedOverlay.prune }),
+    usedAssociations
+  );
+  assert.deepEqual(associationChecks, [], "a retained used overlay must not block an update");
+
+  const noPrune = validateManifest({ ...structuredClone(selectedOverlay), prune: false });
+  const liveWithExtra = [...structuredClone(overlayDesired), { name: "retired", color: "ABCDEF", description: "Retired label" }];
+  await assertUnusedDeletions(
+    planChanges(resolveDesired(noPrune, resolvePolicySelection(domainPolicy, noPrune)), liveWithExtra, { prune: noPrune.prune }),
+    usedAssociations
+  );
+  assert.deepEqual(associationChecks, [], "prune=false must not check associations");
+
+  const deletionPlan = planChanges(overlayDesired, liveWithExtra, { prune: selectedOverlay.prune });
+  await assert.rejects(() => assertUnusedDeletions(deletionPlan, usedAssociations), /Refusing to prune used label "retired"/);
+  assert.deepEqual(associationChecks, ["retired"], "a genuinely removed used label must block reconciliation");
+  const unusedChecks = [];
+  await assertUnusedDeletions(deletionPlan, async name => { unusedChecks.push(name); return []; });
+  assert.deepEqual(unusedChecks, ["retired"]);
+  await assert.rejects(() => assertUnusedDeletions(deletionPlan, async () => ({})), /not an array/);
+  await assert.rejects(() => assertUnusedDeletions(deletionPlan, async () => { throw new Error("Association lookup failed"); }), /Association lookup failed/);
+
   const unknownDomainPolicy = structuredClone(generatedPolicy);
   unknownDomainPolicy.label_domains = ["unknown"];
   expectFailure(() => resolvePolicySelection(unknownDomainPolicy, manifest), /unknown domain/);
@@ -641,6 +685,13 @@ async function main() {
     return;
   }
 
+  // Guard the actual plan before any mutation. Closed issues and PRs count too.
+  await assertUnusedDeletions(changes, name => githubRequest(
+    options.repository,
+    process.env.GITHUB_TOKEN,
+    "GET",
+    `/issues?state=all&labels=${encodeURIComponent(name)}&per_page=1`
+  ));
   await applyChanges(options.repository, process.env.GITHUB_TOKEN, changes);
   const after = await listLiveLabels(options.repository, process.env.GITHUB_TOKEN);
   const remaining = planChanges(desired, after, { prune: manifest.prune });
@@ -667,3 +718,4 @@ main().catch(async error => {
     process.exitCode = 1;
   }
 });
+

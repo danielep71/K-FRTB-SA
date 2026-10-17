@@ -5,6 +5,13 @@ Unreleased describe integrated work, not a published version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Label pruning now checks issue/PR associations against the validated,
+  policy-resolved reconciliation plan, respecting selected overlays and
+  `prune: false`. Used-label protection also applies to direct CLI runs;
+  offline regression fixtures cover the guard without live deletions (#25).
+
 ### Added
 
 - Owner-requested persistent traffic-history branch, daily/manual main-only
@@ -56,3 +63,4 @@ Unreleased describe integrated work, not a published version.
 
 No functional release has been published. SBM, DRC, and RRAO remain planned;
 no engine results or regulatory certification are claimed.
+
