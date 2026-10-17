@@ -21,7 +21,8 @@ implementing those calculations.
 | --- | --- |
 | Label catalogue, reconciliation, and drift detection | Implemented |
 | Repository protection and security baseline | Configured; remaining dependencies tracked in issue #2 |
-| Source/test structure, contribution workflow, and universal integrity gate | Setup work in progress |
+| Source/test structure, file policies, and contribution workflow | Documented setup skeleton; no engine source or runtime harness |
+| Universal integrity gate | Pending issue #7 |
 | Sensitivities-based method (SBM) | Planned; not implemented |
 | Default risk charge (DRC) | Planned; not implemented |
 | Residual risk add-on (RRAO) | Planned; not implemented |
@@ -32,10 +33,10 @@ See [scope and decisions](docs/SCOPE.md) for boundaries and
 
 ## Getting started
 
-Clone the repository and read the current documentation:
+Clone the active integration branch and read the current documentation:
 
 ```sh
-git clone https://github.com/danielep71/MKT-FTRB-SA.git
+git clone --branch release/v0.0.1 https://github.com/danielep71/MKT-FTRB-SA.git
 cd MKT-FTRB-SA
 ```
 
@@ -60,9 +61,14 @@ See [branch governance](docs/GOVERNANCE.md) for the integration procedure.
 
 | Need | Start here |
 | --- | --- |
+| Local setup and verification commands | [Installation](INSTALLATION.md) |
+| Source, tests, generated files, and evidence placement | [Repository structure](docs/REPOSITORY_STRUCTURE.md) |
+| Documentation index | [Documentation](docs/README.md) |
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
 | Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
 | Label usage, issue priorities, and metadata checks | [Labels and triage](docs/LABELS.md) |
+| How to contribute | [Contributing](CONTRIBUTING.md) |
+| Detailed setup purpose and completion criteria | [v0.0.1 guide](docs/Milestones/v0.0.1.md) |
 | Development branches and integration | [Governance](docs/GOVERNANCE.md) |
 | Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
 | Recorded changes | [Changelog](CHANGELOG.md) |
@@ -93,13 +99,8 @@ GitHub repository identifier is **MKT-FTRB-SA**, which transposes the letters
 in FRTB. That identifier is retained for URL and clone-path continuity; no
 repository rename is part of this setup work.
 
-## License and provenance
+## License
 
-Original project material is distributed under the [MIT License](LICENSE).
-The label configuration, scripts, and workflows adapted from
-[VBA-SACCR-Toolkit](https://github.com/danielep71/VBA-SACCR-Toolkit) retain
-Mozilla Public License 2.0 coverage as listed in
-[third-party notices](.github/THIRD_PARTY_NOTICES.md), with the
-[license text](.github/LICENSE-MPL-2.0.txt) included.
+This project is distributed under the [MIT License](LICENSE).
 
 Maintained by [Daniele Penza](https://github.com/danielep71).

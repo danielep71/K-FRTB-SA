@@ -28,8 +28,8 @@ be documented incrementally rather than presented as complete from the start.
 ## Platform and environment
 
 **Decision pending: the engine implementation platform has not been approved.**
-Do not infer Excel/VBA support from the use of VBA-SACCR-Toolkit as a governance
-reference. Excel/VBA, operating-system support, workbook/add-in packaging, and
+Do not infer Excel/VBA support from repository file-type conventions or the
+reserved workbook-template path. Excel/VBA, operating-system support, workbook/add-in packaging, and
 any other engine runtime remain uncommitted until an architecture decision is
 recorded. There is currently no supported engine environment or distributable.
 
@@ -46,10 +46,12 @@ repository labels; they are not a prototype of the calculation engine.
 | Expected-value provenance and tolerances | Independently derived benchmark catalogue |
 | Runtime evidence and release packaging | Reproducible execution and release procedure |
 
-Issue #5 owns the source/test/tool structure appropriate to those decisions;
-[governance](GOVERNANCE.md) establishes `release/v0.0.1` as the integration
-branch, while issue #4 owns the remaining contribution model. Until the platform decision
-is made, structure work must not imply unsupported runtime capability.
+The [setup structure](REPOSITORY_STRUCTURE.md) defines source/test/tool
+boundaries without selecting a runtime. [Governance](GOVERNANCE.md) establishes
+`release/v0.0.1` as the integration branch and owns the contribution model.
+The owner created [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+for subsequent prototype work; its platform and coverage decisions remain open.
+Until they are made, structure work must not imply unsupported runtime capability.
 
 ## Source and validation policy
 

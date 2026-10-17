@@ -1,7 +1,7 @@
 # Repository settings baseline
 
-Verified on October 17, 2026, against the live GitHub settings and
-VBA-SACCR-Toolkit's current rulesets. GitHub Settings remains authoritative;
+Verified on October 17, 2026, against the live GitHub settings and rulesets.
+GitHub Settings remains authoritative;
 this file records the observed baseline and outstanding dependencies.
 
 ## General settings
@@ -9,11 +9,11 @@ this file records the observed baseline and outstanding dependencies.
 | Control | Before issue #2 | Verified baseline |
 | --- | --- | --- |
 | Visibility | Private | Public, changed by the owner during setup |
-| License | MIT | MIT retained; ported label files retain their MPL notices |
+| License | MIT | MIT |
 | Default branch | main | main |
 | Automatically delete merged head branches | Off | On; protected release branches are retained |
 | Suggest updating PR branches | Off | On |
-| Merge / squash / rebase availability | All enabled | All enabled globally, as in SACCR; branch rules narrow permitted methods |
+| Merge / squash / rebase availability | All enabled | All enabled globally; branch rules narrow permitted methods |
 | Auto-merge | Off | Off |
 | Wiki | Enabled | Enabled, editing restricted to collaborators |
 | Issues / projects | Enabled / disabled | Enabled / disabled |
@@ -30,7 +30,7 @@ this file records the observed baseline and outstanding dependencies.
 | [Protect release tags](https://github.com/danielep71/MKT-FTRB-SA/rules/25319649) | v* tags | Updates, deletion and force pushes blocked | None |
 
 All four rulesets have active enforcement. Required approval count is zero,
-as in SACCR's inspected baseline; conversation resolution is required.
+conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
@@ -51,7 +51,7 @@ and record the resulting settings/evidence in issue #2.
 
 ## Actions permissions
 
-- All actions/reusable workflows are allowed, matching SACCR, but **full-length
+- All actions/reusable workflows are allowed, but **full-length
   commit SHA pinning is now enforced** in repository settings.
 - Default GITHUB_TOKEN permissions remain read-only (contents/packages).
 - Actions cannot create or approve PRs by default.
@@ -67,7 +67,7 @@ and record the resulting settings/evidence in issue #2.
 | --- | --- | --- |
 | Dependency graph | Off | Enabled |
 | Dependabot alerts | Off | Enabled |
-| Low-impact development-dependency auto-dismissal | Enabled by the public-repository preset | Disabled, matching SACCR's policy |
+| Low-impact development-dependency auto-dismissal | Enabled by the public-repository preset | Disabled |
 | Private vulnerability reporting | Not offered while private | Enabled after the owner's public-visibility change |
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
@@ -89,7 +89,12 @@ not evidence that automatic PR review is configured; that setting remains to
 be verified through its supported review configuration. Until verified, use
 maintainer review and resolve findings before merge.
 
-Issue #2 remains open for the required check from #7, integration-branch
-remaining contribution/lifecycle verification from #4, automated-review verification and a
+Issue #2 remains open for the required check from #7, automated-review verification and a
 representative PR/check verification of the completed configuration. Preserve
 an accurate distinction between live controls and pending work.
+
+The retained-branch lifecycle was exercised through PR #13: main received
+merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`, the release branch
+was fast-forwarded to it, and the post-integration CodeQL run passed.
+[Governance](GOVERNANCE.md) defines the ongoing verification procedure;
+issue #4 supplies contribution, milestone, and closeout guidance.

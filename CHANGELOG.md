@@ -7,6 +7,17 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Purposeful source, tests, documentation, tooling, and workbook-reservation
+  READMEs; repository structure, source/generated-file and evidence policies,
+  conditional VBA round-trip requirements, and local setup instructions (#5).
+
+- Contribution walkthrough, detailed v0.0.1 milestone guide, triage and
+  closeout procedures, integration verification, and a distinction between
+  enforced controls and maintainer procedures (#4).
+
+- Repository editing, ignore, and Git attribute policies, including the approved
+  `src/workbook/FRTB_Template.xlsx` path (#5).
+
 - Owner-selected integration branch `release/v0.0.1`, branch governance and
   agent instructions: all task PRs target the release branch; integration
   into main uses a separate owner-requested merge-commit PR (#4).
@@ -19,6 +30,9 @@ Unreleased describe integrated work, not a published version.
   source/validation policy, roadmap, and current getting-started commands (#3).
 
 ### Changed
+
+- Repository files consistently use the MIT license; removed external-project
+  references and superseded license files at the owner's request (#5).
 
 - GitHub About description and topics identify the FRTB-SA project and its
   setup-stage maturity (#3).
