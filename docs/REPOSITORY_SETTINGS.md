@@ -98,3 +98,11 @@ merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`, the release branch
 was fast-forwarded to it, and the post-integration CodeQL run passed.
 [Governance](GOVERNANCE.md) defines the ongoing verification procedure;
 issue #4 supplies contribution, milestone, and closeout guidance.
+
+## Traffic analytics
+
+The owner authorized traffic-history collection under issue #23.
+[Traffic history](TRAFFIC_HISTORY.md) owns the workflow, dedicated data-branch
+protection, analytics environment and credential contract. A real successful
+collection is required before reporting the feature operational; branch or
+workflow presence alone is insufficient.

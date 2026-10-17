@@ -67,6 +67,7 @@ See [branch governance](docs/GOVERNANCE.md) for the integration procedure.
 | --- | --- |
 | Local setup and verification commands | [Installation](INSTALLATION.md) |
 | Source, tests, generated files, and evidence placement | [Repository structure](docs/REPOSITORY_STRUCTURE.md) |
+| Aggregate repository traffic and collection readiness | [Traffic history](docs/TRAFFIC_HISTORY.md) |
 | Documentation index | [Documentation](docs/README.md) |
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
 | Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
