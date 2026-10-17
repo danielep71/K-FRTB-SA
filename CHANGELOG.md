@@ -7,6 +7,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Owner-selected integration branch `release/v0.0.1`, branch governance and
+  agent instructions: all task PRs target the release branch; integration
+  into main uses a separate owner-requested merge-commit PR (#4).
+
 - Canonical 20-label catalogue, trusted synchronization, read-only drift
   detection, retained evidence, and issue-triage guidance (#1, PR #9).
 - Documented repository settings baseline and pending setup dependencies
