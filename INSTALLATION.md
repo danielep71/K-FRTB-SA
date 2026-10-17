@@ -53,11 +53,19 @@ The universal local command and ordinary-PR integrity workflow are pending
 issue #7. The commands above do not execute an engine or Excel, test a
 workbook, or establish independently verified capital results.
 
-## Before functional development
+## SA prototype (v0.1.0)
 
-The owner created
-[v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
-for the next stage. Its existence does not change the current integration
-branch or resolve the platform and coverage decisions in [Scope](docs/SCOPE.md).
-Record those decisions before adding a runtime, build procedure, packages,
-or real workbook. The allowed template path is a reservation only.
+The [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+work integrates on `release/v0.1.0` (issue #20). It does not resolve the
+platform and coverage decisions in [Scope](docs/SCOPE.md).
+
+- Checks on Linux: Python 3, LibreOffice Calc with the Python UNO bridge
+  (`python3-uno`) and the pinned packages in `tests/requirements.txt`; run
+  `python3 tools/vba_lint.py` and `REQUIRE_LIBREOFFICE=1 python3 -m pytest tests`
+  as described in [Validation](docs/validation.md).
+- Workbook on Windows: desktop Excel and PowerShell; run
+  `tools\Build-Workbook.ps1 -RunTests` as described in the
+  [workbook guide](docs/workbook-guide.md#building-the-workbook-windows-excel).
+
+The allowed template path remains a reservation until a reviewed template is
+committed.

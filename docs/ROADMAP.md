@@ -26,6 +26,18 @@ Exit criteria belong to #8. Closing this milestone does not publish a release,
 create a version tag, establish an approved engine platform, or certify an
 FRTB-SA implementation.
 
+## v0.1.0 — SA prototype
+
+[Live milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/2),
+integration branch `release/v0.1.0`.
+
+| Issue | Deliverable |
+| --- | --- |
+| [#20](https://github.com/danielep71/MKT-FTRB-SA/issues/20) | Excel VBA workbook prototype: SBM (delta, vega, curvature) for five risk classes, DRC non-securitization, RRAO, independent Python reference and reconciliation |
+
+The prototype explores phases 1-4 below in one pass to inform the
+architecture decision; it does not complete their gates.
+
 ## Proposed functional phases
 
 | Sequence | Intended result | Gate before completion |

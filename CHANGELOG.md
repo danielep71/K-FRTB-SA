@@ -7,6 +7,18 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Excel VBA workbook prototype of the FRTB standardized approach (Basel
+  MAR21-MAR23): SBM delta, vega and curvature for GIRR, CSR
+  non-securitization, equity, commodity and FX under three correlation
+  scenarios; DRC for non-securitizations; RRAO. Exported source under
+  `src/core`, `src/workbook` and `tests/modules`, a code-built workbook with
+  editable parameter sheets checked against the BIS text, an independent
+  Python reference reconciled with the VBA run in LibreOffice, a static VBA
+  lint, the `Prototype checks` workflow, methodology, workbook guide and
+  validation record. Not yet compiled or run in Excel (#20).
+
+- Integration branch `release/v0.1.0` for the SA prototype milestone (#20).
+
 - Purposeful source, tests, documentation, tooling, and workbook-reservation
   READMEs; repository structure, source/generated-file and evidence policies,
   conditional VBA round-trip requirements, and local setup instructions (#5).

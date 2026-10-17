@@ -9,19 +9,27 @@ This document owns branch, issue, review, and milestone procedures.
 
 ## Branches
 
-The active integration branch is **`release/v0.0.1`**, selected by the owner.
-It was created from main at `96a3b44312fd0f6beb000a06d2a43ac46b0551ef`,
-so it includes all setup work already integrated through PRs #9, #10 and #11.
-Those earlier commits remain in main; shared history is preserved.
+Two integration branches are active, each selected by the owner for one
+milestone:
+
+- **`release/v0.0.1`** for the v0.0.1 repository setup. It was created from
+  main at `96a3b44312fd0f6beb000a06d2a43ac46b0551ef`, so it includes all
+  setup work already integrated through PRs #9, #10 and #11. Those earlier
+  commits remain in main; shared history is preserved.
+- **`release/v0.1.0`** for the v0.1.0 SA prototype, approved by the owner on
+  2026-10-17 and created from main at
+  `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
 
 | Branch | Purpose and allowed changes |
 | --- | --- |
 | `release/v0.0.1` | Integration branch for all ongoing v0.0.1 development, including documentation, tooling, tests and configuration |
-| `main` | Stable default branch; receives the integration branch only through a separate owner-requested PR |
-| Short-lived task branches | Branch from `release/v0.0.1`; use focused names such as `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
+| `release/v0.1.0` | Integration branch for the v0.1.0 SA prototype |
+| `main` | Stable default branch; receives an integration branch only through a separate owner-requested PR |
+| Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
-Every development PR targets **`release/v0.0.1`**, including automated
-maintenance PRs when configured. Task PRs are squash-merged after applicable
+Every development PR targets the integration branch of its issue's milestone:
+**`release/v0.0.1`** for setup work, including automated maintenance PRs when
+configured, and **`release/v0.1.0`** for prototype work. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
 directly to main or the release branch. Check the base explicitly when opening
 a PR: GitHub's default branch remains main.

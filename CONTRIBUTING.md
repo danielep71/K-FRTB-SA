@@ -20,15 +20,17 @@ include the required information directly in the issue and PR.
 
 ## Make a focused change
 
-1. Fetch the repository and create a task branch from the current integration
-   branch, `origin/release/v0.0.1`. Confirm the PR base explicitly.
+1. Fetch the repository and create a task branch from the integration branch
+   of the issue's milestone: `origin/release/v0.0.1` for setup work,
+   `origin/release/v0.1.0` for the SA prototype. Confirm the PR base
+   explicitly.
 2. Reproduce the problem where applicable and make a focused change.
 3. Follow the root editing, ignore, and attribute policies. Do not include
    credentials, client data, local caches, or generated output.
 4. Update affected documentation and [CHANGELOG.md](CHANGELOG.md).
 5. Run checks appropriate to the changed files. Record the exact commands,
    source commit, results, and anything unavailable.
-6. Open the PR against `release/v0.0.1`, link the issue, explain scope and
+6. Open the PR against that integration branch, link the issue, explain scope and
    compatibility impact, and include validation and unresolved findings.
    Apply the issue's milestone, assignee, and one priority label to the PR.
 7. Follow the review and completion procedure in governance.
@@ -61,6 +63,10 @@ For staged changes, check whitespace with `git diff --cached --check`.
 For documentation, verify local paths, headings, and commands against the
 candidate tree. For ignore or attribute changes, exercise representative
 paths with `git check-ignore --no-index` and `git check-attr`.
+
+The prototype (issue #20) adds its own checks: `python3 tools/vba_lint.py`
+and `REQUIRE_LIBREOFFICE=1 python3 -m pytest tests`, run by the
+`Prototype checks` workflow; see [validation](docs/validation.md).
 
 The universal local validation command and hosted integrity workflow are
 pending issue #7. Do not claim they ran before they exist. Inspect applicable

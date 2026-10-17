@@ -53,6 +53,14 @@ The owner created [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB
 for subsequent prototype work; its platform and coverage decisions remain open.
 Until they are made, structure work must not imply unsupported runtime capability.
 
+At the owner's request, the v0.1.0 prototype (issue #20) is written in
+Excel/VBA, built from exported source, to evaluate that approach. It covers
+SBM for GIRR, CSR non-securitization, equity, commodity and FX, DRC for
+non-securitizations and RRAO, following the Basel MAR21-MAR23 baseline
+recorded in the [methodology](methodology.md). This is a prototype scope,
+not the architecture decision: Excel runtime evidence is still missing, and
+the open interpretations listed in the methodology still need decisions.
+
 ## Source and validation policy
 
 Start from primary sources and distinguish their roles:

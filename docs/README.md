@@ -6,6 +6,10 @@ procedures. Keep root entry documents linked rather than copying them here.
 | Need | Document |
 | --- | --- |
 | Current capability, platform decisions, regulatory-source and validation policy | [Scope](SCOPE.md) |
+| Prototype formulas, parameters, BIS check and open interpretations | [Methodology](methodology.md) |
+| Prototype source layout, build, sheets and inputs | [Workbook guide](workbook-guide.md) |
+| Prototype checks and what they do not establish | [Validation](validation.md) |
+| Documentation images and their sources | [Assets](assets/README.md) |
 | Directory ownership, generated files, workbook policy, and evidence | [Repository structure](REPOSITORY_STRUCTURE.md) |
 | Current local checkout and verification | [Installation](../INSTALLATION.md) |
 | Contribution walkthrough | [Contributing](../CONTRIBUTING.md) |

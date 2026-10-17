@@ -10,11 +10,14 @@ assuming an engine runtime.
 
 | Path | Purpose today and intended content |
 | --- | --- |
-| `src/` | Source boundary for future production components; currently guidance only |
-| `src/workbook/` | Reserved workbook-template location and its policy; no workbook exists |
-| `tests/` | Verification-source and synthetic-data policy; no calculation harness or cases yet |
-| `docs/` | Authoritative versioned scope, governance, structure, and milestone documentation |
-| `tools/` | Tooling index and placement policy; current executable label tooling remains in `.github/scripts/` |
+| `src/` | Production source boundary |
+| `src/core/` | Prototype calculation engine, exported VBA (`CORE_*`, issue #20) |
+| `src/workbook/` | Prototype workbook glue (`M_*`) and the reserved workbook-template location; no template exists |
+| `tests/` | Verification source: independent Python reference, reconciliation and tooling tests |
+| `tests/modules/` | VBA test modules imported into development builds (`TEST_*`) |
+| `docs/` | Authoritative versioned scope, governance, structure, methodology, validation, and milestone documentation |
+| `docs/assets/` | Documentation images and their sources |
+| `tools/` | Tooling index; prototype build, LibreOffice runner, VBA lint and expected-value generator; label tooling remains in `.github/scripts/` |
 | `.github/` | Label manifests, scripts, and workflows |
 | Root | Entry documentation, licenses, contribution/setup guidance, and repository-control files |
 
@@ -103,3 +106,10 @@ apply to that decision:
 No synchronizer, exporter, workbook, Excel harness, or runtime gate is
 implemented at setup time. Add them through scoped implementation issues when
 the platform is selected.
+
+**Prototype deviation (issue #20).** The v0.1.0 prototype follows rules 1, 3
+and 4 in intent, with two documented differences: the workbook is built from
+exported source by `M_Setup.BuildWorkbook` instead of from a committed
+template (`tools/Build-Workbook.ps1 -Template` saves one for review), and the
+only runtime executed so far is LibreOffice Calc in VBA-compatibility mode,
+which is not Excel host evidence. See [validation](validation.md).
