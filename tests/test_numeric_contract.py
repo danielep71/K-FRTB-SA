@@ -73,6 +73,14 @@ INVALID_TABLE_VALUES = {
                                "[VEGA_LH] data row 1, column 3 (P_General): '60d'"),
     "vertex-list": ("P_General", "VERTICES", "GIRR_TENORS", 2, "0.25,0.5,1,2,3,5,10,15,20,3O",
                     "Invalid number '3O' in GIRR_TENORS (P_General)"),
+    "vertex-blank-entry": ("P_General", "VERTICES", "CSR_TENORS", 2, "0.5,1,,5,10",
+                           "Blank entry in CSR_TENORS (P_General)"),
+    "vertex-trailing-comma": ("P_General", "VERTICES", "COM_TENORS", 2, "0,0.25,0.5,1,2,3,5,10,15,20,30,",
+                              "Blank entry in COM_TENORS (P_General)"),
+    "vertex-empty": ("P_General", "VERTICES", "VEGA_MATURITIES", 2, None,
+                     "Missing list VEGA_MATURITIES (P_General)"),
+    # Fails in the vega step, after the delta step has written Out_Buckets rows
+    "partial-outputs": ("P_General", "VEGA_LH", "GIRR", 1, "XX", "No liquidity horizon for GIRR"),
 }
 
 

@@ -26,8 +26,8 @@ Attribute VB_Name = "M_Main"
 ' ERROR POLICY
 '   A run error is logged, stored in LastRunStatus, noted on Results and
 '   shown in a message box by RunFRTB; RunFRTB_Silent never shows a dialog.
-'   Every run first clears the output sheets, so a failed run leaves no
-'   earlier capital behind. A parameter that is blank or not a number is a
+'   Every run first clears the output sheets, and a failed run clears them
+'   again, so it leaves neither earlier nor partial capital behind. A parameter that is blank or not a number is a
 '   run error. Errors in the input rows are not VBA errors: they are listed
 '   on the Log sheet.
 '
@@ -84,15 +84,21 @@ End Function
 
 
 Public Sub ClearOutputs()
-    Dim names As Variant, i As Long
-    names = Array(SH_OUT_CLASS, SH_OUT_BUCKETS, SH_OUT_DRC, SH_OUT_SUMMARY, SH_LOG, SH_RESULTS)
-    For i = LBound(names) To UBound(names)
-        If SheetExists(CStr(names(i))) Then ClearTableArea GetSheet(CStr(names(i)))
-    Next i
+    ClearResultSheets
+    If SheetExists(SH_LOG) Then ClearTableArea GetSheet(SH_LOG)
     If SheetExists(SH_RESULTS) Then
         TableCell(GetSheet(SH_RESULTS), LAYOUT_HEADER_ROW, 1).Value = "No results yet: press Run FRTB-SA."
         StyleNote GetSheet(SH_RESULTS).Cells(LAYOUT_HEADER_ROW, LAYOUT_FIRST_COL), False
     End If
+End Sub
+
+' Empties Results and the Out_* sheets, but not the Log.
+Private Sub ClearResultSheets()
+    Dim names As Variant, i As Long
+    names = Array(SH_OUT_CLASS, SH_OUT_BUCKETS, SH_OUT_DRC, SH_OUT_SUMMARY, SH_RESULTS)
+    For i = LBound(names) To UBound(names)
+        If SheetExists(CStr(names(i))) Then ClearTableArea GetSheet(CStr(names(i)))
+    Next i
 End Sub
 
 '------------------------------------------------------------------------------
@@ -123,6 +129,7 @@ CleanUp:
     If errNumber <> 0 Then
         mLastStatus = "Error " & errNumber & ": " & errDescription
         LogMessage "ERROR", "RunFRTB", mLastStatus
+        ClearResultSheets                                    'drop rows written before the error
         If SheetExists(SH_RESULTS) Then
             TableCell(GetSheet(SH_RESULTS), LAYOUT_HEADER_ROW, 1).Value = _
                 "Run failed (see the Log sheet): " & errDescription

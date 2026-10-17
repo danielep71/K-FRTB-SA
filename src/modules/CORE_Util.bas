@@ -418,28 +418,28 @@ Public Function TenorKey(ByVal t As Double) As String
 End Function
 
 
-' Parses "0.25,0.5,1" into a 1-based Double array; returns the count. Raises
-' an error naming the source when an entry is not a number.
+' Parses a required list such as "0.25,0.5,1" into a 1-based Double array;
+' returns the count. Raises an error naming the source for an empty list, a
+' blank entry ("0.25,,1" or a trailing comma) or an entry that is not a
+' number, so that no vertex is dropped silently.
 Public Function ParseNumberList(ByVal s As String, ByRef values() As Double, ByVal source As String) As Long
     Dim parts As Variant, i As Long, n As Long, part As String
-    n = 0
     If Trim$(s) = "" Then
-        ReDim values(1 To 1)
-        ParseNumberList = 0
-        Exit Function
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", "Missing list " & source
     End If
     parts = Split(s, ",")
     ReDim values(1 To UBound(parts) - LBound(parts) + 1)
+    n = 0
     For i = LBound(parts) To UBound(parts)
         part = Trim$(CStr(parts(i)))
-        If part <> "" Then
-            If Not IsNumber(part) Then
-                Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", _
-                          "Invalid number '" & part & "' in " & source
-            End If
-            n = n + 1
-            values(n) = ToDouble(part, 0#)
+        If part = "" Then
+            Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", "Blank entry in " & source
+        ElseIf Not IsNumber(part) Then
+            Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", _
+                      "Invalid number '" & part & "' in " & source
         End If
+        n = n + 1
+        values(n) = ToDouble(part, 0#)
     Next i
     ParseNumberList = n
 End Function
