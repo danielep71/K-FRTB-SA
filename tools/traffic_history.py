@@ -104,7 +104,7 @@ def merge_daily(previous, payload):
     """Replace each overlapping metric/day; never add overlapping 14-day windows."""
     validate_traffic(payload)
     rows = {}
-    if previous:
+    if previous is not None:
         reader = csv.DictReader(io.StringIO(previous))
         if reader.fieldnames != COLUMNS:
             raise ValueError("Unexpected daily history CSV header")
@@ -159,7 +159,7 @@ def publish(writer, repository, snapshot):
     parent = ref["object"]["sha"]
     commit = writer.request("GET", base + "/git/commits/" + parent)
     old = writer.request("GET", base + "/contents/data/daily.csv?ref=" + parent, missing=True)
-    previous = "" if old is None else base64.b64decode(old["content"]).decode("utf-8")
+    previous = None if old is None else base64.b64decode(old["content"]).decode("utf-8")
     merged = merge_daily(previous, snapshot)
     date = dt.datetime.fromisoformat(snapshot["collected_at_utc"]).date().isoformat()
     text = json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n"
