@@ -138,8 +138,9 @@ separate. Issue #8 owns the release procedure and version convention.
 [Repository settings](REPOSITORY_SETTINGS.md) records the live rulesets,
 bypass actors, security features and current limitations. PRs and resolved
 conversations are required; main allows merge commits, release branches allow
-squash merges. Required approvals are zero. The universal required integrity
-check is pending issue #7, and automatic PR-review configuration is not yet
+squash merges. Required approvals are zero. The universal integrity workflow
+is implemented under #7; attachment to branch rules remains #2. Automatic
+PR-review configuration is not yet
 verified under issue #2.
 
 | Requirement | Enforcement or working procedure |
@@ -147,7 +148,7 @@ verified under issue #2.
 | PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets, with the bypass modes recorded in the settings baseline |
 | Release-branch deletion prohibition | Separate active ruleset with no bypass actors |
 | Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
-| Successful universal integrity check | Pending #7 and attachment to rulesets in #2 |
+| Successful universal integrity check | Repository integrity workflow (#7); pending attachment to rulesets in #2 |
 | Review coverage for every PR | Maintainer procedure; automatic-review configuration and release-target coverage remain to be verified in #2 |
 | Issue/PR assignee, priority, milestone, acceptance evidence | Manual triage and completion procedure |
 | Owner-requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
@@ -155,8 +156,9 @@ verified under issue #2.
 Issue #6 owns default-branch activation verification for issue forms and the
 PR template. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
 policies define the reporting routes.
-Issue #7 must target Dependabot PRs at `release/v0.0.1` when adding its
-configuration. Issue #2 remains open for its required-check and review
+Dependabot targets setup updates at `release/v0.0.1` and existing prototype
+updates at `release/v0.1.0`, as detailed in [Repository checks](CI.md).
+Issue #2 remains open for its required-check and review
 dependencies; issue #8 owns final milestone closeout.
 
 The procedures fit this project's setup stage and retained-release-branch

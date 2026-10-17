@@ -15,6 +15,11 @@ They use synthetic payloads and mocked GitHub writes, without credentials or
 network access. Run them with the command in [Tooling](../tools/README.md).
 They do not run a calculation engine.
 
+`tooling/test_repository_integrity.py` uses temporary synthetic files to verify
+configuration, whitespace, Markdown targets and CI policy failures. Both
+maintenance suites run through `python tools/check_repository.py`; see
+[Repository checks](../docs/CI.md) for prerequisites and evidence limits.
+
 The label self-tests belong to the scripts listed in
 [Tooling](../tools/README.md). They exercise repository maintenance, not FRTB.
 [Scope](../docs/SCOPE.md) owns validation principles, and

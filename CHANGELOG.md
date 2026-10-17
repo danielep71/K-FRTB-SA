@@ -5,7 +5,21 @@ Unreleased describe integrated work, not a published version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Label pruning now checks issue/PR associations against the validated,
+  policy-resolved reconciliation plan, respecting selected overlays and
+  `prune: false`. Used-label protection also applies to direct CLI runs;
+  offline regression fixtures cover the guard without live deletions, including
+  exact matching and bounded association scans for comma-containing names (#25).
+
 ### Added
+
+- Universal Repository integrity check for ordinary PRs and pushes to main
+  and release branches; one local entry point for configuration, tracked
+  whitespace, local documentation targets and existing maintenance tests.
+  Weekly Dependabot version updates cover Actions on both integration lines,
+  the CI parser and the existing prototype test packages (#7).
 
 - Owner-requested persistent traffic-history branch, daily/manual main-only
   collection, offline tooling checks, operational documentation, and an

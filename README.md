@@ -26,7 +26,7 @@ implementing those calculations.
 | Label catalogue, reconciliation, and drift detection | Implemented |
 | Repository protection and security baseline | Configured; remaining dependencies tracked in issue #2 |
 | Source/test structure, file policies, and contribution workflow | Documented setup skeleton; no engine source or runtime harness |
-| Universal integrity gate | Pending issue #7 |
+| Universal integrity gate | Implemented in the setup branch; required-check enforcement tracked in #2 |
 | Sensitivities-based method (SBM) | Planned; not implemented |
 | Default risk charge (DRC) | Planned; not implemented |
 | Residual risk add-on (RRAO) | Planned; not implemented |
@@ -54,6 +54,17 @@ node .github/scripts/labels-sync.mjs --mode validate
 node .github/scripts/labels-drift.mjs --self-test
 ```
 
+For the universal maintenance check, install the pinned CI parser and run:
+
+```sh
+python3 -m venv .venv-ci
+.venv-ci/bin/python -m pip install -r .github/requirements.txt
+.venv-ci/bin/python tools/check_repository.py
+```
+
+[Repository checks](docs/CI.md) explains prerequisites, coverage, offline
+fixtures, dependency updates, and the required-check handoff to #2.
+
 There is currently no engine installation or calculation command. The engine's
 implementation platform and supported runtime environment remain to be
 approved. The Node.js maintenance tools do not determine that platform.
@@ -66,6 +77,7 @@ See [branch governance](docs/GOVERNANCE.md) for the integration procedure.
 | Need | Start here |
 | --- | --- |
 | Local setup and verification commands | [Installation](INSTALLATION.md) |
+| Universal integrity check and dependency updates | [Repository checks](docs/CI.md) |
 | Source, tests, generated files, and evidence placement | [Repository structure](docs/REPOSITORY_STRUCTURE.md) |
 | Aggregate repository traffic and collection readiness | [Traffic history](docs/TRAFFIC_HISTORY.md) |
 | Documentation index | [Documentation](docs/README.md) |
