@@ -32,7 +32,8 @@ Attribute VB_Name = "M_Main"
 '   on the Log sheet.
 '
 ' KNOWN DEVIATION
-'   The sheet buttons call this module directly; see src/README.md.
+'   The sheet buttons call this module directly, and it writes the Results
+'   and Out_Summary sheets itself; there is no separate UI layer yet.
 '
 ' COMPATIBILITY
 '   Excel VBA; no references beyond the defaults.

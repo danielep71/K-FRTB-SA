@@ -10,12 +10,13 @@ Attribute VB_Name = "CORE_Util"
 ' PUBLIC SURFACE
 '   Sheets: SheetExists, GetSheet, TableCell, ClearTableArea.
 '   Tagged tables: FindTagRow, ReadTable, ReadKeyValues, KVNumber, KVText,
-'   KVBool, TableNumber. A tagged table starts with a heading cell in column C whose text
-'   begins with "[TAG]"; the next row is the header and data rows follow
-'   until the first blank cell in column C.
+'   KVBool, TableNumber. A tagged table starts with a heading cell in
+'   column C whose text begins with "[TAG]"; the next row is the header and
+'   data rows follow until the first blank cell in column C.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
-'   Conversions: IsBlank, ToDouble, IsNumber, ToBool, ToText, BucketLabel,
-'   MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList, InNumberList.
+'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool,
+'   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
+'   InNumberList.
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.

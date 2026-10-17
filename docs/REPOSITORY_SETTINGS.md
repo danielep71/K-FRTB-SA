@@ -34,13 +34,19 @@ conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-The owner has selected **`release/v0.0.1`** as the active integration branch.
-It was created from main after PR #11 and inherits the existing setup work.
-All task PRs target this branch. No version tag has been created. The rulesets
-match `release/**`, including the `release/v0.0.1` name. See
+The owner has selected **`release/v0.0.1`** as the integration branch for
+setup work. It was created from main after PR #11 and inherits the existing
+setup work; setup task PRs target this branch. No version tag has been
+created. The rulesets match `release/**`, including the `release/v0.0.1` name. See
 [branch governance](GOVERNANCE.md) for integration into main and subsequent
 retention/fast-forward; the separate deletion rule has no bypass. Task branches
 can be deleted automatically after merge.
+
+The prototype integration branch `release/v0.1.0` was approved separately
+for milestone v0.1.0 and is covered by the same release/** protections.
+Shared maintenance content is synchronized there under #31; setup work
+continues on release/v0.0.1. This is a content synchronization, not a claim
+that a squash merge advances main's ancestry in the prototype branch.
 
 **Required status-check enforcement remains pending issue #2.** The label checks are
 path-filtered and cannot serve as a universal repository-integrity gate.
@@ -51,12 +57,6 @@ Actions identity to main and release rules, require main to be up to date,
 and record the resulting settings/evidence in issue #2.
 
 ## Actions permissions
-
-The prototype integration branch `release/v0.1.0` was approved separately
-for milestone v0.1.0 and is covered by the same release/** protections.
-Shared maintenance content is synchronized there under #31; setup work
-continues on release/v0.0.1. This is a content synchronization, not a claim
-that a squash merge advances main's ancestry in the prototype branch.
 
 - All actions/reusable workflows are allowed, but **full-length
   commit SHA pinning is now enforced** in repository settings.

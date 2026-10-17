@@ -18,12 +18,17 @@ Unreleased describe integrated work, not a published version.
   truncated by `Val`. Every run clears the output sheets first, so a failed
   run leaves no earlier capital and notes the failure on `Results`. The
   reference applies the same numeric-text grammar to inputs (#45).
-
 - Label pruning now checks issue/PR associations against the validated,
   policy-resolved reconciliation plan, respecting selected overlays and
   `prune: false`. Used-label protection also applies to direct CLI runs;
   offline regression fixtures cover the guard without live deletions, including
   exact matching and bounded association scans for comma-containing names (#25).
+- Prototype documentation consistency: the v0.1.0 roadmap table renders as
+  one table, the repository settings describe both integration branches, and
+  the source, template, validation and workbook guides match the lint rules,
+  CI triggers, build-time window settings and core worksheet access. Module
+  comments in `M_Main`, `M_Setup` and `CORE_Util` were corrected; no code
+  changed (#40).
 
 ### Added
 
