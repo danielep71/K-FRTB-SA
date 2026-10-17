@@ -1,0 +1,35 @@
+name: Export repository traffic
+
+on:
+  schedule:
+    - cron: "37 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-traffic-history
+  cancel-in-progress: false
+
+jobs:
+  export:
+    name: Collect repository traffic
+    if: github.ref == 'refs/heads/main'
+    environment: analytics
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out trusted main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Run offline collector tests before credentialed collection
+        run: python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v
+      - name: Collect and atomically publish aggregate traffic
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/traffic_history.py

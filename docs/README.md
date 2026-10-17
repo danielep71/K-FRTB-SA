@@ -1,17 +1,22 @@
-# Documentation index
+# 📚 Documentation index
+
+[![Stage: repository setup](https://img.shields.io/badge/stage-repository_setup-1D76DB)](Milestones/v0.0.1.md)
 
 Versioned documentation is authoritative for project contracts and maintenance
 procedures. Keep root entry documents linked rather than copying them here.
 
 | Need | Document |
 | --- | --- |
+| Prototype formulas, parameters and open interpretations | [Methodology](methodology.md) |
+| Prototype source, template, build, sheets and inputs | [Workbook guide](workbook-guide.md) |
+| Prototype checks and missing Excel evidence | [Validation](validation.md) |
+| Documentation assets and sources | [Assets](assets/README.md) |
+| Universal integrity and dependency updates | [🧪 Repository checks](CI.md) |
 | Current capability, platform decisions, regulatory-source and validation policy | [Scope](SCOPE.md) |
-| Prototype formulas, parameters, BIS check and open interpretations | [Methodology](methodology.md) |
-| Prototype source layout, build, sheets and inputs | [Workbook guide](workbook-guide.md) |
-| Prototype checks and what they do not establish | [Validation](validation.md) |
-| Documentation images and their sources | [Assets](assets/README.md) |
 | Directory ownership, generated files, workbook policy, and evidence | [Repository structure](REPOSITORY_STRUCTURE.md) |
 | Current local checkout and verification | [Installation](../INSTALLATION.md) |
+| Conduct and moderation | [Code of conduct](../CODE_OF_CONDUCT.md) |
+| Security reporting and support | [Security policy](../SECURITY.md) |
 | Contribution walkthrough | [Contributing](../CONTRIBUTING.md) |
 | Branches, issues, reviews, milestone management, and completion | [Governance](GOVERNANCE.md) |
 | Label catalogue and triage searches | [Labels](LABELS.md) |

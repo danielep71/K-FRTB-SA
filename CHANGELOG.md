@@ -5,29 +5,43 @@ Unreleased describe integrated work, not a published version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Label pruning now checks issue/PR associations against the validated,
+  policy-resolved reconciliation plan, respecting selected overlays and
+  `prune: false`. Used-label protection also applies to direct CLI runs;
+  offline regression fixtures cover the guard without live deletions, including
+  exact matching and bounded association scans for comma-containing names (#25).
+
 ### Added
 
-- Excel VBA workbook prototype of the FRTB standardized approach (Basel
-  MAR21-MAR23): SBM delta, vega and curvature for GIRR, CSR
-  non-securitization, equity, commodity and FX under three correlation
-  scenarios; DRC for non-securitizations; RRAO. Exported source under
-  `src/core`, `src/workbook` and `tests/modules`, a code-built workbook with
-  editable parameter sheets checked against the BIS text, an independent
-  Python reference reconciled with the VBA run in LibreOffice, a static VBA
-  lint, the `Prototype checks` workflow, methodology, workbook guide and
-  validation record. Not yet compiled or run in Excel (#20).
+- Excel/VBA SA prototype (#20/#22): SBM for five risk classes, DRC
+  non-securitization and RRAO; independent Python reference, LibreOffice
+  reconciliation and methodology/workbook/validation documentation. Excel
+  host evidence remains pending (#28).
+- Committed macro-free template and template-based builds; production and
+  workbook modules under `src/modules`, with test modules under
+  `tests/modules` (#30/#34). Generated `.xlsm` workbooks remain local.
+- Owner-approved prototype integration branch `release/v0.1.0` alongside
+  `release/v0.0.1` for setup.
 
-- Integration branch `release/v0.1.0` for the SA prototype milestone (#20).
 
-- Macro-free workbook template `src/workbook/FRTB_Template.xlsx`, generated
-  from the modules by `tools/build_template.py` and checked by
-  `tests/test_template.py`; Excel builds start from it and
-  `M_Setup.FinishWorkbook` adds buttons and window settings (#30).
+- Universal Repository integrity check for ordinary PRs and pushes to main
+  and release branches; one local entry point for configuration, tracked
+  whitespace, local documentation targets and existing maintenance tests.
+  Weekly Dependabot version updates cover Actions on both integration lines,
+  the CI parser and the existing prototype test packages (#7).
 
-### Changed
+- Owner-requested persistent traffic-history branch, daily/manual main-only
+  collection, offline tooling checks, operational documentation, and an
+  explicit analytics credential/first-run prerequisite (#23). The collector
+  rejects malformed rows and existing empty history before publication.
 
-- All prototype VBA modules moved from `src/core` and `src/workbook` to
-  `src/modules`; `src/workbook` now holds only the template (#30).
+- Bug, feature, and documentation issue forms with owner/type/priority defaults;
+  one PR merge checklist; conduct and security policies with reporting routes;
+  default-branch activation and manual milestone triage guidance (#6).
+- Navigation glyphs and descriptive MIT/setup/development badges on the
+  project entry points and new participation policies.
 
 - Purposeful source, tests, documentation, tooling, and workbook-reservation
   READMEs; repository structure, source/generated-file and evidence policies,
@@ -53,6 +67,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Synchronized main setup controls into the prototype line, preserving its
+  template and module layout. Shared guidance and forms describe both active
+  milestones; prototype tests install the separate CI parser dependency (#31).
+
+
 - Repository files consistently use the MIT license; removed external-project
   references and superseded license files at the owner's request (#5).
 
@@ -65,5 +84,6 @@ Unreleased describe integrated work, not a published version.
 - Documentation uses the correct display name FRTB-SA while retaining the
   existing MKT-FTRB-SA repository identifier and URLs (#3).
 
-No functional release has been published. SBM, DRC, and RRAO remain planned;
-no engine results or regulatory certification are claimed.
+No functional release has been published. Prototype LibreOffice results and
+independent reconciliation are recorded; Excel execution and regulatory
+certification are not claimed.

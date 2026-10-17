@@ -24,7 +24,7 @@ checked. Treat any result as unvalidated for regulatory use.
 Run everything with:
 
 ```sh
-python3 -m pip install -r tests/requirements.txt
+python3 -m pip install -r tests/requirements.txt -r .github/requirements.txt
 python3 tools/vba_lint.py
 REQUIRE_LIBREOFFICE=1 python3 -m pytest -v tests
 ```
@@ -33,6 +33,11 @@ LibreOffice Calc and the Python UNO bridge (`python3-uno` on Debian/Ubuntu)
 are required for the reconciliation tests; without them those tests are
 skipped unless `REQUIRE_LIBREOFFICE=1` is set. The `Prototype checks`
 workflow runs the same commands on pull requests.
+
+The separate universal [Repository integrity](CI.md) job covers repository
+maintenance and its offline tests. Its PyYAML dependency is installed from
+the CI manifest above when pytest discovers the shared tests; it is not an
+engine dependency or evidence of Excel execution.
 
 ### How the LibreOffice run works
 

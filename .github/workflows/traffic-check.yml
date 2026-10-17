@@ -1,0 +1,36 @@
+name: Validate traffic tooling
+
+on:
+  pull_request:
+    branches: [main, "release/**"]
+    paths:
+      - tools/traffic_history.py
+      - tests/tooling/test_traffic_history.py
+      - .github/workflows/traffic-*.yml
+  push:
+    branches: [main, "release/**"]
+    paths:
+      - tools/traffic_history.py
+      - tests/tooling/test_traffic_history.py
+      - .github/workflows/traffic-*.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: traffic-tooling-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Traffic tooling tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out candidate source without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Exercise traffic merging, validation, publication, and trust boundaries
+        run: python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v

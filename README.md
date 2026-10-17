@@ -12,7 +12,7 @@
 [![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#quick-start)
 [![Framework](https://img.shields.io/badge/Framework-Basel_MAR21--MAR23-1f3a5f?style=for-the-badge)](docs/methodology.md)
 [![Status](https://img.shields.io/badge/Status-Prototype_0.1.0-D93F0B?style=for-the-badge)](#status)
-[![Reconciliation](https://img.shields.io/badge/Reconciliation-60_tests_PASS-2ea44f?style=for-the-badge)](docs/validation.md)
+[![Reconciliation](https://img.shields.io/badge/Reconciliation-LibreOffice_checked-2ea44f?style=for-the-badge)](docs/validation.md)
 [![Excel evidence](https://img.shields.io/badge/Excel_evidence-pending-6E7781?style=for-the-badge)](docs/validation.md#not-validated)
 [![License](https://img.shields.io/badge/License-MIT-2ea44f?style=for-the-badge)](LICENSE)
 
@@ -105,7 +105,7 @@ need to **check** an FRTB-SA number:
 | --- | --- |
 | Label catalogue, reconciliation, and drift detection | Implemented |
 | Repository protection and security baseline | Configured; remaining dependencies tracked in issue #2 |
-| Universal integrity gate | Pending issue #7 |
+| Universal integrity gate | Implemented; required-check enforcement tracked in #2 |
 | Sensitivities-based method (SBM) | Prototype: GIRR, CSR non-securitization, equity, commodity, FX; delta, vega, curvature |
 | Default risk charge (DRC) | Prototype: non-securitizations |
 | Residual risk add-on (RRAO) | Prototype |
@@ -147,8 +147,9 @@ python3 tools/vba_lint.py
 
 Use a clone, not **Download ZIP**: a clone checks the VBA out with the CRLF
 line endings the VBA editor expects. The full test suite needs LibreOffice
-and Python packages; see [validation](docs/validation.md). The label tools
-are described in [Installation](INSTALLATION.md).
+and Python packages; see [validation](docs/validation.md). Maintenance checks are described in [Installation](INSTALLATION.md) and
+[Repository checks](docs/CI.md); they include labels, configuration,
+whitespace and local documentation targets.
 
 ## 2. Build the workbook
 
@@ -241,6 +242,10 @@ what is **not** validated yet.
 | Automated checks and what is not validated | [Validation](docs/validation.md) |
 | Local setup and verification commands | [Installation](INSTALLATION.md) |
 | Source, tests, generated files, and evidence placement | [Repository structure](docs/REPOSITORY_STRUCTURE.md) |
+| Universal maintenance CI and dependency updates | [Repository checks](docs/CI.md) |
+| Aggregate traffic history and collection readiness | [Traffic history](docs/TRAFFIC_HISTORY.md) |
+| Conduct and reporting | [Code of conduct](CODE_OF_CONDUCT.md) |
+| Private security reporting | [Security policy](SECURITY.md) |
 | Documentation index | [Documentation](docs/README.md) |
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
 | Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
@@ -264,6 +269,11 @@ Each implemented rule carries its paragraph reference; a link to a regulation
 is not proof that an implementation matches it.
 [Scope](docs/SCOPE.md#source-and-validation-policy) defines the source and
 independent-validation policy.
+
+Setup work is integrated on main; this prototype and its updated forms remain
+on release/v0.1.0 until an owner-requested main integration. Repository setup
+closeout is #8; prototype evaluation/closeout is #32. Traffic credentials and
+first collection remain explicitly deferred in #23.
 
 ## 🏷️ Project name
 
