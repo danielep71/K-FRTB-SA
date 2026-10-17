@@ -12,6 +12,12 @@ Unreleased describe integrated work, not a published version.
   `prune: false`. Used-label protection also applies to direct CLI runs;
   offline regression fixtures cover the guard without live deletions, including
   exact matching and bounded association scans for comma-containing names (#25).
+- Prototype documentation consistency: the v0.1.0 roadmap table renders as
+  one table, the repository settings describe both integration branches, and
+  the source, template, validation and workbook guides match the lint rules,
+  CI triggers, build-time window settings and core worksheet access. Module
+  comments in `M_Main`, `M_Setup` and `CORE_Util` were corrected; no code
+  changed (#40).
 
 ### Added
 

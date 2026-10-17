@@ -207,8 +207,6 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
 End Sub
 
 
-' Writes values from column C. Text is stored as text, so that a reference
-' such as "MAR21.54" is never converted to a date or a number.
 ' Tab color by role, from the sheet name: navy README, green tests, blue
 ' outputs, gold inputs and parameters. Set again by FinishWorkbook because
 ' not every host keeps it in the saved template.
@@ -226,6 +224,8 @@ Private Sub ApplyTabColor(ByVal ws As Object)
 End Sub
 
 
+' Writes values from column C. Text is stored as text, so that a reference
+' such as "MAR21.54" is never converted to a date or a number.
 Private Sub PutRow(ByVal ws As Object, ByVal r As Long, ByVal values As Variant)
     Dim i As Long, k As Long
     k = 0

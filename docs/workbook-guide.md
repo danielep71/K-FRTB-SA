@@ -35,7 +35,7 @@ src/
 tests/
   modules/     VBA test modules imported into development builds (TEST_*)
   *.py         independent reference, reconciliation and tooling tests
-tools/         build script, LibreOffice runner, VBA lint, expected-value generator
+tools/         build script, template builder, LibreOffice runner, VBA lint, expected-value generator
 docs/          methodology, workbook guide, validation, assets
 ```
 
