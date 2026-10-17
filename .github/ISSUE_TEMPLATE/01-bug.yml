@@ -74,8 +74,7 @@ body:
   attributes:
     label: Submission checks
     options:
-    - label: I have read the [Code of Conduct](https://github.com/danielep71/MKT-FTRB-SA/blob/main/CODE_OF_CONDUCT.md)
-        and will follow it.
+    - label: I have read and will follow the Code of Conduct.
       required: true
     - label: I have excluded credentials, confidential data, and undisclosed vulnerability details.
       required: true
