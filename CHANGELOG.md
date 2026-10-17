@@ -7,6 +7,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Contribution walkthrough, detailed v0.0.1 milestone guide, triage and
+  closeout procedures, integration verification, and a distinction between
+  enforced controls and maintainer procedures (#4).
+
 - Repository editing, ignore, and Git attribute policies copied from
   VBA-SACCR-Toolkit; adapted the workbook exception to the approved
   `src/workbook/FRTB_Template.xlsx` path (#5).
