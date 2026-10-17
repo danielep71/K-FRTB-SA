@@ -17,6 +17,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import tempfile
 import zipfile
@@ -72,11 +73,52 @@ def _cell_style(c) -> tuple:
     )
 
 
+def _attributes(element: str) -> dict:
+    return dict(re.findall(r'([\w:]+)="([^"]*)"', element))
+
+
+def sheet_parts(path: Path) -> dict:
+    """Map each sheet name to its XML part inside the package."""
+    with zipfile.ZipFile(path) as z:
+        book = z.read("xl/workbook.xml").decode("utf-8")
+        rels = z.read("xl/_rels/workbook.xml.rels").decode("utf-8")
+    targets = {}
+    for element in re.findall(r"<Relationship [^>]*>", rels):
+        a = _attributes(element)
+        targets[a["Id"]] = "xl/" + a["Target"].lstrip("/").removeprefix("xl/")
+    return {a["name"]: targets[a["r:id"]] for a in map(_attributes, re.findall(r"<sheet [^>]*>", book))}
+
+
+def _explicit_dimensions(path: Path) -> dict:
+    """Row heights and column widths set explicitly, per sheet name.
+
+    Automatic heights and widths depend on the fonts installed where the
+    workbook was saved, so only entries flagged customHeight/customWidth
+    are compared. openpyxl does not keep those flags, so read the XML.
+    """
+    out = {}
+    with zipfile.ZipFile(path) as z:
+        for name, part in sheet_parts(path).items():
+            xml = z.read(part).decode("utf-8")
+            rows, cols = {}, {}
+            for element in re.findall(r"<row [^>]*>", xml):
+                a = _attributes(element)
+                if a.get("customHeight") in ("true", "1") and "ht" in a:
+                    rows[int(a["r"])] = float(a["ht"])
+            for element in re.findall(r"<col [^>]*>", xml):
+                a = _attributes(element)
+                if a.get("customWidth") in ("true", "1") and "width" in a:
+                    cols[(int(a["min"]), int(a["max"]))] = round(float(a["width"]), 2)
+            out[name] = (rows, cols)
+    return out
+
+
 def signature(path: Path) -> dict:
     """Normalized content and layout of a workbook: values, cell styles,
-    column widths, row heights, merged ranges, tab colors, frozen panes,
-    gridlines and autofilters of every sheet."""
+    explicit column widths and row heights, merged ranges, tab colors,
+    frozen panes, gridlines and autofilters of every sheet."""
     wb = openpyxl.load_workbook(path)
+    dims = _explicit_dimensions(path)
     sheets = {}
     for ws in wb.worksheets:
         cells = {}
@@ -86,8 +128,8 @@ def signature(path: Path) -> dict:
                     cells[c.coordinate] = (c.value, _cell_style(c))
         sheets[ws.title] = {
             "cells": cells,
-            "columns": {k: round(v.width or 0, 2) for k, v in ws.column_dimensions.items()},
-            "rows": {k: v.height for k, v in ws.row_dimensions.items() if v.height is not None},
+            "columns": dims.get(ws.title, ({}, {}))[1],
+            "rows": dims.get(ws.title, ({}, {}))[0],
             "merged": sorted(str(r) for r in ws.merged_cells.ranges),
             "tab": _color(ws.sheet_properties.tabColor),
             "freeze": ws.freeze_panes,
