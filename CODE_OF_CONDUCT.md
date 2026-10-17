@@ -35,11 +35,11 @@ For a concern about the maintainer, use the same GitHub Support route.
 Reports to GitHub Support are handled by GitHub, not a private project inbox.
 Do not assume a report to GitHub automatically notifies this maintainer.
 
-For a routine moderation request that can safely be public, open a repository
-issue with a short factual description and links to the relevant content.
-Do not include private identities, personal contact details, or sensitive
-evidence in a public issue. Do not contact people repeatedly or through
-unrequested personal channels.
+Include a short factual description, links to the relevant content, and
+necessary context in the private report. The issue forms are for technical
+work, not conduct reports. Do not publish private identities, personal contact
+details, or sensitive evidence in issues. Do not contact people repeatedly or
+through unrequested personal channels.
 
 Potential vulnerabilities use the separate [security policy](SECURITY.md).
 This conduct policy does not authorize investigation of private accounts or
