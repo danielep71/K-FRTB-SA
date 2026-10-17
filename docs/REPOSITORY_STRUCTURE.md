@@ -45,7 +45,7 @@ An ignore rule is a tracking aid, not a data-security control.
 | Test run output | Keep disposable output under ignored root `test-results/` or `test-output/` |
 | Durable reviewed evidence | Add selected sanitized records under `docs/evidence/` with their first real record; record commit, environment, commands, results, and limitations |
 | Synthetic test inputs and expected values | Add `tests/fixtures/` and `tests/expected/` when real cases exist; record independent provenance, units, signs, tolerances, and reference versions |
-| Office packages | Ignored by default; only `src/workbook/FRTB_Template.xlsx` is currently allowed by exact rooted exception |
+| Excel workbooks, add-ins, and templates | Ignored by default; only `src/workbook/FRTB_Template.xlsx` is currently allowed by exact rooted exception |
 | Local dependencies and environments | Ignored caches/installations; commit necessary manifests and locks when a real ecosystem is introduced |
 
 The workbook exception reserves a path; it is not an existing artifact,
