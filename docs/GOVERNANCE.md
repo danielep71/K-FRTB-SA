@@ -71,6 +71,24 @@ open with named dependencies. Static repository checks, actual runtime tests,
 independent expected-value comparisons and methodology review are distinct
 forms of evidence; do not claim one establishes the others.
 
+### Issue forms and template activation
+
+The bug form defaults to `bug` and `P2`; feature and documentation forms
+default to their type label and `P3`. All forms assign `danielep71`.
+Forms cannot assign a milestone, so maintainers must select it and confirm
+exactly one priority before completing triage. P1 remains limited to confirmed
+calculation bugs. API/CLI-created issues and PRs bypass form defaults and need
+explicit metadata. Disabling ordinary blank issues does not enforce metadata
+or prevent maintainers from creating blank issues.
+
+GitHub serves the issue chooser and PR template from the default branch.
+Files merged into `release/v0.0.1` are available for review but require a
+separate owner-requested integration into main before normal default-branch
+activation can be verified. Issue #6 keeps that live verification criterion
+open until it is performed. The
+[PR template](../.github/PULL_REQUEST_TEMPLATE.md) contains the single merge
+checklist; this document owns its detailed procedures.
+
 ### Triage and closeout procedure
 
 1. Inspect the title, objective, acceptance criteria, dependencies, labels,
@@ -134,7 +152,9 @@ verified under issue #2.
 | Issue/PR assignee, priority, milestone, acceptance evidence | Manual triage and completion procedure |
 | Owner-requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
 
-Issue #6 owns issue forms, the PR template, and conduct/security policies.
+Issue #6 owns default-branch activation verification for issue forms and the
+PR template. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
+policies define the reporting routes.
 Issue #7 must target Dependabot PRs at `release/v0.0.1` when adding its
 configuration. Issue #2 remains open for its required-check and review
 dependencies; issue #8 owns final milestone closeout.

@@ -1,4 +1,10 @@
-# Contributing to FRTB-SA
+# 🤝 Contributing to FRTB-SA
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Stage: repository setup](https://img.shields.io/badge/stage-repository_setup-1D76DB)](docs/Milestones/v0.0.1.md)
+
+Participation follows the [Code of Conduct](CODE_OF_CONDUCT.md).
+Potential vulnerabilities follow [SECURITY.md](SECURITY.md).
 
 The project is preparing its v0.0.1 repository setup baseline. Read
 [scope and decisions](docs/SCOPE.md) before proposing functional work.
@@ -15,8 +21,11 @@ and independently specified expected results.
 
 [Governance](docs/GOVERNANCE.md) owns branch, metadata, review, and completion
 rules. [Labels and triage](docs/LABELS.md) owns the label catalogue and priority
-definitions. Issue forms and the PR template are pending issue #6; until then,
-include the required information directly in the issue and PR.
+definitions. Use the bug, feature, or documentation form in the issue chooser
+once the templates have reached main. Use the
+[PR template](.github/PULL_REQUEST_TEMPLATE.md) for scope, evidence, and the
+single merge checklist. API-created issues and PRs must supply the same
+information and metadata explicitly.
 
 ## Make a focused change
 
@@ -82,7 +91,7 @@ must define its runtime and evidence contract before claiming support.
 Do not disclose suspected vulnerabilities in public issues or PRs. Use
 [private vulnerability reporting](https://github.com/danielep71/MKT-FTRB-SA/security/advisories/new),
 enabled in the [settings baseline](docs/REPOSITORY_SETTINGS.md).
-Issue #6 owns the dedicated security and conduct policies.
+See the dedicated security and conduct policies for reporting and moderation.
 
 ## Rights and licenses
 
