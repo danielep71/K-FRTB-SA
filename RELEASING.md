@@ -17,7 +17,9 @@ No version has been tagged or published. v0.0.1 is the **repository setup
 baseline**: labels, governance, settings, forms, CI and traffic analytics.
 It is not a working or regulatory-validated calculator. v0.1.0 is the Excel/VBA
 **SA prototype**; its LibreOffice evidence exists, but Excel host evidence
-(#28), methodology decisions (#29) and the Excel round trip (#30) remain open.
+(#28) and the Excel round trip (#30) remain open. Its open methodology
+interpretations are documented as limits; deciding them (#29) belongs to
+v0.2.0 under the [roadmap](docs/ROADMAP.md).
 
 <a id="version-convention"></a>
 
@@ -109,7 +111,7 @@ owner deferred the tag on October 18, 2026.
 | Stage | Release contents | Evidence required before tagging |
 | --- | --- | --- |
 | Setup (v0.0.x) | Source tree only; no binaries or workbooks | Closeout issue with merged PRs, green `Repository integrity` and label-drift runs, live settings readback, fresh-checkout verification and metadata audit |
-| Prototype (v0.1.x) | Source tree and the committed macro-free template; no built `.xlsm` | Setup evidence, plus the LibreOffice reconciliation suite, Excel host build, compile and regression evidence (#28), the Excel round trip (#30) and recorded methodology decisions (#29) |
+| Prototype (v0.1.x) | Source tree and the committed macro-free template; no built `.xlsm` | Setup evidence, plus the LibreOffice reconciliation suite, Excel host build, compile and regression evidence (#28), the Excel round trip (#30) and the open methodology interpretations documented as limits (decided in v0.2.0, #29) |
 | Functional releases | Defined by the milestone that introduces them | Prototype evidence, plus independent benchmarks, the supported-host matrix and any packaging approved in [Scope](docs/SCOPE.md) |
 
 Evidence is bound to a commit: it names the PR or commit, commands, results,

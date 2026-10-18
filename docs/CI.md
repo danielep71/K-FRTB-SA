@@ -104,6 +104,6 @@ FRTB engine, validate formulas, certify regulation, or substitute for runtime
 and independent numerical evidence. The prototype's separate checks already
 cover VBA lint, Python reference tests and LibreOffice reconciliation on its
 branch. Excel build/compile/runtime evidence is tracked in #28, methodology
-decisions in #29, and prototype synchronization in #31. Future engine gates
+decisions in #29 (v0.2.0), and prototype synchronization in #31. Future engine gates
 must retain independently derived expectations and name the actual host and
 commit, following [Scope](SCOPE.md) and the [structure policy](REPOSITORY_STRUCTURE.md).

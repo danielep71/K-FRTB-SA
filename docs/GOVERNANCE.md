@@ -133,11 +133,13 @@ checklist; this document owns its detailed procedures.
 
 ### Milestone management
 
-Two milestones are active: [v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
-and [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2).
-The setup [detailed guide](Milestones/v0.0.1.md) defines purpose, entry/exit
-criteria and evidence. Prototype closeout and its milestone guide are tracked
-in #32; #28 owns Excel evidence and #29 the remaining methodology decisions. The live issue tracker
+[v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
+[closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
+baseline. [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+is active: prototype closeout and its milestone guide are tracked in #32, and
+#28 owns Excel evidence. The methodology decisions (#29) belong to v0.2.0 in
+the [milestone plan](ROADMAP.md). The live issue tracker
 owns progress; a guide is not a substitute for completed acceptance criteria.
 
 The owner approves milestone scope and any next integration branch. Before a

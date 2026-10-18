@@ -93,6 +93,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The roadmap records the owner-approved milestone plan from the closed
+  v0.0.1 setup to v1.0.0, the first certified release, with each milestone's
+  objective and exit condition; the old unversioned phases are replaced, and
+  the methodology decisions (#29) move to v0.2.0 (#55).
 - Settings, governance, CI, roadmap, traffic and contribution documents and
   the issue forms now record the required `Repository integrity` check,
   automatic Codex review on PR open and active traffic collection, and no
