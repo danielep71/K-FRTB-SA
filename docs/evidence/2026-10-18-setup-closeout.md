@@ -1,7 +1,7 @@
 # ✅ v0.0.1 setup closeout record
 
 Closeout record for issue #8 and the
-[v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+[v0.0.1 — Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
 milestone. Readback on October 18, 2026 (Europe/Rome), at main,
 `release/v0.0.1` and `release/v0.1.0` = `d487ee293f6762f38041ed06dc055ac02b43adf9`.
 `release/v0.0.1` was fast-forwarded to main by the owner before this record.
@@ -87,3 +87,20 @@ Issues #1–#7, #23 and #25 are closed as completed.
    closed milestone and this record are the setup baseline.
 4. v0.1.0 closeout (#32), after #28 and #30; the methodology decisions
    (#29) belong to v0.2.0 ([roadmap](../ROADMAP.md)).
+
+## 🗒️ Addendum — October 18, 2026, after closeout
+
+This addendum records later outcomes; the readback above is unchanged.
+Readback at main and `release/v0.1.0` = `a9ee4bbe251ce7ebdaf771a4aab42b850c4584b2`,
+`release/v0.0.1` = `b4d6c02edcd60bb412a06999d1909e6eaba63837`.
+
+| Next decision | Outcome |
+| --- | --- |
+| 1. Integrate the #8 closeout | #53 merged into main (`b4d6c02`); the owner fast-forwarded `release/v0.0.1` to it. The issue forms are served from main |
+| 2. Retire the setup line | #51 closed: #57 (`b40ba5c`) retargeted all Dependabot entries to `release/v0.1.0`, milestone 2, and aligned the branch guidance; #58 (`a9ee4bb`) integrated it into main and the owner fast-forwarded `release/v0.1.0`. `release/v0.0.1` is historical, protected and closed to new work |
+| 3. Tag `v0.0.1` | Still deferred by the owner; no tag exists |
+| 4. v0.1.0 closeout | Open (#32), after #28 and #30 |
+
+The approved milestone plan was recorded in the [roadmap](../ROADMAP.md)
+through #56 (`b0f5c73`), closing #55. Milestone v0.2.0 exists and holds the
+methodology decisions (#29).

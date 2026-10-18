@@ -1,4 +1,4 @@
-"""Synthetic runtime regressions for issues #41 and #45; no locale-dependent expectations."""
+"""Synthetic runtime regressions for issues #41, #45 and #48; no locale-dependent expectations."""
 
 import openpyxl
 import pytest

@@ -101,8 +101,8 @@ or prevent maintainers from creating blank issues.
 GitHub serves the issue chooser and PR template from the default branch.
 Files merged into a release branch need a separate owner-requested main
 integration before default-branch activation. Initial forms and policies were
-activated and verified through #21/#6. Prototype-aware updates on
-release/v0.1.0 require their own later main integration. The
+activated and verified through #21/#6; the prototype-aware updates
+reached main through #58. The
 [PR template](../.github/PULL_REQUEST_TEMPLATE.md) contains the single merge
 checklist; this document owns its detailed procedures.
 
@@ -133,10 +133,10 @@ checklist; this document owns its detailed procedures.
 
 ### Milestone management
 
-[v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+[v0.0.1 — Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
 closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
 [closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
-baseline. [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+baseline. [v0.1.0 — SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
 is active: prototype closeout and its milestone guide are tracked in #32, and
 #28 owns Excel evidence. The methodology decisions (#29) belong to v0.2.0 in
 the [milestone plan](ROADMAP.md). The live issue tracker

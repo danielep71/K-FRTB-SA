@@ -99,8 +99,8 @@ target milestone. Maintainers must still verify all metadata during triage.
 Non-default `target-branch` settings govern version updates, not security
 update PRs. The existing Dependabot alerts stay enabled; automatic security
 update PRs remain off under the recorded settings baseline. Enabling or
-retargeting them is a separate settings decision under #2, not an assertion
-made by this file. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
+retargeting them is a new owner settings decision (#2 is closed), not an
+assertion made by this file. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
 
 ## Evidence boundaries
 
@@ -109,6 +109,6 @@ FRTB engine, validate formulas, certify regulation, or substitute for runtime
 and independent numerical evidence. The prototype's separate checks already
 cover VBA lint, Python reference tests and LibreOffice reconciliation on its
 branch. Excel build/compile/runtime evidence is tracked in #28, methodology
-decisions in #29 (v0.2.0), and prototype synchronization in #31. Future engine gates
+decisions in #29 (v0.2.0); prototype synchronization was completed in #31. Future engine gates
 must retain independently derived expectations and name the actual host and
 commit, following [Scope](SCOPE.md) and the [structure policy](REPOSITORY_STRUCTURE.md).

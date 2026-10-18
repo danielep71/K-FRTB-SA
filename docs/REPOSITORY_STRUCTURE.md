@@ -16,8 +16,10 @@ The layout separates source, tests, documentation, and tools while distinguishin
 | `tests/modules/` | VBA test modules imported into development builds (`TEST_*`) |
 | `docs/` | Authoritative versioned scope, governance, structure, methodology, validation, and milestone documentation |
 | `docs/assets/` | Documentation images and their sources |
+| `docs/evidence/` | Dated, sanitized evidence records bound to reviewed commits |
+| `docs/Milestones/` | Detailed milestone guides |
 | `tools/` | Tooling index; prototype build, LibreOffice runner, VBA lint and expected-value generator; label tooling remains in `.github/scripts/` |
-| `.github/` | Labels, forms, universal maintenance/analytics workflows and dependency updates |
+| `.github/` | Labels, forms, universal maintenance/analytics workflows, prototype checks and dependency updates |
 | Root | Entry documentation, licenses, contribution/setup guidance, and repository-control files |
 
 Each new root has a purposeful README. Add further subdirectories with their
@@ -45,7 +47,7 @@ An ignore rule is a tracking aid, not a data-security control.
 | --- | --- |
 | Generated build/release packages | Keep local output under ignored root `build/`, `dist/`, or `release-assets/`; publish only through a separately approved release procedure |
 | Test run output | Keep disposable output under ignored root `test-results/` or `test-output/` |
-| Durable reviewed evidence | Add selected sanitized records under `docs/evidence/` with their first real record; record commit, environment, commands, results, and limitations |
+| Durable reviewed evidence | Add selected sanitized records under `docs/evidence/`; record commit, environment, commands, results, and limitations |
 | Synthetic test inputs and expected values | Add `tests/fixtures/` and `tests/expected/` when real cases exist; record independent provenance, units, signs, tolerances, and reference versions |
 | Excel workbooks, add-ins, and templates | Ignored by default; only `src/workbook/FRTB_Template.xlsx` is currently allowed by exact rooted exception |
 | Local dependencies and environments | Ignored caches/installations; commit necessary manifests and locks when a real ecosystem is introduced |
@@ -78,11 +80,14 @@ or renormalize existing files without a separate justified compatibility
 check. Markdown may retain intentional hard-break spaces.
 The settings describe file handling; they do not select an engine platform.
 
-## Conditional Excel/VBA policy
+<a id="conditional-excelvba-policy"></a>
 
-If Excel/VBA is selected, record its supported hosts and build/import procedure
-before claiming workbook support. The following source-first requirements
-apply to that decision:
+## Excel/VBA source policy
+
+Excel/VBA is approved for the prototype ([Scope](SCOPE.md)); the long-term
+platform decision remains open. Record supported hosts and the build/import
+procedure before claiming workbook support. The following source-first
+requirements apply:
 
 1. Commit reviewable exported `.bas`, `.cls`, and `.frm` files under
    documented source roots. Keep each required `.frx` beside its `.frm`.
