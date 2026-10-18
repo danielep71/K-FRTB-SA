@@ -1,8 +1,9 @@
 # Repository settings baseline
 
-Verified on October 17, 2026, against the live GitHub settings and rulesets.
-GitHub Settings remains authoritative;
-this file records the observed baseline and outstanding dependencies.
+Baseline verified on October 17, 2026, against the live GitHub settings and
+rulesets. Later readbacks are dated where they are recorded; the latest is
+October 18, 2026. GitHub Settings remains authoritative; this file records
+the observed baseline and outstanding dependencies.
 
 ## General settings
 
@@ -15,7 +16,7 @@ this file records the observed baseline and outstanding dependencies.
 | Suggest updating PR branches | Off | On |
 | Merge / squash / rebase availability | All enabled | All enabled globally; branch rules narrow permitted methods |
 | Auto-merge | Off | Off |
-| Wiki | Enabled | Enabled, editing restricted to collaborators |
+| Wiki | Enabled | Enabled, editing restricted to collaborators; since October 18, 2026 its Home page links to the versioned documents |
 | Issues / projects | Enabled / disabled | Enabled / disabled |
 | Discussions | Disabled in repository API | Disabled in repository API; the navigation may display a Discussions link |
 | GitHub Pages | Disabled | Disabled; website publication is separate work |
