@@ -36,6 +36,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Release procedure and version convention in `RELEASING.md` (SemVer, `v`
+  tags on main, changelog cut on request, evidence by stage) and the v0.0.1
+  setup closeout record with the verification readback, including the
+  owner's zero-alert security readback, the wiki entry page and the deferred
+  `v0.0.1` tag, which has no complete setup-only candidate on main (#8).
 - Excel/VBA SA prototype (#20/#22): SBM for five risk classes, DRC
   non-securitization and RRAO; independent Python reference, LibreOffice
   reconciliation and methodology/workbook/validation documentation. Excel
@@ -88,6 +93,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Settings, governance, CI, roadmap, traffic and contribution documents and
+  the issue forms now record the required `Repository integrity` check,
+  automatic Codex review on PR open and active traffic collection, and no
+  longer describe them as pending (#2, #23, #8).
 - Synchronized main setup controls into the prototype line, preserving its
   template and module layout. Shared guidance and forms describe both active
   milestones; prototype tests install the separate CI parser dependency (#31).

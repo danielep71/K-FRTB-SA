@@ -62,9 +62,9 @@ default-branch activation. Checkout is pinned to the existing reviewed SHA,
 credentials are not persisted, permissions are `contents: read`, timeout is
 10 minutes, and newer runs cancel older runs for the same workflow/ref.
 
-Issue #2 owns attaching that check name and app identity to the main/release
-rulesets, requiring main to be up to date, and verifying effective enforcement.
-Adding this workflow does not itself change those settings. A task PR proves
+The check name and app identity are required by the main and release
+rulesets, and main must be up to date before merging; issue #2 records the
+readback and a representative blocked PR (October 18, 2026). A task PR proves
 the hosted command; release-to-main integration and synchronization into the
 prototype branch (#31) install the workflow on the respective branch lines.
 The prototype workflow installs both requirements manifests in its own test

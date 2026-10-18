@@ -104,8 +104,8 @@ need to **check** an FRTB-SA number:
 | Area | Status |
 | --- | --- |
 | Label catalogue, reconciliation, and drift detection | Implemented |
-| Repository protection and security baseline | Configured; remaining dependencies tracked in issue #2 |
-| Universal integrity gate | Implemented; required-check enforcement tracked in #2 |
+| Repository protection and security baseline | Configured and verified (#2) |
+| Universal integrity gate | Implemented and required on main and release branches (#7, #2) |
 | Sensitivities-based method (SBM) | Prototype: GIRR, CSR non-securitization, equity, commodity, FX; delta, vega, curvature |
 | Default risk charge (DRC) | Prototype: non-securitizations |
 | Residual risk add-on (RRAO) | Prototype |
@@ -270,10 +270,10 @@ is not proof that an implementation matches it.
 [Scope](docs/SCOPE.md#source-and-validation-policy) defines the source and
 independent-validation policy.
 
-Setup work is integrated on main; this prototype and its updated forms remain
-on release/v0.1.0 until an owner-requested main integration. Repository setup
-closeout is #8; prototype evaluation/closeout is #32. Traffic credentials and
-first collection remain explicitly deferred in #23.
+Setup work and the prototype are integrated on main. Repository setup
+closeout is #8 and the release procedure is in [Releasing](RELEASING.md);
+prototype evaluation/closeout is #32. Traffic history is collecting daily
+(#23).
 
 ## 🏷️ Project name
 

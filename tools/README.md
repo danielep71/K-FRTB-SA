@@ -43,7 +43,7 @@ dependency-update policy are in [Repository checks](../docs/CI.md).
 `traffic_history.py` collects aggregate traffic only from trusted main in the
 analytics environment; [Traffic history](../docs/TRAFFIC_HISTORY.md) owns the
 contract and credential readiness. Its offline tests run without credentials
-through the universal gate. Traffic credentials and first collection remain
-explicitly deferred in #23.
+through the universal gate. The credentialed daily collection has been active
+since October 18, 2026 (#23).
 Generated output and durable evidence follow
 [Repository structure](../docs/REPOSITORY_STRUCTURE.md).
