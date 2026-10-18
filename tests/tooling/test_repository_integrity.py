@@ -8,6 +8,8 @@ import subprocess
 import tempfile
 import unittest
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 import check_repository as checker
 
@@ -75,15 +77,45 @@ class RepositoryIntegrityTests(unittest.TestCase):
             workflow_path = root / ".github/workflows/integrity.yml"
             workflow = checker.load_yaml(workflow_path.read_text())
             workflow["on"]["pull_request"]["paths"] = ["tools/**"]
-            import yaml
             workflow_path.write_text(yaml.safe_dump(workflow))
             with self.assertRaisesRegex(ValueError, "without path filters"):
                 checker.validate_controls(root)
             workflow_path.write_text((source / ".github/workflows/integrity.yml").read_text())
             dependabot_path = root / ".github/dependabot.yml"
-            dependabot_path.write_text(dependabot_path.read_text().replace("target-branch: release/v0.0.1", "target-branch: main", 1))
+            dependabot_path.write_text(dependabot_path.read_text().replace("target-branch: release/v0.1.0", "target-branch: main", 1))
             with self.assertRaisesRegex(ValueError, "Dependabot must cover"):
                 checker.validate_controls(root)
+
+    def test_dependabot_retirement_and_coverage_regressions(self):
+        source = Path(__file__).resolve().parents[2]
+        baseline = checker.load_yaml((source / ".github/dependabot.yml").read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workflow_path = root / ".github/workflows/integrity.yml"
+            workflow_path.parent.mkdir(parents=True)
+            workflow_path.write_text((source / ".github/workflows/integrity.yml").read_text())
+            dependabot_path = root / ".github/dependabot.yml"
+
+            def validate(document):
+                dependabot_path.write_text(yaml.safe_dump(document))
+                checker.validate_controls(root)
+
+            validate(baseline)
+            for index, entry in enumerate(baseline["updates"]):
+                with self.subTest(ecosystem=entry["package-ecosystem"], directory=entry["directory"]):
+                    missing = copy.deepcopy(baseline)
+                    del missing["updates"][index]
+                    duplicate = copy.deepcopy(baseline)
+                    duplicate["updates"].append(copy.deepcopy(entry))
+                    retired = copy.deepcopy(baseline)
+                    retired["updates"][index]["target-branch"] = "release/v0.0.1"
+                    for broken in [missing, duplicate, retired]:
+                        with self.assertRaisesRegex(ValueError, "Dependabot must cover"):
+                            validate(broken)
+                    wrong_milestone = copy.deepcopy(baseline)
+                    wrong_milestone["updates"][index]["milestone"] = 1
+                    with self.assertRaisesRegex(ValueError, "target milestone"):
+                        validate(wrong_milestone)
 
 
 if __name__ == "__main__":

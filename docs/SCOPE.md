@@ -49,8 +49,9 @@ distinct compatibility runtime.
 Maintenance tooling uses Node built-ins and Python with a pinned CI parser;
 the prototype test environment has its own packages. These are documented in
 [Repository checks](CI.md) and do not select the long-term engine platform.
-[Governance](GOVERNANCE.md) assigns setup work to release/v0.0.1 and prototype
-work to release/v0.1.0; source and evidence placement follow the
+[Governance](GOVERNANCE.md) assigns current prototype and maintenance work
+to release/v0.1.0, milestone 2; release/v0.0.1 is historical, protected and
+closed to new work. Source and evidence placement follow the
 [structure policy](REPOSITORY_STRUCTURE.md).
 
 ## Source and validation policy

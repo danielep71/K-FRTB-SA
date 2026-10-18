@@ -35,19 +35,20 @@ conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-The owner has selected **`release/v0.0.1`** as the integration branch for
-setup work. It was created from main after PR #11 and inherits the existing
-setup work; setup task PRs target this branch. No version tag has been
-created. The rulesets match `release/**`, including the `release/v0.0.1` name. See
-[branch governance](GOVERNANCE.md) for integration into main and subsequent
-retention/fast-forward; the separate deletion rule has no bypass. Task branches
-can be deleted automatically after merge.
+The v0.0.1 setup milestone closed on October 18, 2026. **`release/v0.0.1`**
+is retained and protected as a historical branch, closed to new work. Its
+closeout head is `b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53); it is not
+advanced during prototype integration. No v0.0.1 tag was created.
 
-The prototype integration branch `release/v0.1.0` was approved separately
-for milestone v0.1.0 and is covered by the same release/** protections.
-Shared maintenance content is synchronized there under #31; setup work
-continues on release/v0.0.1. This is a content synchronization, not a claim
-that a squash merge advances main's ancestry in the prototype branch.
+The active prototype integration branch **`release/v0.1.0`** also receives
+repository maintenance and all three Dependabot entries, milestone 2, under
+the owner decision of October 18, 2026 (#51). Shared controls were synchronized
+under #31. Both retained release branches still match `release/**`: readback
+on October 18 confirms the active force-push restriction and the separate
+deletion rule with no bypass. No protection was weakened for this transition.
+See [branch governance](GOVERNANCE.md) for task PRs and controlled active-branch
+fast-forward after main integration. Task branches can be deleted automatically
+after merge.
 
 **Required status check.** The unconditional **Repository integrity** check
 from #7 (GitHub Actions, app ID 15368) is required by both rulesets, read back
@@ -86,7 +87,7 @@ only because the required check had not run.
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
-| Dependabot version updates | No configuration | Configuration added under #7; activates after default-branch integration; targets in CI.md |
+| Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries on release/v0.1.0, milestone 2; scheduling uses the configuration on main; targets in CI.md |
 | Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; see CI.md and #2 |
 
 [CodeQL setup evidence](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39070451926).

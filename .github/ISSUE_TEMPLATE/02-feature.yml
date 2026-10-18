@@ -10,7 +10,7 @@ body:
   attributes:
     value: '## 🧭 Before you submit
 
-      Setup work integrates on release/v0.0.1 and prototype work on release/v0.1.0; the Excel/VBA prototype is also on main. Excel host evidence remains pending in #28.
+      Prototype and repository-maintenance work integrates on release/v0.1.0 (milestone 2). The historical release/v0.0.1 branch is retained and protected, closed to new work. The Excel/VBA prototype is also on main; Excel host evidence remains pending in #28.
 
       Use synthetic examples only. Report potential vulnerabilities privately via [SECURITY.md](https://github.com/danielep71/MKT-FTRB-SA/blob/main/SECURITY.md).
 

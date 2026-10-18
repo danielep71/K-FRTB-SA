@@ -136,8 +136,9 @@ need to **check** an FRTB-SA number:
 
 ## 1. Clone and check
 
-Prototype work integrates on **`release/v0.1.0`**; setup work stays on
-`release/v0.0.1`. See [branch governance](docs/GOVERNANCE.md).
+Prototype and repository maintenance integrate on **`release/v0.1.0`**,
+milestone 2. `release/v0.0.1` is retained and protected as a historical
+setup branch, closed to new work. See [branch governance](docs/GOVERNANCE.md).
 
 ```sh
 git clone --branch release/v0.1.0 https://github.com/danielep71/MKT-FTRB-SA.git
