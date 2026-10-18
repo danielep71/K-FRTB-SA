@@ -13,8 +13,9 @@
 - Squash-merge task PRs after applicable checks pass and findings are resolved.
 - Keep main as the default stable branch. Open or merge a release-to-main PR
   only when the owner explicitly requests integration; use a merge commit.
-- Preserve shared history and protected release branches; never force-push,
-  reset, or delete/recreate them. Only the owner decides a deletion (#62).
+- Preserve shared history and active release branches; never force-push or
+  reset them. Delete a release branch only once it is obsolete, following the
+  lifecycle in docs/GOVERNANCE.md (#66); never recreate a deleted one.
 
 Read [docs/GOVERNANCE.md](docs/GOVERNANCE.md) for the integration lifecycle
 and [docs/REPOSITORY_SETTINGS.md](docs/REPOSITORY_SETTINGS.md) for current

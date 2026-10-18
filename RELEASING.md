@@ -66,8 +66,11 @@ milestone and leave the others under `[Unreleased]`.
    and links the evidence below. Closing the milestone does not merge main,
    create a tag or publish a release.
 3. **Integration into main** happens only on the owner's explicit request,
-   through a release-to-main PR with a merge commit. The retained release
-   branch is then fast-forwarded to that merge with an expected-head guard.
+   through a release-to-main PR with a merge commit. While work continues,
+   the release branch is then fast-forwarded to that merge with an
+   expected-head guard. Once its milestone is closed and fully integrated,
+   the branch is obsolete and is deleted under the
+   [release-branch lifecycle](docs/GOVERNANCE.md#release-branch-lifecycle).
 4. **Tag candidate**: the main commit whose whole tree both satisfies the
    version's contents rule below and carries the version's completion
    record and dated changelog section. On the owner's request, a task PR

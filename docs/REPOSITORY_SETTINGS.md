@@ -12,7 +12,7 @@ the observed baseline and outstanding dependencies.
 | Visibility | Private | Public, changed by the owner during setup |
 | License | MIT | MIT |
 | Default branch | main | main |
-| Automatically delete merged head branches | Off | On; protected release branches are retained |
+| Automatically delete merged head branches | Off | On; the release deletion rules keep release branches from automatic deletion; obsolete ones are deleted under the governance lifecycle (#66) |
 | Suggest updating PR branches | Off | On |
 | Merge / squash / rebase availability | All enabled | All enabled globally; branch rules narrow permitted methods |
 | Auto-merge | Off | Off |
@@ -48,8 +48,9 @@ repository maintenance and all three Dependabot entries, milestone 2, under
 the owner decision of October 18, 2026 (#51). Shared controls were synchronized
 under #31. It matches `release/**`: readback on October 18 confirms the
 active force-push restriction and the separate deletion rule with no bypass.
-See [branch governance](GOVERNANCE.md) for task PRs and controlled active-branch
-fast-forward after main integration. Task branches can be deleted automatically
+See [branch governance](GOVERNANCE.md) for task PRs, controlled active-branch
+fast-forward after main integration and the deletion of obsolete release
+branches. Task branches can be deleted automatically
 after merge.
 
 **Required status check.** The unconditional **Repository integrity** check
