@@ -11,7 +11,9 @@ issues, must have:
 
 - Assignee `danielep71`.
 - Exactly one priority: `P1`, `P2` or `P3`.
-- The milestone that owns its work; setup work belongs to **v0.0.1 - Repo setup**.
+- The milestone that owns its work; current prototype and repository maintenance
+  belong to **v0.1.0 - SA prototype** (milestone 2, owner-approved #51).
+  Historical setup issues retain the closed **v0.0.1 - Repo setup** milestone.
 - An objective, acceptance checklist, dependencies and required evidence.
 
 The owner's triage convention reserves **P1 for confirmed calculation bugs**.

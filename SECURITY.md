@@ -1,17 +1,17 @@
 # 🛡️ Security policy
 
-[![Stage: repository setup](https://img.shields.io/badge/stage-repository_setup-1D76DB)](README.md)
+[![Stage: prototype](https://img.shields.io/badge/stage-prototype-1D76DB)](README.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## 📦 Supported scope
 
 | Material | Security maintenance status |
 | --- | --- |
-| Current `main` and active `release/v0.0.1` setup files and maintenance tooling | Reports accepted and triaged by the maintainer |
-| Historical commits or unmaintained task branches | No separate backport commitment; report issues that also affect current maintained source |
+| Current `main` and active `release/v0.1.0` source and maintenance tooling | Reports accepted and triaged by the maintainer |
+| Historical `release/v0.0.1`, historical commits or unmaintained task branches | No separate backport commitment; report issues that also affect current maintained source; the setup branch is retained and protected, closed to new work |
 | Calculation engine, workbook, or packaged releases | None published or supported yet |
 
-This is a single-maintainer setup project, not a managed security service.
+This is a single-maintainer prototype project, not a managed security service.
 There is no guaranteed response or remediation time and no bug-bounty program.
 
 ## 🔒 Report privately

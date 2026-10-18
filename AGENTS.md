@@ -2,8 +2,10 @@
 
 ## Development branch
 
-- The active integration branches are `release/v0.0.1` (v0.0.1 repository
-  setup) and `release/v0.1.0` (v0.1.0 SA prototype).
+- The active integration branch is `release/v0.1.0` for the SA prototype
+  and repository maintenance (milestone 2, owner-approved October 18, 2026, #51).
+- `release/v0.0.1` is retained and protected as a historical setup branch,
+  closed to new work; do not target task or automated maintenance PRs there.
 - Branch every task from the integration branch of its issue's milestone and
   open its PR against that branch.
 - Put all development, documentation, tooling, tests and configuration work
@@ -16,7 +18,7 @@
 
 Read [docs/GOVERNANCE.md](docs/GOVERNANCE.md) for the integration lifecycle
 and [docs/REPOSITORY_SETTINGS.md](docs/REPOSITORY_SETTINGS.md) for current
-controls and pending integrity/review configuration.
+verified controls, including required integrity checks and automatic PR review.
 
 ## Scope and evidence
 

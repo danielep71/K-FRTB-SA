@@ -75,18 +75,23 @@ Do not require a check on a line before installing it there.
 ## 🔄 Dependabot policy
 
 The configuration must reach the default branch before GitHub schedules
-version updates. It follows the two existing workstreams:
+version updates. The owner approved the temporary maintenance successor in
+[#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)
+on October 18, 2026: all three updater entries target `release/v0.1.0`,
+milestone 2. The closed setup branch is retained and protected, with no new
+version-update PRs:
 
 | Ecosystem and manifest location | Version-update PR target | Milestone |
 | --- | --- | --- |
-| GitHub Actions, `/` | `release/v0.0.1` | v0.0.1 |
 | GitHub Actions, `/` | `release/v0.1.0` | v0.1.0 |
-| pip, `/.github/requirements.txt` (PyYAML configuration parser) | `release/v0.0.1` | v0.0.1 |
+| pip, `/.github/requirements.txt` (PyYAML configuration parser) | `release/v0.1.0` | v0.1.0 |
 | pip, `/tests/requirements.txt` (prototype NumPy, openpyxl, pytest) | `release/v0.1.0` | v0.1.0 |
 
-The prototype dependency file was inspected on `7f6f15a`; those packages are
-not copied into the setup branch. Both lines use GitHub Actions. There is no
-npm package manifest: the label scripts use Node built-ins. No npm updater or
+The two previous Actions entries are consolidated into one. Both pip
+manifest locations remain covered; no dependency is copied into the historical
+setup branch. The integrity gate rejects duplicate entries, retired or wrong
+targets, lost ecosystem/directory coverage and incorrect milestone metadata.
+There is no npm package manifest: the label scripts use Node built-ins. No npm updater or
 other absent ecosystem is configured. Each entry runs weekly, limits open
 PRs to five, assigns `danielep71`, and sets exactly P3 plus type labels and the
 target milestone. Maintainers must still verify all metadata during triage.
@@ -104,6 +109,6 @@ FRTB engine, validate formulas, certify regulation, or substitute for runtime
 and independent numerical evidence. The prototype's separate checks already
 cover VBA lint, Python reference tests and LibreOffice reconciliation on its
 branch. Excel build/compile/runtime evidence is tracked in #28, methodology
-decisions in #29, and prototype synchronization in #31. Future engine gates
+decisions in #29 (v0.2.0), and prototype synchronization in #31. Future engine gates
 must retain independently derived expectations and name the actual host and
 commit, following [Scope](SCOPE.md) and the [structure policy](REPOSITORY_STRUCTURE.md).

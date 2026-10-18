@@ -160,17 +160,15 @@ def validate_controls(root):
     if updates["version"] != 2:
         raise ValueError("Dependabot requires version 2")
     expected = {
-        ("github-actions", "/", "release/v0.0.1"),
         ("github-actions", "/", "release/v0.1.0"),
-        ("pip", "/.github", "release/v0.0.1"),
+        ("pip", "/.github", "release/v0.1.0"),
         ("pip", "/tests", "release/v0.1.0"),
     }
     actual = [(item["package-ecosystem"], item["directory"], item["target-branch"]) for item in updates["updates"]]
     if set(actual) != expected or len(actual) != len(expected):
-        raise ValueError("Dependabot must cover both Actions branches, setup CI and prototype test packages")
+        raise ValueError("Dependabot must cover Actions, CI parser and prototype packages once each on release/v0.1.0")
     for item in updates["updates"]:
-        milestone = 1 if item["target-branch"] == "release/v0.0.1" else 2
-        if item["assignees"] != ["danielep71"] or item["milestone"] != milestone or [label for label in item["labels"] if label in {"P1", "P2", "P3"}] != ["P3"]:
+        if item["assignees"] != ["danielep71"] or item["milestone"] != 2 or [label for label in item["labels"] if label in {"P1", "P2", "P3"}] != ["P3"]:
             raise ValueError("Dependabot requires owner, target milestone and exactly P3")
 
 

@@ -70,8 +70,9 @@ Issues #1–#7, #23 and #25 are closed as completed.
 - The wiki is a separate repository that the owner publishes. It is an entry
   point only; the versioned documents remain authoritative.
 - Main also carries the v0.1.0 prototype. Its LibreOffice evidence is not
-  Excel evidence (#28), and its methodology decisions (#29) and round trip
-  (#30) are open under v0.1.0.
+  Excel evidence (#28) and its round trip (#30) are open under v0.1.0; its
+  methodology decisions (#29) move to v0.2.0 under the approved milestone
+  plan (#55).
 
 ## ➡️ Next decisions
 
@@ -84,4 +85,5 @@ Issues #1–#7, #23 and #25 are closed as completed.
    and complete, so a tag would first need an owner decision on preparing a
    complete candidate (see [Releasing](../../RELEASING.md)). Until then the
    closed milestone and this record are the setup baseline.
-4. v0.1.0 closeout (#32), after #28, #29 and #30.
+4. v0.1.0 closeout (#32), after #28 and #30; the methodology decisions
+   (#29) belong to v0.2.0 ([roadmap](../ROADMAP.md)).
