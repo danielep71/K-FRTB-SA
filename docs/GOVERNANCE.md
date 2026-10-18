@@ -16,13 +16,14 @@ until a later owner-approved transition. It was originally approved for
 the prototype on October 17 and created from main at
 `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
 
-The v0.0.1 setup milestone is closed. **`release/v0.0.1`** remains a protected
-historical branch at its setup closeout head; it accepts no new task or
-automated maintenance PRs and is not advanced during prototype integration.
+The v0.0.1 setup milestone is closed. The owner deleted its integration
+branch **`release/v0.0.1`** on October 18, 2026 (#62). Its closeout head
+`b4d6c02` is on main, so no history was lost; the closed milestone and the
+[setup closeout record](evidence/2026-10-18-setup-closeout.md) remain the
+setup baseline. Do not recreate or target the branch.
 
 | Branch | Purpose and allowed changes |
 | --- | --- |
-| `release/v0.0.1` | Retained protected historical setup branch; closed to new work |
 | `release/v0.1.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
 | `main` | Stable default branch; receives an integration branch only through a separate owner-requested PR |
 | Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
@@ -40,13 +41,16 @@ When the owner requests integration, open a PR from the applicable integration b
 a **merge commit** to preserve ancestry. Integration does not by itself publish
 a version tag, release, workbook or website.
 
-Release branches are retained: a separate active ruleset blocks their deletion
-with no bypass. After integration, an authorized maintainer may fast-forward
-the applicable integration branch to the main merge commit if work continues, using the
-existing administrator maintenance bypass and an expected-head check. Never
-force-push, reset shared history, or delete/recreate a release branch. At a
-milestone transition, create the next owner-approved integration branch and
-update this document, agent guidance and automated PR targets together.
+Release branches are retained by default: a separate active ruleset blocks
+their deletion with no bypass. Only an explicit owner decision recorded in an
+issue deletes one, as for `release/v0.0.1` (#62). After integration, an
+authorized maintainer may fast-forward the applicable integration branch to
+the main merge commit if work continues, using the existing administrator
+maintenance bypass and an expected-head check. Never force-push, reset shared
+history, delete a release branch without that owner decision, or recreate a
+deleted one. At a milestone transition, create the next owner-approved
+integration branch and update this document, agent guidance and automated PR
+targets together.
 
 ### Integration verification
 

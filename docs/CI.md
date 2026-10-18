@@ -78,8 +78,8 @@ The configuration must reach the default branch before GitHub schedules
 version updates. The owner approved the temporary maintenance successor in
 [#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)
 on October 18, 2026: all three updater entries target `release/v0.1.0`,
-milestone 2. The closed setup branch is retained and protected, with no new
-version-update PRs:
+milestone 2. The setup branch `release/v0.0.1` receives no version-update
+PRs; the owner deleted it after the closeout (#62):
 
 | Ecosystem and manifest location | Version-update PR target | Milestone |
 | --- | --- | --- |

@@ -18,8 +18,8 @@ node --version
 ```
 
 Current prototype and maintenance work uses `release/v0.1.0`, milestone 2
-(#51). The historical setup branch `release/v0.0.1` is retained and protected,
-closed to new work. Record the source commit when reporting results.
+(#51). The setup branch `release/v0.0.1` was deleted after the v0.0.1
+closeout (#62). Record the source commit when reporting results.
 Main remains the stable default. Create focused task
 branches from the integration branch following [Governance](docs/GOVERNANCE.md).
 

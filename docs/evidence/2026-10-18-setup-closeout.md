@@ -104,3 +104,6 @@ Readback at main and `release/v0.1.0` = `a9ee4bbe251ce7ebdaf771a4aab42b850c4584b
 The approved milestone plan was recorded in the [roadmap](../ROADMAP.md)
 through #56 (`b0f5c73`), closing #55. Milestone v0.2.0 exists and holds the
 methodology decisions (#29).
+
+Later on October 18, 2026 the owner deleted `release/v0.0.1` (#62). Its
+head `b4d6c02` remains on main, so the setup history is unchanged.

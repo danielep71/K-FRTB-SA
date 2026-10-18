@@ -102,13 +102,20 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The owner deleted the setup branch `release/v0.0.1` after the v0.0.1
+  closeout. Its head `b4d6c02` is on main, and the closed milestone and the
+  closeout record remain the setup baseline. The release deletion ruleset
+  excluded the branch only for the deletion and was then restored. Branch
+  guidance, the PR template and the issue forms no longer describe the branch
+  as retained (#62).
+
 - After setup closeout, repository maintenance and all Dependabot version
   updates use `release/v0.1.0`, milestone 2, under the owner decision in #51.
   Consolidate the duplicate Actions coverage and retain both CI-parser and
   prototype pip manifests. Align current branch guidance, forms and templates;
   reject duplicate, retired, missing or incorrectly assigned updater entries
-  in the integrity gate. `release/v0.0.1` remains historical and protected,
-  closed to new work.
+  in the integrity gate. `release/v0.0.1` stayed historical and protected,
+  closed to new work, until the owner deleted it (#62).
 
 - The roadmap records the owner-approved milestone plan from the closed
   v0.0.1 setup to v1.0.0, the first certified release, with each milestone's
