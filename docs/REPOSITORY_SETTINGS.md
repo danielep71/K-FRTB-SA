@@ -35,17 +35,17 @@ conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-The v0.0.1 setup milestone closed on October 18, 2026. **`release/v0.0.1`**
-is retained and protected as a historical branch, closed to new work. Its
-closeout head is `b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53); it is not
-advanced during prototype integration. No v0.0.1 tag was created.
+The v0.0.1 setup milestone closed on October 18, 2026. The owner deleted
+**`release/v0.0.1`** the same day (#62): ruleset 25319621 was disabled only
+for the deletion and then re-enabled. The branch's closeout head
+`b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No v0.0.1 tag
+was created.
 
 The active prototype integration branch **`release/v0.1.0`** also receives
 repository maintenance and all three Dependabot entries, milestone 2, under
 the owner decision of October 18, 2026 (#51). Shared controls were synchronized
-under #31. Both retained release branches still match `release/**`: readback
-on October 18 confirms the active force-push restriction and the separate
-deletion rule with no bypass. No protection was weakened for this transition.
+under #31. It matches `release/**`: readback on October 18 confirms the
+active force-push restriction and the separate deletion rule with no bypass.
 See [branch governance](GOVERNANCE.md) for task PRs and controlled active-branch
 fast-forward after main integration. Task branches can be deleted automatically
 after merge.
