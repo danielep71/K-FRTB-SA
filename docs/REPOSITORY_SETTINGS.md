@@ -100,7 +100,7 @@ No paid feature or agentic autofix was enabled.
 GitHub's Copilot code review page explicitly reports **No Copilot code review
 access** for this account. No paid subscription or Copilot review automation
 was enabled. The ChatGPT Codex Connector reviews automatically when a PR is
-opened: on #42 and #46 its summary shows the trigger "PR
+opened or a draft is marked ready for review: on #42 and #46 its summary shows the trigger "PR
 opened" with no manual request. It does not re-review later pushes; request
 one with `@codex review` or review them as a maintainer, and resolve findings
 before merge.
