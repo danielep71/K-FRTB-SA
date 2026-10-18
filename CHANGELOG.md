@@ -114,8 +114,8 @@ Unreleased describe integrated work, not a published version.
   Consolidate the duplicate Actions coverage and retain both CI-parser and
   prototype pip manifests. Align current branch guidance, forms and templates;
   reject duplicate, retired, missing or incorrectly assigned updater entries
-  in the integrity gate. `release/v0.0.1` remains historical and protected,
-  closed to new work.
+  in the integrity gate. `release/v0.0.1` stayed historical and protected,
+  closed to new work, until the owner deleted it (#62).
 
 - The roadmap records the owner-approved milestone plan from the closed
   v0.0.1 setup to v1.0.0, the first certified release, with each milestone's

@@ -41,13 +41,16 @@ When the owner requests integration, open a PR from the applicable integration b
 a **merge commit** to preserve ancestry. Integration does not by itself publish
 a version tag, release, workbook or website.
 
-Release branches are retained: a separate active ruleset blocks their deletion
-with no bypass. After integration, an authorized maintainer may fast-forward
-the applicable integration branch to the main merge commit if work continues, using the
-existing administrator maintenance bypass and an expected-head check. Never
-force-push, reset shared history, or delete/recreate a release branch. At a
-milestone transition, create the next owner-approved integration branch and
-update this document, agent guidance and automated PR targets together.
+Release branches are retained by default: a separate active ruleset blocks
+their deletion with no bypass. Only an explicit owner decision recorded in an
+issue deletes one, as for `release/v0.0.1` (#62). After integration, an
+authorized maintainer may fast-forward the applicable integration branch to
+the main merge commit if work continues, using the existing administrator
+maintenance bypass and an expected-head check. Never force-push, reset shared
+history, delete a release branch without that owner decision, or recreate a
+deleted one. At a milestone transition, create the next owner-approved
+integration branch and update this document, agent guidance and automated PR
+targets together.
 
 ### Integration verification
 
