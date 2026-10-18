@@ -104,9 +104,10 @@ Unreleased describe integrated work, not a published version.
 
 - The owner deleted the setup branch `release/v0.0.1` after the v0.0.1
   closeout. Its head `b4d6c02` is on main, and the closed milestone and the
-  closeout record remain the setup baseline. The release deletion ruleset was
-  disabled only for the deletion and re-enabled. Branch guidance, the PR
-  template and the issue forms no longer describe the branch as retained (#62).
+  closeout record remain the setup baseline. The release deletion ruleset
+  excluded the branch only for the deletion and was then restored. Branch
+  guidance, the PR template and the issue forms no longer describe the branch
+  as retained (#62).
 
 - After setup closeout, repository maintenance and all Dependabot version
   updates use `release/v0.1.0`, milestone 2, under the owner decision in #51.
