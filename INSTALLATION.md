@@ -9,7 +9,7 @@ Git 2.51.1, Node.js 24.19.0 and Python 3.12.14; hosted CI uses Ubuntu 24.04.
 ## Check out the active work
 
 ```sh
-git clone --branch release/v0.0.1 https://github.com/danielep71/MKT-FTRB-SA.git
+git clone --branch release/v0.1.0 https://github.com/danielep71/MKT-FTRB-SA.git
 cd MKT-FTRB-SA
 git branch --show-current
 git rev-parse HEAD
@@ -17,9 +17,10 @@ git --version
 node --version
 ```
 
-For prototype work, clone `release/v0.1.0` instead. Confirm the branch of
-its issue's milestone and record the source commit
-when reporting results. Main remains the stable default. Create focused task
+Current prototype and maintenance work uses `release/v0.1.0`, milestone 2
+(#51). The historical setup branch `release/v0.0.1` is retained and protected,
+closed to new work. Record the source commit when reporting results.
+Main remains the stable default. Create focused task
 branches from the integration branch following [Governance](docs/GOVERNANCE.md).
 
 Use a Git clone for development and checks. The inherited archive attributes
