@@ -1,13 +1,15 @@
 # 🤝 Contributing to FRTB-SA
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Stage: setup and prototype](https://img.shields.io/badge/stage-setup_and_prototype-1D76DB)](docs/ROADMAP.md)
+[![Stage: prototype](https://img.shields.io/badge/stage-prototype-1D76DB)](docs/ROADMAP.md)
 
 Participation follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 Potential vulnerabilities follow [SECURITY.md](SECURITY.md).
 
-Repository setup (v0.0.1) and the Excel/VBA SA prototype (v0.1.0) proceed on
-separate integration branches. Read [scope and decisions](docs/SCOPE.md)
+Repository setup (v0.0.1) is closed; `release/v0.0.1` is retained and protected
+as a historical branch, closed to new work. The Excel/VBA SA prototype and
+repository maintenance use `release/v0.1.0`, milestone 2 (#51).
+Read [scope and decisions](docs/SCOPE.md)
 before functional changes. The prototype is on main and release/v0.1.0 with a
 committed macro-free template; Excel host evidence remains pending in #28.
 Versions and tags follow [Releasing](RELEASING.md).
@@ -31,9 +33,9 @@ information and metadata explicitly.
 
 ## Make a focused change
 
-1. Fetch the repository and branch from the issue milestone's integration
-   branch: `origin/release/v0.0.1` for setup or `origin/release/v0.1.0` for
-   the prototype. Confirm the PR base explicitly.
+1. Fetch the repository and branch from `origin/release/v0.1.0` for current
+   prototype or maintenance work (milestone 2). Future milestones need an
+   owner-approved integration branch. Confirm the PR base explicitly.
 2. Reproduce the problem where applicable and make a focused change.
 3. Follow the root editing, ignore, and attribute policies. Do not include
    credentials, client data, local caches, or generated output.
@@ -49,7 +51,7 @@ For example:
 
 ```sh
 git fetch origin
-git switch -c docs/4-governance origin/release/v0.0.1
+git switch -c chore/51-retire-setup-targets origin/release/v0.1.0
 ```
 
 Use an imperative commit subject describing the change. Add a body when useful

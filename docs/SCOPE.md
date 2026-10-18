@@ -2,10 +2,12 @@
 
 ## Current stage
 
-Repository setup (v0.0.1) and the SA prototype (v0.1.0) are separate active
-workstreams. Main contains the setup controls; release/v0.1.0 contains the
-Excel/VBA prototype, its committed macro-free template and independent
-Python reference. No functional release or regulatory certification has been
+Repository setup (v0.0.1) is closed. The active workstream is the SA prototype
+and repository maintenance on release/v0.1.0, milestone 2 (#51).
+Main and release/v0.1.0 contain the setup controls, Excel/VBA prototype,
+committed macro-free template and independent Python reference.
+The protected historical release/v0.0.1 branch is closed to new work.
+No functional release or regulatory certification has been
 published. The prototype has run in LibreOffice Calc VBA-compatibility mode;
 desktop Excel build, compilation, execution and export evidence remain #28.
 
@@ -49,8 +51,9 @@ distinct compatibility runtime.
 Maintenance tooling uses Node built-ins and Python with a pinned CI parser;
 the prototype test environment has its own packages. These are documented in
 [Repository checks](CI.md) and do not select the long-term engine platform.
-[Governance](GOVERNANCE.md) assigns setup work to release/v0.0.1 and prototype
-work to release/v0.1.0; source and evidence placement follow the
+[Governance](GOVERNANCE.md) assigns current prototype and maintenance work
+to release/v0.1.0, milestone 2; release/v0.0.1 is historical, protected and
+closed to new work. Source and evidence placement follow the
 [structure policy](REPOSITORY_STRUCTURE.md).
 
 ## Source and validation policy

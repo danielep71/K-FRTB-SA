@@ -93,6 +93,14 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- After setup closeout, repository maintenance and all Dependabot version
+  updates use `release/v0.1.0`, milestone 2, under the owner decision in #51.
+  Consolidate the duplicate Actions coverage and retain both CI-parser and
+  prototype pip manifests. Align current branch guidance, forms and templates;
+  reject duplicate, retired, missing or incorrectly assigned updater entries
+  in the integrity gate. `release/v0.0.1` remains historical and protected,
+  closed to new work.
+
 - The roadmap records the owner-approved milestone plan from the closed
   v0.0.1 setup to v1.0.0, the first certified release, with each milestone's
   objective and exit condition; the old unversioned phases are replaced, and

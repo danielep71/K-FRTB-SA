@@ -9,27 +9,27 @@ This document owns branch, issue, review, and milestone procedures.
 
 ## Branches
 
-Two integration branches are active, each selected by the owner for one
-milestone:
+The active integration branch is **`release/v0.1.0`** for the SA prototype
+and repository maintenance. The owner approved maintenance on this branch
+and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)),
+until a later owner-approved transition. It was originally approved for
+the prototype on October 17 and created from main at
+`d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
 
-- **`release/v0.0.1`** for the v0.0.1 repository setup. It was created from
-  main at `96a3b44312fd0f6beb000a06d2a43ac46b0551ef`, so it includes all
-  setup work already integrated through PRs #9, #10 and #11. Those earlier
-  commits remain in main; shared history is preserved.
-- **`release/v0.1.0`** for the v0.1.0 SA prototype, approved by the owner on
-  2026-10-17 and created from main at
-  `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
+The v0.0.1 setup milestone is closed. **`release/v0.0.1`** remains a protected
+historical branch at its setup closeout head; it accepts no new task or
+automated maintenance PRs and is not advanced during prototype integration.
 
 | Branch | Purpose and allowed changes |
 | --- | --- |
-| `release/v0.0.1` | Integration branch for all ongoing v0.0.1 development, including documentation, tooling, tests and configuration |
-| `release/v0.1.0` | Integration branch for the v0.1.0 SA prototype |
+| `release/v0.0.1` | Retained protected historical setup branch; closed to new work |
+| `release/v0.1.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
 | `main` | Stable default branch; receives an integration branch only through a separate owner-requested PR |
 | Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
-Every development PR targets the integration branch of its issue's milestone:
-**`release/v0.0.1`** for setup work, including automated maintenance PRs when
-configured, and **`release/v0.1.0`** for prototype work. Task PRs are squash-merged after applicable
+Current prototype and maintenance task PRs target **`release/v0.1.0`**,
+including Dependabot version updates. Future milestone work needs its own
+owner-approved integration branch. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
 directly to main or the release branch. Check the base explicitly when opening
 a PR: GitHub's default branch remains main.
@@ -154,7 +154,7 @@ release, a workbook, a website, or a visibility change. Those decisions are
 separate. [Releasing](../RELEASING.md) defines the release procedure and
 version convention (#8).
 
-## Current controls and outstanding setup
+## Current controls and maintenance
 
 [Repository settings](REPOSITORY_SETTINGS.md) records the live rulesets,
 bypass actors, security features and current limitations. PRs and resolved
@@ -177,12 +177,12 @@ re-reviewed only on request (`@codex review`).
 Issue #6 recorded initial default-branch activation of forms and the PR
 template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
 policies define the reporting routes.
-Dependabot targets setup updates at `release/v0.0.1` and existing prototype
-updates at `release/v0.1.0`, as detailed in [Repository checks](CI.md).
-Issue #8 owns the v0.0.1 closeout; its record is
+Dependabot targets Actions, the CI parser and prototype test packages at
+`release/v0.1.0`, milestone 2, as detailed in [Repository checks](CI.md).
+Issue #8 completed the v0.0.1 closeout; its record is
 [Setup closeout](evidence/2026-10-18-setup-closeout.md).
 
-The procedures fit this project's setup stage and retained-release-branch
+The procedures fit this project's prototype stage and retained-release-branch
 protections. This document records maintenance procedures, not Excel execution or
 regulatory certification. Prototype source and LibreOffice evidence are
 tracked separately from setup closeout.
