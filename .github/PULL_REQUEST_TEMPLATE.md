@@ -24,5 +24,7 @@ risks, dependencies, or missing evidence; write None when applicable.
 - [ ] Evidence and limitations are accurate; no credentials, confidential data, or undisclosed vulnerability details are included.
 
 Task PRs squash-merge into the integration branch. Owner-requested main
-integrations use a merge commit and retain/fast-forward the release branch.
-See [governance](https://github.com/danielep71/MKT-FTRB-SA/blob/main/docs/GOVERNANCE.md).
+integrations use a merge commit. If work continues, fast-forward the release
+branch to the merge; after the milestone-final integration, delete the
+obsolete branch under the
+[release-branch lifecycle](https://github.com/danielep71/MKT-FTRB-SA/blob/main/docs/GOVERNANCE.md#release-branch-lifecycle).

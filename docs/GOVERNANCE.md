@@ -41,23 +41,49 @@ When the owner requests integration, open a PR from the applicable integration b
 a **merge commit** to preserve ancestry. Integration does not by itself publish
 a version tag, release, workbook or website.
 
-Release branches are retained by default: a separate active ruleset blocks
-their deletion with no bypass. Only an explicit owner decision recorded in an
-issue deletes one, as for `release/v0.0.1` (#62). After integration, an
-authorized maintainer may fast-forward the applicable integration branch to
-the main merge commit if work continues, using the existing administrator
-maintenance bypass and an expected-head check. Never force-push, reset shared
-history, delete a release branch without that owner decision, or recreate a
-deleted one. At a milestone transition, create the next owner-approved
-integration branch and update this document, agent guidance and automated PR
-targets together.
+After integration, an authorized maintainer may fast-forward the active
+integration branch to the main merge commit if work continues, using the
+existing administrator maintenance bypass and an expected-head check. At a
+milestone transition, create the next owner-approved integration branch and
+update this document, contribution guidance and automated PR targets together.
+
+### Release-branch lifecycle
+
+A release branch is active while its milestone accepts work. Both release
+rulesets protect it, including a separate deletion rule with no bypass. Once
+it is **obsolete**, it is deleted (owner decision of October 18, 2026, #66).
+A release branch is obsolete when all of these hold:
+
+1. its milestone is closed;
+2. its head is an ancestor of main, integrated through the owner-requested
+   merge-commit PR;
+3. no open PR, Dependabot entry or workflow targets it;
+4. a repository-wide search finds no current document that names it as
+   active or tells contributors to use it. The search covers README,
+   INSTALLATION, CONTRIBUTING, SECURITY, SCOPE, this document and the
+   other `docs/` pages, the PR template and the issue forms. Dated evidence
+   records and historical CHANGELOG entries are excluded.
+
+To delete an obsolete branch:
+
+1. The milestone closeout issue, or a follow-up issue, records the branch
+   head, the check of each condition and the search used for the fourth.
+2. The owner temporarily excludes the branch from ruleset 25319621, deletes
+   it using the administrator bypass of ruleset 25319604, and then removes
+   the exclusion.
+3. The issue records the readback: the branch is absent, its head is on
+   main, and ruleset 25319621 matches its earlier configuration.
+
+`release/v0.0.1` was deleted this way (#62). Never delete an active release
+branch, force-push or reset shared history, or recreate a deleted release
+branch name; later work uses a new owner-approved branch.
 
 ### Integration verification
 
 Before integration, record the release head and main head. After the
 owner-requested merge, inspect the resulting commit: its first parent must
 be the previous main head and its second parent the reviewed release head.
-Fast-forward the retained release branch only if it still points to that
+Fast-forward the active release branch only if it still points to that
 reviewed head and the merge commit descends from it. If it moved, inspect
 the new work before proceeding; never reset or force an update.
 
@@ -171,7 +197,7 @@ re-reviewed only on request (`@codex review`).
 | Requirement | Enforcement or working procedure |
 | --- | --- |
 | PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets, with the bypass modes recorded in the settings baseline |
-| Release-branch deletion prohibition | Separate active ruleset with no bypass actors |
+| Release-branch deletion protection | Separate active ruleset with no bypass actors; an obsolete branch is deleted only through the lifecycle procedure above (#66) |
 | Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
 | Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
@@ -186,7 +212,7 @@ Dependabot targets Actions, the CI parser and prototype test packages at
 Issue #8 completed the v0.0.1 closeout; its record is
 [Setup closeout](evidence/2026-10-18-setup-closeout.md).
 
-The procedures fit this project's prototype stage and retained-release-branch
+The procedures fit this project's prototype stage and release-branch
 protections. This document records maintenance procedures, not Excel execution or
 regulatory certification. Prototype source and LibreOffice evidence are
 tracked separately from setup closeout.
