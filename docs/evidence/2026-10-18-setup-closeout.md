@@ -38,7 +38,7 @@ Issues #1–#7, #23 and #25 are closed as completed.
 | Repository | Description and topics updated by the owner to describe the Excel/VBA prototype with its pending Excel evidence; public; default branch main; Pages and Discussions off; automatic deletion of merged branches on; merge methods enabled globally and narrowed by rulesets |
 | Forms and policies on main | Three issue forms, `config.yml` with blank issues disabled and the private-reporting link, PR template, `SECURITY.md` and `CODE_OF_CONDUCT.md` |
 | License | `LICENSE` is MIT with copyright Daniele Penza; GitHub detects MIT. README, contribution and policy documents link it, and the maintenance scripts carry `SPDX-License-Identifier: MIT` |
-| Tag candidate `7ee0ced` | Last setup-only main commit (#36), 45 files, no VBA modules or workbook. Fresh checkout of that commit: `tools/check_repository.py` passed (45 files plus label and traffic self-tests), and `labels-sync.mjs --mode validate` plans 0 changes. Hosted [Repository integrity run 39077036863](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39077036863) passed on it |
+| Last setup-only commit `7ee0ced` | The #36 merge, 45 files, no VBA modules or workbook. It predates the closeout (no release procedure or closeout record; its documents describe completed controls as pending), so it is not a tag candidate. Fresh checkout of that commit: `tools/check_repository.py` passed (45 files plus label and traffic self-tests), and `labels-sync.mjs --mode validate` plans 0 changes. Hosted [Repository integrity run 39077036863](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39077036863) passed on it |
 | Wiki | Enabled for collaborators. The owner published a Home page (wiki commit `3725aa9`) that links to the versioned repository documents; it holds no other content |
 | Traffic history | [Run 39105087826](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105087826) published data commit `af6a68a`; the first window has zero counts |
 
@@ -59,7 +59,7 @@ Issues #1–#7, #23 and #25 are closed as completed.
 | Dependabot security update PRs | Deferred; alerts remain enabled |
 | Auto-merge | Off |
 | Pages, SEO and repository social preview | Deferred unless separately authorized |
-| Tag `v0.0.1` and GitHub release | Deferred by the owner on October 18, 2026; candidate `7ee0ced` stays validated under [Releasing](../../RELEASING.md) |
+| Tag `v0.0.1` and GitHub release | Deferred by the owner on October 18, 2026. No main commit is both setup-only and complete, so there is no tag candidate; see [Releasing](../../RELEASING.md) |
 
 ## ⚠️ Limitations
 
@@ -80,7 +80,8 @@ Issues #1–#7, #23 and #25 are closed as completed.
 2. Retire the setup line: Dependabot still targets `release/v0.0.1` and
    milestone v0.0.1 for GitHub Actions and the CI parser, and governance and
    agent instructions list the branch as active (#51).
-3. Tag `v0.0.1`: deferred by the owner. If requested later, use the
-   validated candidate `7ee0ced` (see [Releasing](../../RELEASING.md));
-   current main also carries the prototype and cannot carry a setup-only tag.
+3. Tag `v0.0.1`: deferred by the owner. No main commit is both setup-only
+   and complete, so a tag would first need an owner decision on preparing a
+   complete candidate (see [Releasing](../../RELEASING.md)). Until then the
+   closed milestone and this record are the setup baseline.
 4. v0.1.0 closeout (#32), after #28, #29 and #30.

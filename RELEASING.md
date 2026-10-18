@@ -66,15 +66,16 @@ milestone and leave the others under `[Unreleased]`.
 3. **Integration into main** happens only on the owner's explicit request,
    through a release-to-main PR with a merge commit. The retained release
    branch is then fast-forwarded to that merge with an expected-head guard.
-4. **Tag candidate**: the main commit whose whole tree satisfies the
-   version's contents rule below. A tag and its source archives expose the
-   entire tree, so release notes cannot exclude files from it.
-   - Normally the candidate is the main commit that carries the dated
-     changelog section: on the owner's request, a task PR dates the section
-     and it reaches main through step 3.
-   - If main has already moved past the version's scope, the candidate is
-     the last main commit within scope. The dated changelog section is then
-     added afterwards on main and names the tagged commit.
+4. **Tag candidate**: the main commit whose whole tree both satisfies the
+   version's contents rule below and carries the version's completion
+   record and dated changelog section. On the owner's request, a task PR
+   dates the section and it reaches main through step 3. A tag and its
+   source archives expose the entire tree, so release notes can neither
+   exclude files from it nor add the missing closeout to it.
+   - If no main commit meets both conditions, there is no tag candidate.
+     The version is then recorded by its closed milestone and closeout
+     record. Tagging it needs a separate owner decision on how a complete
+     candidate is prepared and validated.
 5. **Validate the exact candidate**: run the stage's checks on a fresh
    checkout of that commit and confirm that the hosted `Repository integrity`
    run passed on it. Record the commands, results and run URL in the closeout
@@ -92,10 +93,16 @@ milestone and leave the others under `[Unreleased]`.
    issue and evidence. Attach no workbook binary unless the version's
    evidence covers it.
 
-For v0.0.1, main carried the v0.1.0 prototype (#39) before the setup
-closeout, so the candidate is `7ee0ced`, the #36 merge and last setup-only
-main commit. Its tree has 45 files, with no VBA modules or workbook; the
-validation is in the [setup closeout record](docs/evidence/2026-10-18-setup-closeout.md).
+**v0.0.1 has no tag candidate.** Main carried the v0.1.0 prototype (#39)
+before the setup closeout:
+- `7ee0ced` (#36), the last setup-only main commit, predates the closeout:
+  it has no release procedure or closeout record, and its documents still
+  describe completed controls as pending.
+- Every later main commit carries the prototype source and template.
+
+The setup baseline is recorded by the closed v0.0.1 milestone and the
+[setup closeout record](docs/evidence/2026-10-18-setup-closeout.md). The
+owner deferred the tag on October 18, 2026.
 
 ## 📦 Contents and evidence by stage
 
