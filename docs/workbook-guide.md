@@ -16,6 +16,9 @@ liquidity horizons, DRC and RRAO weights, bucket numbers) and every entry of
 a `P_General` vertex list is required as well: a blank or nonnumeric value,
 an empty list or a blank list entry (`0.25,,1`, a trailing comma) stops the
 run and the `Log` names the sheet, table, data row and column, or the list.
+Tagged parameter tables reject blank keys in populated rows and completely
+blank rows followed by more data before the next tag; blank separator rows
+between tables remain valid (#48).
 Every run clears the output sheets first and again when it fails, so a
 failed run shows "Run failed" on `Results` and leaves neither earlier nor
 partial capital behind (#45).

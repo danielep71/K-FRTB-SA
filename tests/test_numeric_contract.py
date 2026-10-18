@@ -108,3 +108,25 @@ def test_reference_numeric_text_matches_the_vba_contract():
     for text in ["abc", "0,5", "1,000", "1.2junk", "1e", "1e309", "1 2", "$1", "NaN", "inf", "1_000", "&H10", "1%", "", ".", "\t1"]:
         assert ref._number(text) is None, text
     assert ref._number(True) is None and ref._number(7) == 7.0
+
+
+@pytest.mark.parametrize("key,clear_row", [(1, False), (7, False), (13, False), (7, True)])
+def test_blank_parameter_key_or_internal_gap_fails(lo_default_path, tmp_path, key, clear_row):
+    wb = openpyxl.load_workbook(lo_default_path)
+    ws = wb["P_EQ"]
+    tag_row = next(r for r in range(1, ws.max_row + 1)
+                   if str(ws.cell(r, FIRST_COL).value).startswith("[EQ_GAMMA]"))
+    row = tag_row + 1 + key
+    for column in range(FIRST_COL, FIRST_COL + (14 if clear_row else 1)):
+        ws.cell(row, column).value = None
+    source = tmp_path / "blank-key.xlsx"
+    wb.save(source)
+    out = tmp_path / "blank-key-out.xlsx"
+    assert lo_runner.run(out, ["M_Main.RunFRTB_Silent"], input_book=source) == []
+    result = openpyxl.load_workbook(out, data_only=True)
+    message = f"Blank {'data row' if clear_row else 'key'} in [EQ_GAMMA] data row {key} (P_EQ)"
+    errors = log_rows(result, "ERROR")
+    assert len(errors) == 1 and message in errors[0][2], errors
+    for name in ("Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC"):
+        assert sheet_rows(result, name) == [], name
+    assert str(result["Results"].cell(5, FIRST_COL).value).startswith("Run failed")

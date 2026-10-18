@@ -12,7 +12,8 @@ Attribute VB_Name = "CORE_Util"
 '   Tagged tables: FindTagRow, ReadTable, ReadKeyValues, KVNumber, KVText,
 '   KVBool, TableNumber. A tagged table starts with a heading cell in
 '   column C whose text begins with "[TAG]"; the next row is the header and
-'   data rows follow until the first blank cell in column C.
+'   data rows continue to the next tag or used-range end. Blank keys and
+'   internal blank rows raise rather than silently truncating the table.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
 '   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool,
 '   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
@@ -112,10 +113,12 @@ End Function
 
 
 ' Returns the data rows of a tagged table as a 1-based 2D array
-' (rows x columns) and sets nRows/nCols. Raises an error if the tag is missing.
+' (rows x columns) and sets nRows/nCols. Reads to the next tag or used-range
+' end; rejects blank keys and internal gaps instead of truncating the table.
 Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
                           ByRef nRows As Long, ByRef nCols As Long) As Variant
     Dim ws As Object, tagRow As Long, r As Long, c As Long
+    Dim lastRow As Long, firstBlank As Long, rowHasData As Boolean
     Dim data() As Variant
 
     Set ws = GetSheet(sheetName)
@@ -130,9 +133,28 @@ Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
         nCols = nCols + 1
     Loop
     nRows = 0
-    Do While Trim$(CStr(TableCell(ws, tagRow + 2 + nRows, 1).Value)) <> ""
-        nRows = nRows + 1
-    Loop
+    firstBlank = 0
+    lastRow = ws.UsedRange.Row + ws.UsedRange.Rows.Count - 1
+    For r = tagRow + 2 To lastRow
+        If Left$(ToText(TableCell(ws, r, 1).Value), 1) = "[" Then Exit For
+        rowHasData = False
+        For c = 1 To nCols
+            If Not IsBlank(TableCell(ws, r, c).Value) Then rowHasData = True
+        Next c
+        If rowHasData Then
+            If IsBlank(TableCell(ws, r, 1).Value) Then
+                Err.Raise vbObjectError + ERR_APP, "CORE_Util.ReadTable", _
+                          "Blank key in [" & tag & "] data row " & r - tagRow - 1 & " (" & sheetName & ")"
+            End If
+            If firstBlank > 0 Then
+                Err.Raise vbObjectError + ERR_APP, "CORE_Util.ReadTable", _
+                          "Blank data row in [" & tag & "] data row " & firstBlank & " (" & sheetName & ")"
+            End If
+            nRows = nRows + 1
+        ElseIf firstBlank = 0 Then
+            firstBlank = r - tagRow - 1
+        End If
+    Next r
 
     If nRows = 0 Or nCols = 0 Then
         ReadTable = Empty

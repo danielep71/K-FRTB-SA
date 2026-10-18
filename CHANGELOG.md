@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Tagged parameter tables reject blank keys and internal blank rows rather
+  than truncating later matrix data and leaving correlations at zero (#48).
+
 - Required numeric parameters fail with key/source context instead of using
   zero for invalid text. Validation and conversion share a full invariant
   dot-decimal/scientific grammar; comma/grouped/junk/overflow text is rejected
