@@ -102,6 +102,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Release branches are deleted once obsolete: milestone closed, head
+  integrated into main, no PR, updater or workflow targeting them and no
+  guidance naming them as active. Governance defines the conditions and the
+  owner's exclusion-based deletion procedure; the rulesets are unchanged and
+  keep protecting active branches (#66).
+
 - The owner deleted the setup branch `release/v0.0.1` after the v0.0.1
   closeout. Its head `b4d6c02` is on main, and the closed milestone and the
   closeout record remain the setup baseline. The release deletion ruleset
