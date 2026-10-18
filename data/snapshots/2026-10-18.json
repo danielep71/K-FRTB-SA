@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "repository": "danielep71/MKT-FTRB-SA",
-  "collected_at_utc": "2026-10-18T06:44:15.345574+00:00",
-  "source_commit_sha": "d487ee293f6762f38041ed06dc055ac02b43adf9",
+  "collected_at_utc": "2026-10-18T09:01:12.902249+00:00",
+  "source_commit_sha": "b4d6c02edcd60bb412a06999d1909e6eaba63837",
   "views": {
     "count": 0,
     "uniques": 0,
