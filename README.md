@@ -248,7 +248,7 @@ what is **not** validated yet.
 | Private security reporting | [Security policy](SECURITY.md) |
 | Documentation index | [Documentation](docs/README.md) |
 | Functional scope, platform decisions, and validation policy | [Scope](docs/SCOPE.md) |
-| Setup work and proposed functional phases | [Roadmap](docs/ROADMAP.md) |
+| Milestone plan from setup to the first certified release | [Roadmap](docs/ROADMAP.md) |
 | Label usage, issue priorities, and metadata checks | [Labels and triage](docs/LABELS.md) |
 | How to contribute | [Contributing](CONTRIBUTING.md) |
 | Development branches and integration | [Governance](docs/GOVERNANCE.md) |

@@ -21,7 +21,7 @@ procedures. Keep root entry documents linked rather than copying them here.
 | Branches, issues, reviews, milestone management, and completion | [Governance](GOVERNANCE.md) |
 | Label catalogue and triage searches | [Labels](LABELS.md) |
 | Effective GitHub controls | [Repository settings](REPOSITORY_SETTINGS.md) |
-| Workstreams and proposed functional sequence | [Roadmap](ROADMAP.md) |
+| Milestone plan and current workstreams | [Roadmap](ROADMAP.md) |
 | Detailed repository-setup milestone | [v0.0.1](Milestones/v0.0.1.md) |
 | Versions, tags and release evidence | [Releasing](../RELEASING.md) |
 | Setup closeout evidence | [v0.0.1 closeout](evidence/2026-10-18-setup-closeout.md) |
