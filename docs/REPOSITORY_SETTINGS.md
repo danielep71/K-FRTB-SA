@@ -84,7 +84,7 @@ only because the required check had not run.
 | Private vulnerability reporting | Not offered while private | Enabled after the owner's public-visibility change |
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
-| CodeQL | Not configured | Default setup enabled for detected GitHub Actions; setup run succeeded |
+| CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
 | Dependabot version updates | No configuration | Configuration added under #7; activates after default-branch integration; targets in CI.md |
 | Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; see CI.md and #2 |
 

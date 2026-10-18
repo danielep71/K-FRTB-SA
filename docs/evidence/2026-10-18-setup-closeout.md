@@ -34,7 +34,7 @@ Issues #1–#7, #23 and #25 are closed as completed.
 | Fresh checkout | Clone of `release/v0.0.1` at `d487ee2`. Each command passed: `tools/check_repository.py` (79 files plus label and traffic self-tests), `tools/vba_lint.py` (11 modules, 0 problems), the label self-tests and `REQUIRE_LIBREOFFICE=1 pytest` (97 passed, 21 subtests passed). Live drift detection needs a token locally; the hosted run covers it |
 | Required check | Main ruleset 25319557 and release ruleset 25319604 require `Repository integrity` (GitHub Actions, app 15368); main also requires up-to-date branches. Dependabot PR #37 was `blocked` only by the missing check |
 | Review | The ChatGPT Codex Connector reviewed #42 and #46 automatically when they were opened |
-| Security | Secret scanning and push protection are enabled, private vulnerability reporting is enabled and Dependabot security updates are off, as documented. Dependabot version updates opened #37 |
+| Security | CodeQL default setup covers GitHub Actions and Python (default suite, weekly). Secret scanning and push protection are enabled, private vulnerability reporting is enabled and Dependabot security updates are off, as documented. Dependabot version updates opened #37 |
 | Repository | Public; default branch main; Pages and Discussions off; automatic deletion of merged branches on; merge methods enabled globally and narrowed by rulesets |
 | Forms and policies on main | Three issue forms, `config.yml` with blank issues disabled and the private-reporting link, PR template, `SECURITY.md` and `CODE_OF_CONDUCT.md` |
 | License | `LICENSE` is MIT with copyright Daniele Penza; GitHub detects MIT. README, contribution and policy documents link it, and the maintenance scripts carry `SPDX-License-Identifier: MIT` |
@@ -65,6 +65,10 @@ Issues #1–#7, #23 and #25 are closed as completed.
   planned; only the owner can change it.
 - Codex does not re-review later pushes automatically.
 - The traffic token expires; collection fails until it is renewed.
+- Open code-scanning, Dependabot and secret-scanning alerts are not readable
+  with this session's access; the owner confirms them on the Security tab.
+- The wiki is enabled for collaborators only; its content is maintained
+  outside this repository and was not reviewed here.
 - Main also carries the v0.1.0 prototype. Its LibreOffice evidence is not
   Excel evidence (#28), and its methodology decisions (#29) and round trip
   (#30) are open under v0.1.0.
@@ -72,7 +76,10 @@ Issues #1–#7, #23 and #25 are closed as completed.
 ## ➡️ Next decisions
 
 1. Integrate the #8 closeout PR into main (owner request), then fast-forward
-   `release/v0.0.1`.
-2. Whether to tag `v0.0.1`, and on which main commit (see
+   `release/v0.0.1` and recheck the issue forms from main.
+2. Retire the setup line: Dependabot still targets `release/v0.0.1` and
+   milestone v0.0.1 for GitHub Actions and the CI parser, and governance and
+   agent instructions list the branch as active (#51).
+3. Whether to tag `v0.0.1`, and on which main commit (see
    [Releasing](../../RELEASING.md)).
-3. v0.1.0 closeout (#32), after #28, #29 and #30.
+4. v0.1.0 closeout (#32), after #28, #29 and #30.
