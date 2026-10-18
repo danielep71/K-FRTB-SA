@@ -8,8 +8,9 @@ Potential vulnerabilities follow [SECURITY.md](SECURITY.md).
 
 Repository setup (v0.0.1) and the Excel/VBA SA prototype (v0.1.0) proceed on
 separate integration branches. Read [scope and decisions](docs/SCOPE.md)
-before functional changes. The prototype exists on release/v0.1.0 with a
+before functional changes. The prototype is on main and release/v0.1.0 with a
 committed macro-free template; Excel host evidence remains pending in #28.
+Versions and tags follow [Releasing](RELEASING.md).
 
 ## Start with an issue
 

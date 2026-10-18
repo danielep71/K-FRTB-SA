@@ -1,0 +1,78 @@
+# ✅ v0.0.1 setup closeout record
+
+Closeout record for issue #8 and the
+[v0.0.1 - Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+milestone. Readback on October 18, 2026 (Europe/Rome), at main,
+`release/v0.0.1` and `release/v0.1.0` = `d487ee293f6762f38041ed06dc055ac02b43adf9`.
+`release/v0.0.1` was fast-forwarded to main by the owner before this record.
+
+v0.0.1 is a repository setup baseline. It does not implement, run in Excel or
+validate an FRTB-SA calculator; the prototype on main belongs to v0.1.0.
+
+## 🧩 Workstreams
+
+| Issue | Result | Merged PRs (merge commit) |
+| --- | --- | --- |
+| #1 Labels | 20 canonical labels; reconciliation and drift detection | #9 (`7d514b0`); pruning guard #33 (`8e7e710`) for #25 |
+| #2 Settings | Rulesets, security features, required check, automatic review | #10 (`a03cbac`); settings changed and read back by the owner |
+| #3 Identity and scope | README, scope, roadmap | #11 (`96a3b44`) |
+| #4 Governance | Integration branch, contribution and milestone procedure | #12 (`4f6ee85`), #13 (`c01f2ad`), #16 (`78bf66f`) |
+| #5 Structure | Directories, file policies, workbook-template path, MIT configuration | #14 (`a00f11e`), #15 (`00e1c30`), #17 (`f631670`) |
+| #6 Contribution policies | Issue forms, PR template, conduct and security policies | #19 (`26312bd`), integrated by #21 (`359a1da`) |
+| #7 CI | Universal `Repository integrity` check and Dependabot configuration | #35 (`d96f081`), integrated by #36 (`7ee0ced`) |
+| #23 Traffic history | Protected data branch, daily collection | #24 (`588029d`), #27 (`9efa093`), integrated by #26 (`71d3e7a`) |
+| #25 Label pruning defect | Pruning checks the resolved plan | #33 (`8e7e710`) |
+
+Issues #1–#7, #23 and #25 are closed as completed.
+
+## 🔎 Verification
+
+| Check | Result |
+| --- | --- |
+| Labels | Live catalogue equals `.github/labels.json`: 20 of 20 names, colors and descriptions, none extra. [Drift run 39105486786](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105486786) on main passed. `labels-sync.mjs --mode validate` plans 0 changes |
+| Metadata | All 20 issues and all 29 PRs are assigned to danielep71 and carry exactly one priority and a milestone; P1 is used only for the confirmed calculation bugs #41, #45 and #48 |
+| Fresh checkout | Clone of `release/v0.0.1` at `d487ee2`. Each command passed: `tools/check_repository.py` (79 files plus label and traffic self-tests), `tools/vba_lint.py` (11 modules, 0 problems), the label self-tests and `REQUIRE_LIBREOFFICE=1 pytest` (97 passed, 21 subtests passed). Live drift detection needs a token locally; the hosted run covers it |
+| Required check | Main ruleset 25319557 and release ruleset 25319604 require `Repository integrity` (GitHub Actions, app 15368); main also requires up-to-date branches. Dependabot PR #37 was `blocked` only by the missing check |
+| Review | The ChatGPT Codex Connector reviewed #42 and #46 automatically when they were opened |
+| Security | Secret scanning and push protection are enabled, private vulnerability reporting is enabled and Dependabot security updates are off, as documented. Dependabot version updates opened #37 |
+| Repository | Public; default branch main; Pages and Discussions off; automatic deletion of merged branches on; merge methods enabled globally and narrowed by rulesets |
+| Forms and policies on main | Three issue forms, `config.yml` with blank issues disabled and the private-reporting link, PR template, `SECURITY.md` and `CODE_OF_CONDUCT.md` |
+| License | `LICENSE` is MIT with copyright Daniele Penza; GitHub detects MIT. README, contribution and policy documents link it, and the maintenance scripts carry `SPDX-License-Identifier: MIT` |
+| Traffic history | [Run 39105087826](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105087826) published data commit `af6a68a`; the first window has zero counts |
+
+## 🧭 Adopted and deferred practices
+
+| Practice | Decision |
+| --- | --- |
+| Label catalogue, reconciliation and drift detection | Adopted |
+| Branch and tag rulesets, required universal check | Adopted |
+| Automatic Codex review on PR open | Adopted; later pushes are re-reviewed on request |
+| CodeQL default setup, secret scanning, push protection, private vulnerability reporting | Adopted |
+| Dependabot version updates | Adopted, targeted at the integration branches |
+| Issue forms, PR template, conduct and security policies | Adopted |
+| Traffic history | Adopted; daily collection active |
+| Release procedure and version convention | Adopted in [Releasing](../../RELEASING.md) |
+| Required approvals | Not adopted: one maintainer; the procedure must not claim independent review |
+| Copilot code review | Not available for this account |
+| Dependabot security update PRs | Deferred; alerts remain enabled |
+| Auto-merge | Off |
+| Pages, SEO and repository social preview | Deferred unless separately authorized |
+| Tag `v0.0.1` and GitHub release | Not created; owner decision under [Releasing](../../RELEASING.md) |
+
+## ⚠️ Limitations
+
+- The GitHub repository description still says SBM, DRC and RRAO are
+  planned; only the owner can change it.
+- Codex does not re-review later pushes automatically.
+- The traffic token expires; collection fails until it is renewed.
+- Main also carries the v0.1.0 prototype. Its LibreOffice evidence is not
+  Excel evidence (#28), and its methodology decisions (#29) and round trip
+  (#30) are open under v0.1.0.
+
+## ➡️ Next decisions
+
+1. Integrate the #8 closeout PR into main (owner request), then fast-forward
+   `release/v0.0.1`.
+2. Whether to tag `v0.0.1`, and on which main commit (see
+   [Releasing](../../RELEASING.md)).
+3. v0.1.0 closeout (#32), after #28, #29 and #30.

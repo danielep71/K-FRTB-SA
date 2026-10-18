@@ -22,9 +22,9 @@ authoritative for current progress.
 | [#7](https://github.com/danielep71/MKT-FTRB-SA/issues/7) | Universal repository-integrity checks and dependency updates |
 | [#8](https://github.com/danielep71/MKT-FTRB-SA/issues/8) | Release baseline and evidence-based setup closeout |
 
-Setup maintenance CI and label pruning are implemented (#7/#25); traffic
-credentials and first collection are explicitly deferred in #23. Protection
-check enforcement remains #2. Exit criteria belong to #8. Closing this milestone does not publish a release,
+Setup maintenance CI, label pruning, required-check enforcement and traffic
+collection are complete (#7, #25, #2, #23). Exit criteria and the closeout
+record belong to #8. Closing this milestone does not publish a release,
 create a version tag, establish an approved engine platform, or certify an
 FRTB-SA implementation.
 
