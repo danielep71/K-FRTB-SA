@@ -1,6 +1,6 @@
 # 📚 Documentation index
 
-[![Stage: repository setup](https://img.shields.io/badge/stage-repository_setup-1D76DB)](Milestones/v0.0.1.md)
+[![Stage: SA prototype](https://img.shields.io/badge/stage-SA_prototype-D93F0B)](ROADMAP.md)
 
 Versioned documentation is authoritative for project contracts and maintenance
 procedures. Keep root entry documents linked rather than copying them here.
@@ -27,5 +27,7 @@ procedures. Keep root entry documents linked rather than copying them here.
 | Setup closeout evidence | [v0.0.1 closeout](evidence/2026-10-18-setup-closeout.md) |
 | Recorded changes | [Changelog](../CHANGELOG.md) |
 
-Create architecture, methodology, and evidence subdirectories with their first
-approved decision or real record. The live issue tracker owns progress.
+Durable evidence records live in [evidence](evidence/) and milestone guides in
+[Milestones](Milestones/). Create further subdirectories, such as architecture,
+with their first approved decision or real record. The live issue tracker owns
+progress.

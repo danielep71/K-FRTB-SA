@@ -7,12 +7,14 @@ never copied from the VBA under test.
 | Path | Content |
 | --- | --- |
 | `modules/TEST_Regression.bas` | VBA regression test imported into development builds; compares the last run with `Test_Expected` |
+| `modules/TEST_Numeric.bas` | VBA numeric validation and conversion contract test imported into development builds |
 | `frtb_reference.py` | Independent Python reference implementation of the prototype's scope |
 | `regulatory_defaults.py` | Regulatory parameters typed independently of `M_Setup` |
 | `test_reference.py` | Hand-calculated checks of the reference |
 | `test_vba_engine.py` | Headless LibreOffice runs of the VBA reconciled with the reference |
 | `test_tooling.py` | VBA lint and freshness of the embedded expected values |
 | `test_template.py` | The committed template matches a fresh build and a build from it runs and reconciles |
+| `test_numeric_contract.py` | Headless LibreOffice runtime regressions for the numeric-text and parameter-table contracts (#41, #45, #48) |
 | `conftest.py` | Shared LibreOffice fixtures |
 | `requirements.txt` | Pinned Python test dependencies |
 

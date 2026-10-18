@@ -78,6 +78,7 @@ docs/          methodology, workbook guide, validation, assets
 | `src/modules/M_Setup` | `BuildWorkbook`, `FinishWorkbook`, `ResetParameters`, `LoadSampleData` |
 | `src/modules/M_Dev` | `Dev_ExportModules`: export the modules back to their folders |
 | `tests/modules/TEST_Regression` | `Test_RunRegression`, `Test_RunRegression_Silent` |
+| `tests/modules/TEST_Numeric` | `Test_NumericContracts_Silent`: numeric validation and conversion contracts |
 
 Each module opens with a banner (purpose, public surface, dependencies, state
 ownership, error policy, compatibility); `tools/vba_lint.py` checks the banner,

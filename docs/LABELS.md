@@ -12,8 +12,8 @@ issues, must have:
 - Assignee `danielep71`.
 - Exactly one priority: `P1`, `P2` or `P3`.
 - The milestone that owns its work; current prototype and repository maintenance
-  belong to **v0.1.0 - SA prototype** (milestone 2, owner-approved #51).
-  Historical setup issues retain the closed **v0.0.1 - Repo setup** milestone.
+  belong to **v0.1.0 — SA prototype** (milestone 2, owner-approved #51).
+  Historical setup issues retain the closed **v0.0.1 — Repo setup** milestone.
 - An objective, acceptance checklist, dependencies and required evidence.
 
 The owner's triage convention reserves **P1 for confirmed calculation bugs**.
@@ -54,7 +54,7 @@ choose priorities or milestones, or close issues. The bug form defaults to
 P2, and feature/documentation forms to P3; all assign danielep71. Milestones
 and metadata confirmation remain manual, and API-created issues bypass form
 defaults. [Governance](GOVERNANCE.md) explains default-branch activation and
-the contribution workflow; issue #6 tracks live activation verification.
+the contribution workflow; live activation was verified through #21/#6.
 
 ## Reusable triage searches
 
@@ -95,7 +95,7 @@ Reconciliation verifies the exact final match; it is not best effort.
 runs (05:17 UTC daily) and manual runs read the live catalogue without mutation
 and retain JSON/Markdown evidence for 30 days. Drift fails the run and requires
 review; detection does not silently repair it. Scheduled workflows use the
-default branch, so they become active after bootstrap integration into `main`.
+default branch; they are active on `main` (drift run 39105486786 passed).
 
 The manifest uses `prune: true`: labels outside the selected catalogue are
 deleted, which also removes their issue/PR associations. Before any change to

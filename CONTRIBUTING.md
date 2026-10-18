@@ -25,8 +25,8 @@ and independently specified expected results.
 
 [Governance](docs/GOVERNANCE.md) owns branch, metadata, review, and completion
 rules. [Labels and triage](docs/LABELS.md) owns the label catalogue and priority
-definitions. Use the bug, feature, or documentation form in the issue chooser
-once the templates have reached main. Use the
+definitions. Use the bug, feature, or documentation form in the issue chooser,
+which GitHub serves from main. Use the
 [PR template](.github/PULL_REQUEST_TEMPLATE.md) for scope, evidence, and the
 single merge checklist. API-created issues and PRs must supply the same
 information and metadata explicitly.

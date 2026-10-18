@@ -33,6 +33,15 @@ Unreleased describe integrated work, not a published version.
   CI triggers, build-time window settings and core worksheet access. Module
   comments in `M_Main`, `M_Setup` and `CORE_Util` were corrected; no code
   changed (#40).
+- Post-closeout documentation consistency: milestone names use their live
+  titles with the em dash; completed work (#2, #6, #7, #8, #23, #31) is no
+  longer described as pending; source archives are described as omitting the
+  `export-ignore` paths; the test module and runtime test tables list
+  `TEST_Numeric` and `test_numeric_contract.py`; the roadmap shows each
+  v0.1.0 issue's state; the structure policy reflects the approved Excel/VBA
+  prototype and the existing evidence and milestone directories; and the setup
+  closeout record gains a dated addendum on the completed next decisions. No
+  code changed (#59).
 
 ### Added
 
@@ -118,11 +127,11 @@ Unreleased describe integrated work, not a published version.
   references and superseded license files at the owner's request (#5).
 
 - GitHub About description and topics identify the FRTB-SA project and its
-  setup-stage maturity (#3).
+  setup-stage maturity (#3); the owner later updated them to describe the
+  Excel/VBA prototype (#8).
 - Main, release branches, and version tags have active protection rules;
   workflow action SHA pinning and the available public-repository security
-  controls are enabled. The required integrity gate and remaining dependencies
-  stay tracked in #2.
+  controls are enabled. The required integrity gate was added later under #2.
 - Documentation uses the correct display name FRTB-SA while retaining the
   existing MKT-FTRB-SA repository identifier and URLs (#3).
 

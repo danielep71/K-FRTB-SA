@@ -13,7 +13,8 @@ prototype (issue #20). None of them holds calculation logic.
 
 [Validation](../docs/validation.md) lists their prerequisites (Python 3,
 LibreOffice Calc with the Python UNO bridge, the pinned packages in
-`tests/requirements.txt`) and how they are used together.
+`tests/requirements.txt` and `.github/requirements.txt`) and how they are used
+together.
 
 ## Label tooling
 

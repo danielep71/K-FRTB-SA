@@ -58,7 +58,7 @@
 
 > [!IMPORTANT]
 > **Version 0.1.0 is a prototype** of the
-> [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+> [v0.1.0 — SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
 > milestone (issue #20). It implements the Basel standardized approach
 > (MAR21-MAR23) in Excel VBA with parameters checked against the BIS text,
 > and every output is reconciled with an independent Python reference. It has
@@ -164,7 +164,7 @@ whitespace and local documentation targets.
 3. Open `dist\K-FRTB-SA.xlsm`, then run **Debug → Compile VBAProject** in the
    VBA editor (**Alt+F11**).
 
-`-Production` leaves out the test module; the manual import is described in
+`-Production` leaves out the test modules; the manual import is described in
 the [workbook guide](docs/workbook-guide.md#building-the-workbook-windows-excel).
 
 ## 3. Run
@@ -256,7 +256,7 @@ what is **not** validated yet.
 | Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
 | Recorded changes | [Changelog](CHANGELOG.md) |
 | Prototype backlog | [v0.1.0 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/2) |
-| Setup backlog | [v0.0.1 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1) |
+| Closed setup baseline | [v0.0.1 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1) and [closeout record](docs/evidence/2026-10-18-setup-closeout.md) |
 | Privately report a potential vulnerability | [Private vulnerability reporting](https://github.com/danielep71/MKT-FTRB-SA/security/advisories/new) |
 
 Every issue must have **one priority label**, a milestone, and an assignee.

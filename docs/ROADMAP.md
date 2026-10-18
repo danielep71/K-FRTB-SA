@@ -10,7 +10,7 @@ requires; the issue tracker is authoritative for current progress.
 
 | Milestone | Objective | Exit condition |
 | --- | --- | --- |
-| ✅ v0.0.1 — Repository setup | Repository foundations: governance, protections, CI, issue management and the release procedure | Required checks active and release procedure verified; analytics kept separate from the certification path. Closed October 18, 2026 |
+| ✅ v0.0.1 — Repo setup | Repository foundations: governance, protections, CI, issue management and the release procedure | Required checks active and release procedure verified; analytics kept separate from the certification path. Closed October 18, 2026 |
 | 🧪 v0.1.0 — SA prototype | Consolidate the existing prototype: SBM for the five implemented risk classes, non-securitization DRC and RRAO | Excel build and run documented, sample reconciliation, source round trip verified and limits stated explicitly |
 | 📐 v0.2.0 — Regulatory baseline and certification scope | Fix exactly what will be certified: standard and version, any CRR profile, included products, exclusions and interpretations | Approved requirement → source → formula → parameter → test matrix; the methodology decisions the scope needs are resolved; the meaning of certification, the validator's role, the target platform and the supported Excel environments are recorded |
 | ⚙️ v0.3.0 — Calculation engine completion | Complete and correct the engine for the approved scope, progressively separating calculation from worksheet access | Every included requirement implemented with independently derived expected values, input/output contracts defined and no known calculation defect open |
@@ -27,7 +27,7 @@ the implementer, not the first check. Every milestone names its own Excel
 evidence, which only a Windows desktop Excel host can produce. Versions,
 tags and release evidence follow [Releasing](../RELEASING.md).
 
-## ✅ v0.0.1 — Repository setup (closed)
+## ✅ v0.0.1 — Repo setup (closed)
 
 [Milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1) ·
 [milestone guide](Milestones/v0.0.1.md) ·
@@ -55,14 +55,22 @@ the setup baseline.
 [Live milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/2),
 integration branch `release/v0.1.0`.
 
-| Issue | Deliverable |
-| --- | --- |
-| [#20](https://github.com/danielep71/MKT-FTRB-SA/issues/20) | Excel VBA workbook prototype: SBM (delta, vega, curvature) for five risk classes, DRC non-securitization, RRAO, independent Python reference and reconciliation |
-| [#28](https://github.com/danielep71/MKT-FTRB-SA/issues/28) | Excel host build, compile, execution and evidence |
-| [#30](https://github.com/danielep71/MKT-FTRB-SA/issues/30) | Committed template and modules layout; remaining Excel round trip |
-| [#32](https://github.com/danielep71/MKT-FTRB-SA/issues/32) | Milestone guide, evaluation and evidence closeout |
-| [#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51) | Retire the setup line: Dependabot targets and branch guidance |
-| [#55](https://github.com/danielep71/MKT-FTRB-SA/issues/55) | This milestone plan |
+| Issue | State | Deliverable |
+| --- | --- | --- |
+| [#20](https://github.com/danielep71/MKT-FTRB-SA/issues/20) | Open | Excel VBA workbook prototype: SBM (delta, vega, curvature) for five risk classes, DRC non-securitization, RRAO, independent Python reference and reconciliation |
+| [#28](https://github.com/danielep71/MKT-FTRB-SA/issues/28) | Open | Excel host build, compile, execution and evidence |
+| [#30](https://github.com/danielep71/MKT-FTRB-SA/issues/30) | Open | Committed template and modules layout; remaining Excel round trip |
+| [#32](https://github.com/danielep71/MKT-FTRB-SA/issues/32) | Open | Milestone guide, evaluation and evidence closeout |
+| [#31](https://github.com/danielep71/MKT-FTRB-SA/issues/31) | Closed | Bring `release/v0.1.0` up to date with main and reconcile governance |
+| [#40](https://github.com/danielep71/MKT-FTRB-SA/issues/40) | Closed | Remaining prototype documentation inconsistencies |
+| [#41](https://github.com/danielep71/MKT-FTRB-SA/issues/41) | Closed | Reject invalid required parameters; consistent numeric-text parsing |
+| [#45](https://github.com/danielep71/MKT-FTRB-SA/issues/45) | Closed | Reject blank or invalid parameter-table values and vertex lists; clear outputs on failure |
+| [#48](https://github.com/danielep71/MKT-FTRB-SA/issues/48) | Closed | Reject blank keys and gaps in required parameter tables |
+| [#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51) | Closed | Retire the setup line: Dependabot targets and branch guidance |
+| [#55](https://github.com/danielep71/MKT-FTRB-SA/issues/55) | Closed | This milestone plan |
+| [#59](https://github.com/danielep71/MKT-FTRB-SA/issues/59) | Closed | Post-closeout documentation consistency (closed by the change that adds this row) |
+
+States were read back on October 18, 2026, and #59 closes with this table; the live milestone is authoritative.
 
 The open methodology interpretations are documented as limits in the
 [methodology](methodology.md); deciding them ([#29](https://github.com/danielep71/MKT-FTRB-SA/issues/29))

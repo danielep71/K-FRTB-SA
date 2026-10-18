@@ -40,7 +40,7 @@ quality.
 - **Validate traffic tooling** runs offline tests on relevant PRs and pushes
   to main and release branches. It receives read-only contents access and no
   traffic credential. It is path-filtered analytics validation, not the
-  universal repository-integrity gate tracked in #7.
+  universal repository-integrity gate (#7, completed).
 - The export job receives `contents: write` through its built-in
   `GITHUB_TOKEN` only to publish the data branch. A separate `TRAFFIC_TOKEN`
   reads the traffic endpoints. Checkout credentials are not persisted.
@@ -68,9 +68,9 @@ zero-valued substitute data.
 
 [GitHub traffic API requirements](https://docs.github.com/en/rest/metrics/traffic)
 define the current access and data contract. This repository had no secrets
-at initial inspection on October 18, 2026 (Europe/Rome). Issue #23 records
-credential and first-run readiness; this document does not claim collection
-has succeeded before a real run exists.
+at initial inspection on October 18, 2026 (Europe/Rome). Issue #23 recorded
+credential and first-run readiness and is closed; the first real export is
+recorded below.
 
 ## 🧪 Validation and operations
 
