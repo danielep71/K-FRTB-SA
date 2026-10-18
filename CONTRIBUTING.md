@@ -39,7 +39,8 @@ information and metadata explicitly.
 2. Reproduce the problem where applicable and make a focused change.
 3. Follow the root editing, ignore, and attribute policies. Do not include
    credentials, client data, local caches, or generated output.
-4. Update affected documentation and [CHANGELOG.md](CHANGELOG.md).
+4. Update affected documentation and [CHANGELOG.md](CHANGELOG.md). Write
+   repository content in US English.
 5. Run checks appropriate to the changed files. Record the exact commands,
    source commit, results, and anything unavailable.
 6. Open the PR against that milestone's integration branch, link the issue, explain scope and

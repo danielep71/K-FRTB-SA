@@ -45,7 +45,7 @@ After integration, an authorized maintainer may fast-forward the active
 integration branch to the main merge commit if work continues, using the
 existing administrator maintenance bypass and an expected-head check. At a
 milestone transition, create the next owner-approved integration branch and
-update this document, agent guidance and automated PR targets together.
+update this document, contribution guidance and automated PR targets together.
 
 ### Release-branch lifecycle
 
@@ -58,8 +58,8 @@ A release branch is obsolete when all of these hold:
 2. its head is an ancestor of main, integrated through the owner-requested
    merge-commit PR;
 3. no open PR, Dependabot entry or workflow targets it;
-4. agent guidance, this document, the PR template and the issue forms no
-   longer name it as active.
+4. this document, contribution guidance, the PR template and the issue forms
+   no longer name it as active.
 
 To delete an obsolete branch:
 

@@ -102,6 +102,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Removed `AGENTS.md` at the owner's request. Its rules duplicated the
+  governance, contribution, scope and CI documents, which remain
+  authoritative; CONTRIBUTING now also states the US English convention
+  (#68).
+
 - Release branches are deleted once obsolete: milestone closed, head
   integrated into main, no PR, updater or workflow targeting them and no
   guidance naming them as active. Governance defines the conditions and the
