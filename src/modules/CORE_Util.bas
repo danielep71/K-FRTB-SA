@@ -10,12 +10,14 @@ Attribute VB_Name = "CORE_Util"
 ' PUBLIC SURFACE
 '   Sheets: SheetExists, GetSheet, TableCell, ClearTableArea.
 '   Tagged tables: FindTagRow, ReadTable, ReadKeyValues, KVNumber, KVText,
-'   KVBool. A tagged table starts with a heading cell in column C whose text
-'   begins with "[TAG]"; the next row is the header and data rows follow
-'   until the first blank cell in column C.
+'   KVBool, TableNumber. A tagged table starts with a heading cell in
+'   column C whose text begins with "[TAG]"; the next row is the header and
+'   data rows continue to the next tag or used-range end. Blank keys and
+'   internal blank rows raise rather than silently truncating the table.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
-'   Conversions: IsBlank, ToDouble, IsNumber, ToBool, ToText, BucketLabel,
-'   MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList, InNumberList.
+'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool,
+'   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
+'   InNumberList.
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
@@ -29,8 +31,10 @@ Attribute VB_Name = "CORE_Util"
 '
 ' ERROR POLICY
 '   GetSheet and ReadTable raise vbObjectError + ERR_APP for a missing sheet
-'   or table. Formatting is cosmetic: a host that rejects a format property
-'   leaves the cell unformatted instead of stopping the run.
+'   or table; KVNumber, TableNumber and ParseNumberList raise it for a
+'   required parameter that is blank or not a number. Formatting is
+'   cosmetic: a host that rejects a format property leaves the cell
+'   unformatted instead of stopping the run.
 '
 ' COMPATIBILITY
 '   Excel VBA; also runs in LibreOffice Calc with VBA support for the
@@ -109,10 +113,12 @@ End Function
 
 
 ' Returns the data rows of a tagged table as a 1-based 2D array
-' (rows x columns) and sets nRows/nCols. Raises an error if the tag is missing.
+' (rows x columns) and sets nRows/nCols. Reads to the next tag or used-range
+' end; rejects blank keys and internal gaps instead of truncating the table.
 Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
                           ByRef nRows As Long, ByRef nCols As Long) As Variant
     Dim ws As Object, tagRow As Long, r As Long, c As Long
+    Dim lastRow As Long, firstBlank As Long, rowHasData As Boolean
     Dim data() As Variant
 
     Set ws = GetSheet(sheetName)
@@ -127,9 +133,28 @@ Public Function ReadTable(ByVal sheetName As String, ByVal tag As String, _
         nCols = nCols + 1
     Loop
     nRows = 0
-    Do While Trim$(CStr(TableCell(ws, tagRow + 2 + nRows, 1).Value)) <> ""
-        nRows = nRows + 1
-    Loop
+    firstBlank = 0
+    lastRow = ws.UsedRange.Row + ws.UsedRange.Rows.Count - 1
+    For r = tagRow + 2 To lastRow
+        If Left$(ToText(TableCell(ws, r, 1).Value), 1) = "[" Then Exit For
+        rowHasData = False
+        For c = 1 To nCols
+            If Not IsBlank(TableCell(ws, r, c).Value) Then rowHasData = True
+        Next c
+        If rowHasData Then
+            If IsBlank(TableCell(ws, r, 1).Value) Then
+                Err.Raise vbObjectError + ERR_APP, "CORE_Util.ReadTable", _
+                          "Blank key in [" & tag & "] data row " & r - tagRow - 1 & " (" & sheetName & ")"
+            End If
+            If firstBlank > 0 Then
+                Err.Raise vbObjectError + ERR_APP, "CORE_Util.ReadTable", _
+                          "Blank data row in [" & tag & "] data row " & firstBlank & " (" & sheetName & ")"
+            End If
+            nRows = nRows + 1
+        ElseIf firstBlank = 0 Then
+            firstBlank = r - tagRow - 1
+        End If
+    Next r
 
     If nRows = 0 Or nCols = 0 Then
         ReadTable = Empty
@@ -177,6 +202,31 @@ Public Function KVNumber(ByVal col As Collection, ByVal key As String, ByVal sou
                   "Invalid numeric parameter " & key & " (" & source & ")"
     End If
     KVNumber = ToDouble(v, 0#)
+End Function
+
+
+' Required number in data row r, column c of a table returned by ReadTable;
+' raises an error naming the sheet, table, row and column when the value is
+' blank or not a number, so that a parameter is never read as zero.
+Public Function TableNumber(ByRef t As Variant, ByVal r As Long, ByVal c As Long, _
+                            ByVal sheetName As String, ByVal tag As String) As Double
+    If Not IsNumber(t(r, c)) Then
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.TableNumber", _
+                  "Invalid numeric parameter in [" & tag & "] data row " & r & ", column " & c & _
+                  " (" & sheetName & "): " & DescribeValue(t(r, c))
+    End If
+    TableNumber = ToDouble(t(r, c), 0#)
+End Function
+
+
+Private Function DescribeValue(ByVal v As Variant) As String
+    If IsError(v) Then
+        DescribeValue = "error value"
+    ElseIf IsBlank(v) Then
+        DescribeValue = "blank"
+    Else
+        DescribeValue = "'" & CStr(v) & "'"
+    End If
 End Function
 
 
@@ -390,22 +440,28 @@ Public Function TenorKey(ByVal t As Double) As String
 End Function
 
 
-' Parses "0.25,0.5,1" into a 1-based Double array; returns the count.
-Public Function ParseNumberList(ByVal s As String, ByRef values() As Double) As Long
-    Dim parts As Variant, i As Long, n As Long
-    n = 0
+' Parses a required list such as "0.25,0.5,1" into a 1-based Double array;
+' returns the count. Raises an error naming the source for an empty list, a
+' blank entry ("0.25,,1" or a trailing comma) or an entry that is not a
+' number, so that no vertex is dropped silently.
+Public Function ParseNumberList(ByVal s As String, ByRef values() As Double, ByVal source As String) As Long
+    Dim parts As Variant, i As Long, n As Long, part As String
     If Trim$(s) = "" Then
-        ReDim values(1 To 1)
-        ParseNumberList = 0
-        Exit Function
+        Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", "Missing list " & source
     End If
     parts = Split(s, ",")
     ReDim values(1 To UBound(parts) - LBound(parts) + 1)
+    n = 0
     For i = LBound(parts) To UBound(parts)
-        If Trim$(CStr(parts(i))) <> "" Then
-            n = n + 1
-            values(n) = Val(Trim$(CStr(parts(i))))
+        part = Trim$(CStr(parts(i)))
+        If part = "" Then
+            Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", "Blank entry in " & source
+        ElseIf Not IsNumber(part) Then
+            Err.Raise vbObjectError + ERR_APP, "CORE_Util.ParseNumberList", _
+                      "Invalid number '" & part & "' in " & source
         End If
+        n = n + 1
+        values(n) = ToDouble(part, 0#)
     Next i
     ParseNumberList = n
 End Function
@@ -426,8 +482,8 @@ End Function
 '          SORTING OF BUCKET LABELS (NUMERIC WHEN BOTH ARE NUMBERS)
 '------------------------------------------------------------------------------
 Public Function BucketLess(ByVal a As String, ByVal b As String) As Boolean
-    If IsNumeric(a) And IsNumeric(b) Then
-        BucketLess = (Val(a) < Val(b))
+    If IsNumber(a) And IsNumber(b) Then
+        BucketLess = (ToDouble(a, 0#) < ToDouble(b, 0#))
     Else
         BucketLess = (a < b)
     End If

@@ -1,7 +1,7 @@
 # Roadmap
 
-This roadmap separates the existing setup milestone from proposed functional
-phases. Proposed phases beyond the approved milestones have no assigned version, date, or release promise;
+This roadmap separates the approved milestones (v0.0.1 setup and the v0.1.0
+SA prototype) from proposed functional phases. Proposed phases beyond the approved milestones have no assigned version, date, or release promise;
 create their milestones only after the owner approves scope and dependencies.
 
 ## v0.0.1 — Repository setup
@@ -36,7 +36,6 @@ integration branch `release/v0.1.0`.
 | Issue | Deliverable |
 | --- | --- |
 | [#20](https://github.com/danielep71/MKT-FTRB-SA/issues/20) | Excel VBA workbook prototype: SBM (delta, vega, curvature) for five risk classes, DRC non-securitization, RRAO, independent Python reference and reconciliation |
-
 | [#28](https://github.com/danielep71/MKT-FTRB-SA/issues/28) | Excel host build, compile, execution and evidence |
 | [#29](https://github.com/danielep71/MKT-FTRB-SA/issues/29) | Remaining methodology interpretations |
 | [#30](https://github.com/danielep71/MKT-FTRB-SA/issues/30) | Committed template and modules layout; remaining Excel round trip |

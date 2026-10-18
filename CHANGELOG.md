@@ -7,16 +7,32 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Tagged parameter tables reject blank keys and internal blank rows rather
+  than truncating later matrix data and leaving correlations at zero (#48).
+
 - Required numeric parameters fail with key/source context instead of using
   zero for invalid text. Validation and conversion share a full invariant
   dot-decimal/scientific grammar; comma/grouped/junk/overflow text is rejected
   while actual numeric cells retain their value (#41, PR #39 review).
-
+- Parameter-table values and vertex lists are required numbers: a blank or
+  nonnumeric risk weight, correlation, liquidity horizon or DRC/RRAO weight,
+  or an invalid, blank or missing `P_General` vertex-list entry, now stops
+  the run with the sheet, table and row or list named, instead of becoming
+  zero, being dropped or being truncated by `Val`. Every run clears the
+  output sheets first and again on failure, so a failed run leaves neither
+  earlier nor partial capital and notes the failure on `Results`. The
+  reference applies the same numeric-text grammar to inputs (#45).
 - Label pruning now checks issue/PR associations against the validated,
   policy-resolved reconciliation plan, respecting selected overlays and
   `prune: false`. Used-label protection also applies to direct CLI runs;
   offline regression fixtures cover the guard without live deletions, including
   exact matching and bounded association scans for comma-containing names (#25).
+- Prototype documentation consistency: the v0.1.0 roadmap table renders as
+  one table, the repository settings describe both integration branches, and
+  the source, template, validation and workbook guides match the lint rules,
+  CI triggers, build-time window settings and core worksheet access. Module
+  comments in `M_Main`, `M_Setup` and `CORE_Util` were corrected; no code
+  changed (#40).
 
 ### Added
 

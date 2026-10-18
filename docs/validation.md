@@ -13,10 +13,11 @@ checked. Treat any result as unvalidated for regulatory use.
 
 | Check | Command | What it shows |
 | --- | --- | --- |
-| VBA static lint | `python3 tools/vba_lint.py` | Module banner, `Option Explicit` and `VB_Name` in every module, `CORE_`/`TEST_` prefixes, `Option Private Module` in core, no undeclared identifiers, no duplicate declarations, no cross-module use of private procedures, ASCII-only source |
+| VBA static lint | `python3 tools/vba_lint.py` | Module banner, `Option Explicit` and `VB_Name` in every module, `CORE_`/`M_` names in `src/modules` and `TEST_` names in `tests/modules`, `Option Private Module` in core, no undeclared identifiers, no duplicate declarations, no cross-module use of private procedures, ASCII-only source |
 | Hand-calculated tests | `python3 -m pytest tests/test_reference.py` | The reference reproduces small examples worked out from the MAR21-MAR23 formulas: correlation scenarios, GIRR tenor/curve/inflation/basis correlations, alternative `Sb`, other-sector buckets, CSR cross-bucket correlations, FX crosses, vega and curvature correlations and risk factors, curvature selection and `psi`, DRC JTD, maturity scaling, seniority netting, HBR, RRAO |
 | Parameter spot check | `tests/test_vba_engine.py::test_parameter_sheets_match_regulatory_defaults` | The `P_*` sheets written by `M_Setup` equal an independently typed list in `tests/regulatory_defaults.py` |
 | VBA engine reconciliation | `python3 -m pytest tests/test_vba_engine.py` | The VBA modules, executed headless in LibreOffice, reproduce every `Out_RiskClass`, `Out_Buckets`, `Out_Summary` and `Out_DRC` value of the independent Python reference, on the sample portfolio and on a variant with all discretions enabled and invalid rows, each of which must be logged; empty inputs give zero capital |
+| Numeric input contract | `python3 -m pytest tests/test_numeric_contract.py` | Valid numeric text converts as expected and invalid text is rejected in the VBA and the reference; a required key, parameter-table value or vertex-list entry that is blank or not a number stops the run with its location named and leaves every output sheet empty (#41, #45) |
 | In-workbook regression test | run inside the reconciliation tests | `Test_RunRegression` passes all 52 items embedded by `M_Setup` |
 | Expected values current | `python3 tools/update_expected.py --check` | The values embedded in `M_Setup` equal the reference results for the sample |
 | Template current | `python3 tools/build_template.py --check`, `tests/test_template.py` | The committed template equals a fresh build of the modules in values and layout (cell styles, number formats, explicitly set column widths and row heights, merged ranges, tab colors, frozen panes, gridlines, autofilters; automatic heights depend on the host's fonts and are not compared), carries no VBA project, controls or personal properties, and a build from it passes the regression test and reconciles with the reference |
@@ -32,7 +33,11 @@ REQUIRE_LIBREOFFICE=1 python3 -m pytest -v tests
 LibreOffice Calc and the Python UNO bridge (`python3-uno` on Debian/Ubuntu)
 are required for the reconciliation tests; without them those tests are
 skipped unless `REQUIRE_LIBREOFFICE=1` is set. The `Prototype checks`
-workflow runs the same commands on pull requests.
+workflow runs the same commands on pull requests into `main` and `release/**`
+that change `src/`, `tests/`, `tools/`, `.github/requirements.txt` or the
+workflow itself. The universal `Repository integrity` check runs on every
+pull request; other workflows, such as the label checks, have path filters
+of their own.
 
 The separate universal [Repository integrity](CI.md) job covers repository
 maintenance and its offline tests. Its PyYAML dependency is installed from
