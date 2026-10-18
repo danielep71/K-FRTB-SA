@@ -29,7 +29,7 @@ v0.2.0 under the [roadmap](docs/ROADMAP.md).
 | --- | --- | --- |
 | Version number | [Semantic Versioning](https://semver.org/) `MAJOR.MINOR.PATCH`; before 1.0.0, MINOR marks a functional stage and PATCH a setup or maintenance increment | `0.0.1`, `0.1.0` |
 | Pre-release | SemVer pre-release identifier | `0.1.0-prototype` |
-| Milestone | Version plus a short title | `v0.1.0 - SA prototype` |
+| Milestone | Version plus a short title | `v0.1.0 — SA prototype` |
 | Integration branch | `release/` plus the tag name | `release/v0.1.0` |
 | Tag | `v` plus the version, annotated, on a main commit | `v0.0.1` |
 | Changelog section | Version and release date | `## [0.0.1] - 2026-10-18` |
@@ -71,9 +71,11 @@ milestone and leave the others under `[Unreleased]`.
 4. **Tag candidate**: the main commit whose whole tree both satisfies the
    version's contents rule below and carries the version's completion
    record and dated changelog section. On the owner's request, a task PR
-   dates the section and it reaches main through step 3. A tag and its
-   source archives expose the entire tree, so release notes can neither
-   exclude files from it nor add the missing closeout to it.
+   dates the section and it reaches main through step 3. A tag exposes the
+   entire tree, so release notes can neither exclude files from it nor add
+   the missing closeout to it. Git source archives of the tag omit only the
+   `export-ignore` paths in `.gitattributes` (`.gitattributes`, `.gitignore`,
+   `.editorconfig` and `.github/`), as [Installation](INSTALLATION.md) notes.
    - If no main commit meets both conditions, there is no tag candidate.
      The version is then recorded by its closed milestone and closeout
      record. Tagging it needs a separate owner decision on how a complete
@@ -87,7 +89,7 @@ milestone and leave the others under `[Unreleased]`.
 
    ```sh
    git fetch origin
-   git tag -a v0.0.1 <candidate-commit> -m "v0.0.1 - Repository setup"
+   git tag -a v0.0.1 <candidate-commit> -m "v0.0.1 — Repo setup"
    git push origin v0.0.1
    ```
 

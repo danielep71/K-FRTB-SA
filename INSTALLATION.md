@@ -59,7 +59,7 @@ an engine or Excel, test a workbook, or establish verified capital results.
 
 ## SA prototype (v0.1.0)
 
-The [v0.1.0 - SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+The [v0.1.0 — SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
 work integrates on `release/v0.1.0` (issue #20). Its approved Excel/VBA
 evaluation scope does not resolve the long-term platform decision or the
 remaining methodology questions in [Scope](docs/SCOPE.md).

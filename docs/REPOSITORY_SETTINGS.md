@@ -88,7 +88,7 @@ only because the required check had not run.
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
 | Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries on release/v0.1.0, milestone 2; scheduling uses the configuration on main; targets in CI.md |
-| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; see CI.md and #2 |
+| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; changing this is a new owner settings decision (CI.md) |
 
 [CodeQL setup evidence](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39070451926).
 The detected language at setup was **GitHub Actions**, not an FRTB calculation
@@ -100,7 +100,7 @@ No paid feature or agentic autofix was enabled.
 GitHub's Copilot code review page explicitly reports **No Copilot code review
 access** for this account. No paid subscription or Copilot review automation
 was enabled. The ChatGPT Codex Connector reviews automatically when a PR is
-opened or marked ready: on #42 and #46 its summary shows the trigger "PR
+opened: on #42 and #46 its summary shows the trigger "PR
 opened" with no manual request. It does not re-review later pushes; request
 one with `@codex review` or review them as a maintainer, and resolve findings
 before merge.
