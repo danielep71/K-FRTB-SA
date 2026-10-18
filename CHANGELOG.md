@@ -38,7 +38,9 @@ Unreleased describe integrated work, not a published version.
 
 - Release procedure and version convention in `RELEASING.md` (SemVer, `v`
   tags on main, changelog cut on request, evidence by stage) and the v0.0.1
-  setup closeout record with the verification readback (#8).
+  setup closeout record with the verification readback, including the
+  owner's zero-alert security readback, the wiki entry page and the deferred
+  `v0.0.1` tag (#8).
 - Excel/VBA SA prototype (#20/#22): SBM for five risk classes, DRC
   non-securitization and RRAO; independent Python reference, LibreOffice
   reconciliation and methodology/workbook/validation documentation. Excel
