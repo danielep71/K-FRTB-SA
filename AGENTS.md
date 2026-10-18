@@ -14,7 +14,7 @@
 - Keep main as the default stable branch. Open or merge a release-to-main PR
   only when the owner explicitly requests integration; use a merge commit.
 - Preserve shared history and protected release branches; never force-push,
-  reset, or delete/recreate them.
+  reset, or delete/recreate them. Only the owner decides a deletion (#62).
 
 Read [docs/GOVERNANCE.md](docs/GOVERNANCE.md) for the integration lifecycle
 and [docs/REPOSITORY_SETTINGS.md](docs/REPOSITORY_SETTINGS.md) for current
