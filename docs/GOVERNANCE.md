@@ -149,7 +149,8 @@ elsewhere does not make the original acceptance criterion pass.
 
 Closing a milestone does not authorize integration into main, a tag, a GitHub
 release, a workbook, a website, or a visibility change. Those decisions are
-separate. Issue #8 owns the release procedure and version convention.
+separate. [Releasing](../RELEASING.md) defines the release procedure and
+version convention (#8).
 
 ## Current controls and outstanding setup
 
@@ -157,17 +158,17 @@ separate. Issue #8 owns the release procedure and version convention.
 bypass actors, security features and current limitations. PRs and resolved
 conversations are required; main allows merge commits, release branches allow
 squash merges. Required approvals are zero. The universal integrity workflow
-is implemented under #7; attachment to branch rules remains #2. Automatic
-PR-review configuration is not yet
-verified under issue #2.
+(#7) is a required check on main and release branches (#2). The ChatGPT Codex
+Connector reviews every PR automatically when it is opened; later pushes are
+re-reviewed only on request (`@codex review`).
 
 | Requirement | Enforcement or working procedure |
 | --- | --- |
 | PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets, with the bypass modes recorded in the settings baseline |
 | Release-branch deletion prohibition | Separate active ruleset with no bypass actors |
 | Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
-| Successful universal integrity check | Repository integrity workflow (#7); pending attachment to rulesets in #2 |
-| Review coverage for every PR | Maintainer procedure; automatic-review configuration and release-target coverage remain to be verified in #2 |
+| Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
+| Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
 | Issue/PR assignee, priority, milestone, acceptance evidence | Manual triage and completion procedure |
 | Owner-requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
 
@@ -176,8 +177,8 @@ template; later changes follow the same activation procedure. [Conduct](../CODE_
 policies define the reporting routes.
 Dependabot targets setup updates at `release/v0.0.1` and existing prototype
 updates at `release/v0.1.0`, as detailed in [Repository checks](CI.md).
-Issue #2 remains open for its required-check and review
-dependencies; issue #8 owns final milestone closeout.
+Issue #8 owns the v0.0.1 closeout; its record is
+[Setup closeout](evidence/2026-10-18-setup-closeout.md).
 
 The procedures fit this project's setup stage and retained-release-branch
 protections. This document records maintenance procedures, not Excel execution or

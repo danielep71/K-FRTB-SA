@@ -104,5 +104,9 @@ Verified on October 18, 2026 (Europe/Rome): the data-only branch exists;
 [Protect traffic history](https://github.com/danielep71/MKT-FTRB-SA/rules/25321321)
 is active for its exact ref, blocks deletion and non-fast-forward updates,
 and has no bypass actors. The `analytics` environment permits the main branch
-only (one branch, zero tags). Its TRAFFIC_TOKEN secret is not configured yet;
-issue #23 remains open for the credential and first real export.
+only (one branch, zero tags) and holds the `TRAFFIC_TOKEN` environment
+secret. The first real export succeeded in
+[run 39105087826](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105087826)
+and published data commit `af6a68a` on `traffic-history`; issue #23 is closed.
+Renew the fine-grained token before it expires; an expired token makes the
+daily run fail.

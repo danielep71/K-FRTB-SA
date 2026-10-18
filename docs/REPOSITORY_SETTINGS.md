@@ -48,13 +48,19 @@ Shared maintenance content is synchronized there under #31; setup work
 continues on release/v0.0.1. This is a content synchronization, not a claim
 that a squash merge advances main's ancestry in the prototype branch.
 
-**Required status-check enforcement remains pending issue #2.** The label checks are
-path-filtered and cannot serve as a universal repository-integrity gate.
-The #7 workflow provides the unconditional **Repository integrity** check;
-[Repository checks](CI.md) records branch-installation prerequisites and
-GitHub Actions app identity. After its representative PR passes, add that name and GitHub
-Actions identity to main and release rules, require main to be up to date,
-and record the resulting settings/evidence in issue #2.
+**Required status check.** The unconditional **Repository integrity** check
+from #7 (GitHub Actions, app ID 15368) is required by both rulesets, read back
+on October 18, 2026:
+
+| Ruleset | Required check | Up to date before merging | Not enforced on branch creation |
+| --- | --- | --- | --- |
+| Protect main (25319557) | `Repository integrity` | Yes | No |
+| Protect release branches (25319604) | `Repository integrity` | No | Yes, so new release branches can be created from main |
+
+The path-filtered label, traffic and prototype checks are deliberately not
+required: a PR that never triggers them would stay blocked. Dependabot PR
+#37, opened before the workflow reached its base, was reported `blocked`
+only because the required check had not run.
 
 ## Actions permissions
 
@@ -78,7 +84,7 @@ and record the resulting settings/evidence in issue #2.
 | Private vulnerability reporting | Not offered while private | Enabled after the owner's public-visibility change |
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
-| CodeQL | Not configured | Default setup enabled for detected GitHub Actions; setup run succeeded |
+| CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
 | Dependabot version updates | No configuration | Configuration added under #7; activates after default-branch integration; targets in CI.md |
 | Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; see CI.md and #2 |
 
@@ -91,14 +97,14 @@ No paid feature or agentic autofix was enabled.
 
 GitHub's Copilot code review page explicitly reports **No Copilot code review
 access** for this account. No paid subscription or Copilot review automation
-was enabled. ChatGPT Codex Connector is installed, but installation alone is
-not evidence that automatic PR review is configured; that setting remains to
-be verified through its supported review configuration. Until verified, use
-maintainer review and resolve findings before merge.
+was enabled. The ChatGPT Codex Connector reviews automatically when a PR is
+opened or marked ready: on #42 and #46 its summary shows the trigger "PR
+opened" with no manual request. It does not re-review later pushes; request
+one with `@codex review` or review them as a maintainer, and resolve findings
+before merge.
 
-Issue #2 remains open for the required check from #7, automated-review verification and a
-representative PR/check verification of the completed configuration. Preserve
-an accurate distinction between live controls and pending work.
+Issue #2 is closed with the readback of the required check, the
+representative blocked PR and the review evidence.
 
 The retained-branch lifecycle was exercised through PR #13: main received
 merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`, the release branch
@@ -116,5 +122,7 @@ workflow presence alone is insufficient.
 
 Traffic ruleset **25321321** is active for `traffic-history`, blocks deletion
 and non-fast-forward updates, and has no bypass actors. The `analytics`
-environment is restricted to branch `main` (no tags). Verified October 18,
-2026 Europe/Rome; TRAFFIC_TOKEN and successful collection remain pending #23.
+environment is restricted to branch `main` (no tags) and holds the
+`TRAFFIC_TOKEN` secret. The first successful collection ran on October 18,
+2026 ([run 39105087826](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105087826),
+data commit `af6a68a`); #23 is closed.
