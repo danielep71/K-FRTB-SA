@@ -61,7 +61,6 @@ integration branch `release/v0.1.0`.
 | [#28](https://github.com/danielep71/MKT-FTRB-SA/issues/28) | Open | Excel host build, compile, execution and evidence |
 | [#30](https://github.com/danielep71/MKT-FTRB-SA/issues/30) | Open | Committed template and modules layout; remaining Excel round trip |
 | [#32](https://github.com/danielep71/MKT-FTRB-SA/issues/32) | Open | Milestone guide, evaluation and evidence closeout |
-| [#59](https://github.com/danielep71/MKT-FTRB-SA/issues/59) | Open | Post-closeout documentation consistency |
 | [#31](https://github.com/danielep71/MKT-FTRB-SA/issues/31) | Closed | Bring `release/v0.1.0` up to date with main and reconcile governance |
 | [#40](https://github.com/danielep71/MKT-FTRB-SA/issues/40) | Closed | Remaining prototype documentation inconsistencies |
 | [#41](https://github.com/danielep71/MKT-FTRB-SA/issues/41) | Closed | Reject invalid required parameters; consistent numeric-text parsing |
@@ -69,8 +68,9 @@ integration branch `release/v0.1.0`.
 | [#48](https://github.com/danielep71/MKT-FTRB-SA/issues/48) | Closed | Reject blank keys and gaps in required parameter tables |
 | [#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51) | Closed | Retire the setup line: Dependabot targets and branch guidance |
 | [#55](https://github.com/danielep71/MKT-FTRB-SA/issues/55) | Closed | This milestone plan |
+| [#59](https://github.com/danielep71/MKT-FTRB-SA/issues/59) | Closed | Post-closeout documentation consistency (closed by the change that adds this row) |
 
-States were read back on October 18, 2026; the live milestone is authoritative.
+States were read back on October 18, 2026, and #59 closes with this table; the live milestone is authoritative.
 
 The open methodology interpretations are documented as limits in the
 [methodology](methodology.md); deciding them ([#29](https://github.com/danielep71/MKT-FTRB-SA/issues/29))
