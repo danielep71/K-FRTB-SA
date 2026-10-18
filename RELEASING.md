@@ -66,23 +66,36 @@ milestone and leave the others under `[Unreleased]`.
 3. **Integration into main** happens only on the owner's explicit request,
    through a release-to-main PR with a merge commit. The retained release
    branch is then fast-forwarded to that merge with an expected-head guard.
-4. **Changelog cut**: on the owner's request, a task PR dates the version
-   section, and it reaches main through step 3.
-5. **Tag**: on the owner's request, create an annotated tag on the main
-   commit that carries the dated section, then push it:
+4. **Tag candidate**: the main commit whose whole tree satisfies the
+   version's contents rule below. A tag and its source archives expose the
+   entire tree, so release notes cannot exclude files from it.
+   - Normally the candidate is the main commit that carries the dated
+     changelog section: on the owner's request, a task PR dates the section
+     and it reaches main through step 3.
+   - If main has already moved past the version's scope, the candidate is
+     the last main commit within scope. The dated changelog section is then
+     added afterwards on main and names the tagged commit.
+5. **Validate the exact candidate**: run the stage's checks on a fresh
+   checkout of that commit and confirm that the hosted `Repository integrity`
+   run passed on it. Record the commands, results and run URL in the closeout
+   or release notes. Evidence from another commit does not count.
+6. **Tag**: on the owner's request, create an annotated tag on the
+   validated candidate, then push it:
 
    ```sh
    git fetch origin
-   git tag -a v0.0.1 <main-commit> -m "v0.0.1 - Repository setup"
+   git tag -a v0.0.1 <candidate-commit> -m "v0.0.1 - Repository setup"
    git push origin v0.0.1
    ```
 
-   If main already carries later-stage work (for example the prototype
-   source), the release notes must say that it is outside the tagged
-   version's scope and evidence.
-6. **GitHub release** (optional, on request): notes that link the closeout
+7. **GitHub release** (optional, on request): notes that link the closeout
    issue and evidence. Attach no workbook binary unless the version's
    evidence covers it.
+
+For v0.0.1, main carried the v0.1.0 prototype (#39) before the setup
+closeout, so the candidate is `7ee0ced`, the #36 merge and last setup-only
+main commit. Its tree has 45 files, with no VBA modules or workbook; the
+validation is in the [setup closeout record](docs/evidence/2026-10-18-setup-closeout.md).
 
 ## 📦 Contents and evidence by stage
 

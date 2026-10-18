@@ -38,6 +38,7 @@ Issues #1–#7, #23 and #25 are closed as completed.
 | Repository | Public; default branch main; Pages and Discussions off; automatic deletion of merged branches on; merge methods enabled globally and narrowed by rulesets |
 | Forms and policies on main | Three issue forms, `config.yml` with blank issues disabled and the private-reporting link, PR template, `SECURITY.md` and `CODE_OF_CONDUCT.md` |
 | License | `LICENSE` is MIT with copyright Daniele Penza; GitHub detects MIT. README, contribution and policy documents link it, and the maintenance scripts carry `SPDX-License-Identifier: MIT` |
+| Tag candidate `7ee0ced` | Last setup-only main commit (#36), 45 files, no VBA modules or workbook. Fresh checkout of that commit: `tools/check_repository.py` passed (45 files plus label and traffic self-tests), and `labels-sync.mjs --mode validate` plans 0 changes. Hosted [Repository integrity run 39077036863](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39077036863) passed on it |
 | Traffic history | [Run 39105087826](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105087826) published data commit `af6a68a`; the first window has zero counts |
 
 ## 🧭 Adopted and deferred practices
@@ -57,7 +58,7 @@ Issues #1–#7, #23 and #25 are closed as completed.
 | Dependabot security update PRs | Deferred; alerts remain enabled |
 | Auto-merge | Off |
 | Pages, SEO and repository social preview | Deferred unless separately authorized |
-| Tag `v0.0.1` and GitHub release | Not created; owner decision under [Releasing](../../RELEASING.md) |
+| Tag `v0.0.1` and GitHub release | Not created; candidate `7ee0ced` validated; owner decision under [Releasing](../../RELEASING.md) |
 
 ## ⚠️ Limitations
 
@@ -80,6 +81,7 @@ Issues #1–#7, #23 and #25 are closed as completed.
 2. Retire the setup line: Dependabot still targets `release/v0.0.1` and
    milestone v0.0.1 for GitHub Actions and the CI parser, and governance and
    agent instructions list the branch as active (#51).
-3. Whether to tag `v0.0.1`, and on which main commit (see
-   [Releasing](../../RELEASING.md)).
+3. Whether to tag `v0.0.1` on the validated candidate `7ee0ced` (see
+   [Releasing](../../RELEASING.md)); current main also carries the
+   prototype and cannot carry a setup-only tag.
 4. v0.1.0 closeout (#32), after #28, #29 and #30.
