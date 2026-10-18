@@ -4,8 +4,8 @@
 
 - The active integration branch is `release/v0.1.0` for the SA prototype
   and repository maintenance (milestone 2, owner-approved October 18, 2026, #51).
-- `release/v0.0.1` is retained and protected as a historical setup branch,
-  closed to new work; do not target task or automated maintenance PRs there.
+- The setup branch `release/v0.0.1` was deleted by the owner on October 18,
+  2026 (#62); its head is on main. Do not recreate or target it.
 - Branch every task from the integration branch of its issue's milestone and
   open its PR against that branch.
 - Put all development, documentation, tooling, tests and configuration work

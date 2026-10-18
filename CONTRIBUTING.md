@@ -6,8 +6,8 @@
 Participation follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 Potential vulnerabilities follow [SECURITY.md](SECURITY.md).
 
-Repository setup (v0.0.1) is closed; `release/v0.0.1` is retained and protected
-as a historical branch, closed to new work. The Excel/VBA SA prototype and
+Repository setup (v0.0.1) is closed, and its branch `release/v0.0.1` was
+deleted (#62); its history is on main. The Excel/VBA SA prototype and
 repository maintenance use `release/v0.1.0`, milestone 2 (#51).
 Read [scope and decisions](docs/SCOPE.md)
 before functional changes. The prototype is on main and release/v0.1.0 with a
