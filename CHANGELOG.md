@@ -108,8 +108,9 @@ Unreleased describe integrated work, not a published version.
   (#68).
 
 - Release branches are deleted once obsolete: milestone closed, head
-  integrated into main, no PR, updater or workflow targeting them and no
-  guidance naming them as active. Governance defines the conditions and the
+  integrated into main, no PR, updater or workflow targeting them and a
+  repository-wide search finding no current guidance that names them as
+  active. Governance defines the conditions and the
   owner's exclusion-based deletion procedure; the rulesets are unchanged and
   keep protecting active branches (#66).
 

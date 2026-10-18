@@ -58,13 +58,16 @@ A release branch is obsolete when all of these hold:
 2. its head is an ancestor of main, integrated through the owner-requested
    merge-commit PR;
 3. no open PR, Dependabot entry or workflow targets it;
-4. this document, contribution guidance, the PR template and the issue forms
-   no longer name it as active.
+4. a repository-wide search finds no current document that names it as
+   active or tells contributors to use it. The search covers README,
+   INSTALLATION, CONTRIBUTING, SECURITY, SCOPE, this document and the
+   other `docs/` pages, the PR template and the issue forms. Dated evidence
+   records and historical CHANGELOG entries are excluded.
 
 To delete an obsolete branch:
 
 1. The milestone closeout issue, or a follow-up issue, records the branch
-   head and the check of each condition.
+   head, the check of each condition and the search used for the fourth.
 2. The owner temporarily excludes the branch from ruleset 25319621, deletes
    it using the administrator bypass of ruleset 25319604, and then removes
    the exclusion.
