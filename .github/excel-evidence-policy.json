@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "description": "What an Excel evidence record of K-FRTB-SA must contain; read by tools/check_excel_evidence.py (docs/EXCEL_EVIDENCE.md).",
+  "repository": "danielep71/MKT-FTRB-SA",
+  "regression_items": 52,
+  "required_references": [
+    "Visual Basic For Applications",
+    "Microsoft Excel 16.0 Object Library",
+    "OLE Automation",
+    "Microsoft Office 16.0 Object Library"
+  ],
+  "stages": [
+    {"name": "build_development", "kind": "build", "depends_on": []},
+    {"name": "compile_development", "kind": "manual", "depends_on": ["build_development"]},
+    {"name": "regression", "kind": "regression", "depends_on": ["compile_development"]},
+    {"name": "round_trip_development", "kind": "compare", "mode": "development", "depends_on": ["build_development"]},
+    {"name": "build_production", "kind": "build", "depends_on": []},
+    {"name": "compile_production", "kind": "manual", "depends_on": ["build_production"]},
+    {"name": "round_trip_production", "kind": "compare", "mode": "production", "depends_on": ["build_production"]}
+  ]
+}

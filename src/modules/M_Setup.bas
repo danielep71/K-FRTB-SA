@@ -8,7 +8,7 @@ Attribute VB_Name = "M_Setup"
 '   regulatory parameters (Basel MAR21-MAR23), a synthetic sample portfolio,
 '   the buttons and the expected results of the regression test. The
 '   macro-free template src/workbook/FRTB_Template.xlsx is this build saved
-'   without VBA; FinishWorkbook adds what a template cannot hold.
+'   without VBA; FinishWorkbook adds buttons and reapplies view settings.
 '
 ' PUBLIC SURFACE
 '   BuildWorkbook: rebuild every sheet (overwrites the inputs), then
@@ -76,8 +76,8 @@ Public Sub BuildWorkbook()
 End Sub
 
 
-' Buttons and window settings are not kept by a macro-free template: the
-' build from the template imports the modules and calls this procedure.
+' The XLSX retains presentation settings. Reapply them when adding the
+' macro buttons, which are deliberately excluded from the template.
 Public Sub FinishWorkbook()
     Dim names As Variant, i As Long
     SetAlerts False
@@ -175,14 +175,14 @@ End Sub
 Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle As String, _
                        ByVal lastCol As Long)
     ws.Cells(1, 2).Value = APP_NAME
-    ws.Cells(2, 2).Value = title
+    ws.Cells(2, 2).Value = SheetTitle(title)
     ws.Cells(LAYOUT_SUBTITLE_ROW, LAYOUT_FIRST_COL).Value = subtitle
     On Error Resume Next
     ws.Cells.Font.Name = FONT_NAME
     ws.Cells.Font.Size = 10
     ws.Cells.VerticalAlignment = -4108                       'xlCenter
     ws.Columns(1).ColumnWidth = 4
-    ws.Columns(2).ColumnWidth = 2.6
+    ws.Columns(2).ColumnWidth = 4
     With ws.Range(ws.Cells(1, 2), ws.Cells(1, lastCol))
         .Interior.Color = COLOR_BRAND_BAR
         .Font.Color = COLOR_BRAND_TEXT
@@ -202,9 +202,56 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
     ws.Rows(2).RowHeight = 26.1
     ws.Rows(3).RowHeight = 30
     ws.Rows(4).RowHeight = 9.95
+    With ws.PageSetup
+        .PrintArea = ""
+        .Orientation = 2                                    'xlLandscape
+        .PaperSize = 9                                      'xlPaperA4
+        .Zoom = False
+        .FitToPagesWide = 1
+        .FitToPagesTall = False
+        .LeftMargin = 18
+        .RightMargin = 18
+        .TopMargin = 36
+        .BottomMargin = 36
+        .CenterHeader = ""
+        .CenterFooter = "&""Aptos,Regular""&9Page &P of &N"
+        If ws.Name = SH_README Then
+            .PrintTitleRows = "$1:$3"
+        ElseIf ws.Name = SH_CONTROL Or ws.Name = SH_TEST Or Left$(ws.Name, 2) = "P_" Then
+            .PrintTitleRows = "$1:$6"
+        Else
+            .PrintTitleRows = "$1:$5"
+        End If
+    End With
     On Error GoTo 0
+    ExtendPrintArea ws, 4, lastCol
     ApplyTabColor ws
 End Sub
+
+
+Private Function SheetTitle(ByVal sheetName As String) As String
+    Select Case sheetName
+        Case SH_IN_DELTA: SheetTitle = "Delta sensitivities"
+        Case SH_IN_VEGA: SheetTitle = "Vega sensitivities"
+        Case SH_IN_CURV: SheetTitle = "Curvature sensitivities"
+        Case SH_IN_DRC: SheetTitle = "Default risk positions"
+        Case SH_IN_RRAO: SheetTitle = "Residual risk positions"
+        Case SH_OUT_SUMMARY: SheetTitle = "Calculation summary"
+        Case SH_OUT_CLASS: SheetTitle = "Capital by risk class"
+        Case SH_OUT_BUCKETS: SheetTitle = "Bucket aggregation"
+        Case SH_OUT_DRC: SheetTitle = "Default risk calculation"
+        Case SH_TEST: SheetTitle = "Regression tests"
+        Case SH_P_GENERAL: SheetTitle = "General parameters"
+        Case SH_P_GIRR: SheetTitle = "Interest rate parameters"
+        Case SH_P_CSR: SheetTitle = "Credit spread parameters"
+        Case SH_P_EQ: SheetTitle = "Equity parameters"
+        Case SH_P_COM: SheetTitle = "Commodity parameters"
+        Case SH_P_FX: SheetTitle = "Foreign exchange parameters"
+        Case SH_P_DRC: SheetTitle = "Default risk parameters"
+        Case SH_P_RRAO: SheetTitle = "Residual risk parameters"
+        Case Else: SheetTitle = sheetName
+    End Select
+End Function
 
 
 ' Tab color by role, from the sheet name: navy README, green tests, blue
@@ -359,10 +406,16 @@ Private Sub ApplyWindowSettings()
         Application.ActiveWindow.DisplayGridlines = False
         Application.ActiveWindow.FreezePanes = False
         If Left$(ws.Name, 3) = "In_" Or Left$(ws.Name, 4) = "Out_" Or ws.Name = SH_LOG Then
-            ws.Cells(LAYOUT_FIRST_DATA_ROW, 1).Select
+            ws.Cells(LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_COL + 1).Select
+            Application.ActiveWindow.FreezePanes = True
+        ElseIf ws.Name = SH_RESULTS Then
+            ws.Cells(LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_COL + 1).Select
+            Application.ActiveWindow.FreezePanes = True
+        ElseIf ws.Name = SH_CONTROL Or ws.Name = SH_TEST Or Left$(ws.Name, 2) = "P_" Then
+            ws.Cells(LAYOUT_HEADER_ROW + 2, LAYOUT_FIRST_COL + 1).Select
             Application.ActiveWindow.FreezePanes = True
         Else
-            ws.Cells(LAYOUT_HEADER_ROW, 1).Select
+            ws.Cells(4, 1).Select
             Application.ActiveWindow.FreezePanes = True
         End If
         ws.Cells(1, 1).Select
@@ -378,7 +431,7 @@ Private Sub BuildReadme()
     Set ws = GetSheet(SH_README)
     ApplyFrame ws, "ReadMe", APP_TITLE & " (Basel MAR21-MAR23) in Excel VBA. Prototype " & APP_VERSION & _
         ": results are not validated for regulatory use.", 4
-    SetWidths ws, Array(34, 150)
+    SetWidths ws, Array(55, 150)
 
     r = 5
     WriteSectionHeading ws, r, "How to use", 2
@@ -424,7 +477,9 @@ Private Function WriteGuideRows(ByVal ws As Object, ByVal r As Long, ByVal pairs
     On Error Resume Next
     With ws.Range(TableCell(ws, first, 1), TableCell(ws, r - 1, 2))
         .WrapText = True
-        .Borders.LineStyle = -4115                           'xlDash
+    End With
+    FormatBorders ws.Range(TableCell(ws, first, 1), TableCell(ws, r - 1, 2)), COLOR_GRID, -4115
+    With ws.Range(TableCell(ws, first, 1), TableCell(ws, r - 1, 2))
         .Borders(7).LineStyle = 1                            'xlEdgeLeft
         .Borders(8).LineStyle = 1                            'xlEdgeTop
         .Borders(9).LineStyle = 1                            'xlEdgeBottom
@@ -434,6 +489,7 @@ Private Function WriteGuideRows(ByVal ws As Object, ByVal r As Long, ByVal pairs
     ws.Range(TableCell(ws, first, 2), TableCell(ws, r - 1, 2)).Font.Size = 9
     ws.Range(ws.Rows(first), ws.Rows(r - 1)).RowHeight = 33.95
     On Error GoTo 0
+    ExtendPrintArea ws, r - 1, LAYOUT_FIRST_COL + 1
     WriteGuideRows = r
 End Function
 
@@ -474,41 +530,32 @@ Private Sub BuildOutputSheets()
     Set ws = GetSheet(SH_RESULTS)
     ApplyFrame ws, "Results", "Capital by risk class, component and correlation scenario (MAR21.7), reporting currency.", 9
     SetWidths ws, Array(26, 14, 16, 16, 16)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_SUMMARY)
     ApplyFrame ws, "Out_Summary", "Key results of the last run, read by the regression test and automation.", 5
     SetWidths ws, Array(18, 20)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_CLASS)
     ApplyFrame ws, "Out_RiskClass", "Capital per risk class, component and scenario; AltSbUsed = Y when the alternative Sb of MAR21.4(5)(b) applied.", 9
     SetWidths ws, Array(12, 13, 11, 16, 9, 11)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_BUCKETS)
     ApplyFrame ws, "Out_Buckets", "Kb and Sb per bucket. Notes: ALT_SB alternative Sb, UP/DOWN selected curvature scenario, OTHER other-sector bucket.", 11
     SetWidths ws, Array(12, 13, 11, 9, 16, 16, 11, 16)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_DRC)
     ApplyFrame ws, "Out_DRC", "Net jump-to-default per obligor after seniority netting, and the hedge benefit ratio and charge per bucket (MAR22).", 18
     SetWidths ws, Array(16, 9, 13, 9, 14, 14, 3, 9, 14, 14, 10, 14, 14, 14)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_LOG)
     ApplyFrame ws, "Log", "Every rejected input row with the reason, warnings and the run status.", 6
     SetWidths ws, Array(9, 24, 110)
-    ResultsPlaceholder ws
-End Sub
-
-
-Private Sub ResultsPlaceholder(ByVal ws As Object)
-    TableCell(ws, LAYOUT_HEADER_ROW, 1).Value = "No results yet: press Run FRTB-SA."
-    On Error Resume Next
-    TableCell(ws, LAYOUT_HEADER_ROW, 1).Font.Italic = True
-    TableCell(ws, LAYOUT_HEADER_ROW, 1).Font.Color = COLOR_NOTE
-    On Error GoTo 0
+    WriteOutputPlaceholder ws
 End Sub
 
 '------------------------------------------------------------------------------

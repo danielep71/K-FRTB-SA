@@ -70,7 +70,8 @@
 > The macro-enabled workbook is **not stored in the repository**.
 > `tools/Build-Workbook.ps1` builds it from the macro-free template
 > `src/workbook/FRTB_Template.xlsx` and the exported VBA in `src/modules`, and
-> the template itself is generated from those modules, so every line of
+> `tools/Sync-FRTB-VBA.ps1` updates the VBA of a workbook you already built.
+> The template itself is generated from those modules, so every line of
 > calculation code and every default parameter is reviewable in a pull request.
 
 ## ✨ What this project is

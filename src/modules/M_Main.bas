@@ -10,7 +10,8 @@ Attribute VB_Name = "M_Main"
 ' PUBLIC SURFACE
 '   RunFRTB: calculate SBM, DRC and RRAO and rewrite every output sheet.
 '   RunFRTB_Silent: RunFRTB without dialogs, for automation and tests.
-'   ClearOutputs: empty every output sheet and the log.
+'   ClearOutputs: empty every output sheet and the log, keeping their
+'   headers and a note, as in a new workbook.
 '   LastRunStatus: "OK" or the error of the last run.
 '   OutSummaryValue: a value of Out_Summary by item name.
 '
@@ -84,20 +85,28 @@ End Function
 
 
 Public Sub ClearOutputs()
-    ClearResultSheets
-    If SheetExists(SH_LOG) Then ClearTableArea GetSheet(SH_LOG)
-    If SheetExists(SH_RESULTS) Then
-        TableCell(GetSheet(SH_RESULTS), LAYOUT_HEADER_ROW, 1).Value = "No results yet: press Run FRTB-SA."
-        StyleNote GetSheet(SH_RESULTS).Cells(LAYOUT_HEADER_ROW, LAYOUT_FIRST_COL), False
+    ClearResultSheets "No results yet: press Run FRTB-SA.", False
+    If SheetExists(SH_LOG) Then
+        ClearTableArea GetSheet(SH_LOG)
+        WriteOutputPlaceholder GetSheet(SH_LOG)
     End If
 End Sub
 
-' Empties Results and the Out_* sheets, but not the Log.
-Private Sub ClearResultSheets()
-    Dim names As Variant, i As Long
+' Returns Results and the Out_* sheets, but not the Log, to their empty
+' state: headers and a note, resultsNote on Results.
+Private Sub ClearResultSheets(ByVal resultsNote As String, ByVal isAlert As Boolean)
+    Dim names As Variant, i As Long, ws As Object
     names = Array(SH_OUT_CLASS, SH_OUT_BUCKETS, SH_OUT_DRC, SH_OUT_SUMMARY, SH_RESULTS)
     For i = LBound(names) To UBound(names)
-        If SheetExists(CStr(names(i))) Then ClearTableArea GetSheet(CStr(names(i)))
+        If SheetExists(CStr(names(i))) Then
+            Set ws = GetSheet(CStr(names(i)))
+            ClearTableArea ws
+            If ws.Name = SH_RESULTS Then
+                WriteOutputPlaceholder ws, resultsNote, isAlert
+            Else
+                WriteOutputPlaceholder ws
+            End If
+        End If
     Next i
 End Sub
 
@@ -129,12 +138,8 @@ CleanUp:
     If errNumber <> 0 Then
         mLastStatus = "Error " & errNumber & ": " & errDescription
         LogMessage "ERROR", "RunFRTB", mLastStatus
-        ClearResultSheets                                    'drop rows written before the error
-        If SheetExists(SH_RESULTS) Then
-            TableCell(GetSheet(SH_RESULTS), LAYOUT_HEADER_ROW, 1).Value = _
-                "Run failed (see the Log sheet): " & errDescription
-            StyleNote GetSheet(SH_RESULTS).Cells(LAYOUT_HEADER_ROW, LAYOUT_FIRST_COL), True
-        End If
+        ' Drop the rows written before the error.
+        ClearResultSheets "Run failed (see the Log sheet): " & errDescription, True
     End If
     If captured Then RestoreSettings savedScreen, savedCalculation
     On Error GoTo 0

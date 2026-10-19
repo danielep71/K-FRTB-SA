@@ -17,10 +17,13 @@ checked. Treat any result as unvalidated for regulatory use.
 | Hand-calculated tests | `python3 -m pytest tests/test_reference.py` | The reference reproduces small examples worked out from the MAR21-MAR23 formulas: correlation scenarios, GIRR tenor/curve/inflation/basis correlations, alternative `Sb`, other-sector buckets, CSR cross-bucket correlations, FX crosses, vega and curvature correlations and risk factors, curvature selection and `psi`, DRC JTD, maturity scaling, seniority netting, HBR, RRAO |
 | Parameter spot check | `tests/test_vba_engine.py::test_parameter_sheets_match_regulatory_defaults` | The `P_*` sheets written by `M_Setup` equal an independently typed list in `tests/regulatory_defaults.py` |
 | VBA engine reconciliation | `python3 -m pytest tests/test_vba_engine.py` | The VBA modules, executed headless in LibreOffice, reproduce every `Out_RiskClass`, `Out_Buckets`, `Out_Summary` and `Out_DRC` value of the independent Python reference, on the sample portfolio and on a variant with all discretions enabled and invalid rows, each of which must be logged; empty inputs give zero capital |
-| Numeric input contract | `python3 -m pytest tests/test_numeric_contract.py` | Valid numeric text converts as expected and invalid text is rejected in the VBA and the reference; a required key, parameter-table value or vertex-list entry that is blank or not a number stops the run with its location named and leaves every output sheet empty (#41, #45) |
+| Numeric input contract | `python3 -m pytest tests/test_numeric_contract.py` | Valid numeric text converts as expected and invalid text is rejected in the VBA and the reference; a required key, parameter-table value or vertex-list entry that is blank or not a number stops the run with its location named and leaves every output sheet empty; **Clear outputs** and a failed run restore the template's output headers and note (#41, #45, #85) |
 | In-workbook regression test | run inside the reconciliation tests | `Test_RunRegression` passes all 52 items embedded by `M_Setup` |
 | Expected values current | `python3 tools/update_expected.py --check` | The values embedded in `M_Setup` equal the reference results for the sample |
-| Template current | `python3 tools/build_template.py --check`, `tests/test_template.py` | The committed template equals a fresh build of the modules in values and layout (cell styles, number formats, explicitly set column widths and row heights, merged ranges, tab colors, frozen panes, gridlines, autofilters; automatic heights depend on the host's fonts and are not compared), carries no VBA project, controls or personal properties, and a build from it passes the regression test and reconciles with the reference |
+| Sync script logic | `python3 -m pytest tests/test_sync_script.py` | The functions of `tools/Sync-FRTB-VBA.ps1`, run offline in PowerShell 7: module identity from `Attribute VB_Name`, folder selection and newest copy, CRLF conversion, mode answers, module sets equal to the build sets; the launchers never echo a path directly. The PowerShell tests are skipped when `pwsh` is not installed (the hosted runner has it); no test runs Excel |
+| Export comparison logic | `python3 -m pytest tests/test_compare_vba_export.py` | `tools/compare_vba_export.py` on synthetic exports of the source at `HEAD`: an exact or re-cased export passes. These fail: changed code, comments, attributes or string case; missing, unexpected or test modules in production; document modules holding code; a changed file or another workbook against the manifest. A renamed workbook is a note. The exporter's format and read-only open match what the tool reads. No test runs Excel |
+| Excel evidence validator | `python3 -m pytest tests/test_excel_evidence.py`, `python3 tools/check_excel_evidence.py --check-policy` | The validator accepts a consistent synthetic record and rejects these: wrong sources or candidate; missing or foreign `CANDIDATE=` lines; tampered, missing, escaping, symlinked or reused logs; stale regression counts; comparison logs with the wrong mode, template, result or binding; dependency violations; environment errors. It reports failed, not-run, timed-out and unavailable runs. The policy's regression count equals the expected values `M_Setup` embeds. No test runs Excel, and a synthetic record is not evidence |
+| Template current | `python3 tools/build_template.py --check`, `tests/test_template.py` | The committed template equals a fresh build of the modules in values and layout (cell styles, number formats, explicitly set column widths and row heights, merged ranges, tab colors, frozen panes, gridlines, autofilters and print settings; automatic heights depend on the host's fonts and are not compared), carries no VBA project, controls or personal properties, and a build from it passes the regression test and reconciles with the reference. Saved-presentation assertions check the intended style independently of rebuild equality; view/print normalization must preserve content and be idempotent. |
 
 Run everything with:
 
@@ -60,12 +63,17 @@ macros and saves the result as `.xlsx`.
   LibreOffice's VBA support is not Excel's, and the lint is a heuristic, not
   a compiler. Build the workbook with `tools\Build-Workbook.ps1 -RunTests`,
   run **Debug → Compile VBAProject**, and record the result as manual
-  evidence.
+  evidence in the format of [Excel evidence](EXCEL_EVIDENCE.md), which
+  `tools/check_excel_evidence.py` validates against the exact commit. No
+  record exists yet (#28).
 * **The build and sync scripts** `tools/Build-Workbook.ps1` and
   `tools/Sync-FRTB-VBA.ps1`, and their `.cmd` launchers, have not been
   executed in Excel. `tests/test_sync_script.py` runs the sync script's
   file selection, name checks, line-ending conversion and module sets
   offline in PowerShell 7; the Excel import, backup and save are untested.
+* **The Excel round trip** (#30): `tools/Export-FRTB-VBA.ps1` has not run
+  in Excel. `tools/compare_vba_export.py` is tested only on synthetic
+  exports, so no workbook has been compared with its source yet.
 * **Excel-only presentation**: buttons, autofilters, frozen panes, tab
   colors and conditional styling were checked only as rendered by
   LibreOffice; `Dev_ExportModules` and the message boxes were not run.

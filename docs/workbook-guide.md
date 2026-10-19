@@ -21,7 +21,9 @@ blank rows followed by more data before the next tag; blank separator rows
 between tables remain valid (#48).
 Every run clears the output sheets first and again when it fails, so a
 failed run shows "Run failed" on `Results` and leaves neither earlier nor
-partial capital behind (#45).
+partial capital behind (#45). **Clear outputs** and a failed run keep the
+column headers of every output sheet and put the note in the first data
+row, as in a new workbook (#85).
 
 Validation and conversion use the same parser. Blank/error optional values
 still use the caller's explicit default; this does not relax required-key
@@ -48,7 +50,9 @@ ignored) and is built from the template plus the modules, following the
 [template-based build](REPOSITORY_STRUCTURE.md#conditional-excelvba-policy).
 
 The template is generated, never edited by hand: `python3
-tools/build_template.py` rebuilds it headless in LibreOffice, and
+tools/build_template.py` rebuilds it headless in LibreOffice and normalizes
+saved view/print settings and README guide borders through
+`tools/template_presentation.py`, and
 `tools/update_expected.py` rebuilds it whenever the expected values change.
 `tests/test_template.py` fails when the committed template differs from a
 fresh build of the modules, in values or layout, or carries VBA, controls or
@@ -69,7 +73,7 @@ docs/          methodology, workbook guide, validation, assets
 | Module | Responsibility |
 | --- | --- |
 | `src/modules/CORE_Config` | Product name, sheet names, layout, palette, risk class codes, components, scenarios |
-| `src/modules/CORE_Util` | Sheet access, tagged parameter tables, conversions, table formatting, run log |
+| `src/modules/CORE_Util` | Sheet access, tagged parameter tables, conversions, table formatting, output placeholders, run log |
 | `src/modules/CORE_Params` | Control settings and `P_*` parameters; risk weight and correlation accessors |
 | `src/modules/CORE_SBM` | Delta, vega and curvature: validation, netting, bucket and cross-bucket aggregation |
 | `src/modules/CORE_DRC` | Default risk charge for non-securitizations |
@@ -99,7 +103,7 @@ modules.
 
    The script opens a copy of `src\workbook\FRTB_Template.xlsx`, imports
    `src\modules` and `tests\modules`, runs `FinishWorkbook` (sheet buttons
-   and window settings), the calculation and the regression test, and saves
+   and reapplication of saved view settings), the calculation and the regression test, and saves
    `dist\K-FRTB-SA.xlsm`. `-FromSource` builds every sheet from the modules
    (`BuildWorkbook`) instead of the template; `-Production` leaves out the
    test modules; `-Template` saves a source-built, macro-free template as
@@ -182,6 +186,17 @@ and cream input cells (`FFF2CC`); output tables have blue headers
 is Aptos and gridlines are hidden. The palette is defined once in
 `CORE_Config`.
 
+The XLSX saves colored tabs, hidden gridlines and frozen panes before any
+macro runs. Data rows are 20.1 points high, table headers are 42 points high,
+and input tables use thin gray borders. The README uses dashed internal
+separators. Display titles and column captions use readable words; engine
+sheet names, parameter codes and column positions remain unchanged.
+Initial output sheets show blue headers and a no-results message, without
+invented calculation values. Printing uses A4 landscape, one page wide with
+unlimited height, repeated heading rows and an Aptos page-number footer.
+Output print areas remain automatic so later runs are not clipped to an
+empty template's extent.
+
 | Tab | Sheet | Content |
 | --- | --- | --- |
 | Navy | `README` | How to use, input conventions, sheet map |
@@ -215,10 +230,62 @@ logged on `Log`; check the error count on `Results` after every run.
 
 1. Edit the modules in the VBA editor of a development build.
 2. Run `Dev_ExportModules` to write them back to `src\modules` and
-   `tests\modules` (the workbook must sit in the repository root or in
-   `dist\`).
+   `tests\modules`. It finds the folders only when the workbook sits in the
+   repository root or in `dist\`. A workbook kept elsewhere, for example one
+   updated from a downloads folder, cannot export: move or copy it into
+   `dist\` of the checkout first.
 3. On a machine with LibreOffice and Python, run the checks in
    [validation](validation.md). If the sample portfolio, parameters or engine
    logic changed, regenerate the expected values with
    `python3 tools/update_expected.py` (which also rebuilds the template) and
    review the diff. A layout change needs `python3 tools/build_template.py`.
+
+<a id="verifying-the-round-trip"></a>
+
+## 🔍 Verifying the round trip
+
+The round trip shows that a workbook holds exactly the source of one commit
+(#30). It never writes into the repository, so it can check any workbook,
+including one updated from a downloads folder.
+
+1. Build the workbook from the template at the commit to check, in
+   development or production mode (see
+   [building the workbook](#building-the-workbook-windows-excel)), and record
+   the commit.
+2. Export its VBA to a new, empty folder outside the checkout:
+
+   ```powershell
+   powershell -NoProfile -ExecutionPolicy Bypass -File tools\Export-FRTB-VBA.ps1 -WorkbookPath dist\K-FRTB-SA.xlsm -OutDir C:\FRTB\export
+   ```
+
+   The exporter opens the workbook read-only, with macros disabled, in a
+   separate Excel instance. It exports every component with the VBA editor's
+   own Export and closes the workbook without saving. It then checks that the
+   workbook's SHA-256 has not changed and writes `export-manifest.json`. The
+   manifest records the SHA-256 of the workbook and of every exported file.
+3. Compare the export with the source of that commit, on any machine with
+   Python and the checkout:
+
+   ```sh
+   python3 tools/compare_vba_export.py --export C:\FRTB\export --mode development --candidate-sha <commit> --workbook dist\K-FRTB-SA.xlsm
+   ```
+
+   The source is read from Git at `<commit>`, not from the working tree.
+   * **Production** expects every module of `src/modules`.
+   * **Development** expects those and every module of `tests/modules`.
+
+   What the comparison checks:
+   * Missing or unexpected modules, and attribute or code differences, fail.
+   * Line endings, trailing blank lines and the letter case of code outside
+     strings and comments are ignored, because the VBA editor re-cases
+     identifiers on import. The re-cased lines are counted.
+   * `ThisWorkbook` and the sheet modules are not part of the source; they
+     must hold no code beyond `Option` lines.
+   * With `--workbook`, the export must match its manifest and the workbook's
+     bytes: the binding is `VERIFIED`. A changed file or another workbook
+     gives `FAIL`; an export without a manifest stays `UNVERIFIED`.
+
+   The output names the commit, the template SHA-256 and the workbook
+   SHA-256, and ends with `RESULT=PASS` or `RESULT=FAIL`. Exit code 0 is
+   PASS, 1 is FAIL, 2 means the inputs could not be read. Record the full
+   output with the evidence.

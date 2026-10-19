@@ -6,7 +6,7 @@
     Starts Excel through COM and opens a copy of the macro-free template
     src\workbook\FRTB_Template.xlsx, imports the modules of src\modules and
     (unless -Production) tests\modules, runs M_Setup.FinishWorkbook to add the
-    sheet buttons and window settings, and saves the result as a
+    sheet buttons and reapply saved view settings, and saves the result as a
     macro-enabled workbook. With -RunTests it also runs the calculation and
     the in-workbook regression test and fails when the test does not pass.
 
@@ -135,7 +135,7 @@ try {
         Write-Host 'Workbook layout, parameters and sample data created from source'
     } else {
         [void]$excel.Run($prefix + 'FinishWorkbook')
-        Write-Host 'Buttons and window settings added to the template'
+        Write-Host 'Buttons added and saved view settings reapplied'
     }
 
     if ($RunTests) {

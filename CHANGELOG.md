@@ -7,6 +7,18 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Workbook presentation now survives template generation: the XLSX saves
+  hidden gridlines, role-colored tabs, frozen headers and identifiers, and
+  landscape print settings. Data-row spacing, table borders, README
+  separators, readable display labels and initial output headers follow the
+  shared toolkit style. VBA formatting and the headless build are updated
+  together, with saved-presentation and regeneration checks (#76).
+- **Clear outputs** and a failed run no longer remove the output sheet
+  headers. Results, the Out_* sheets and Log return to the template's empty
+  state: headers in row 5 and the note in row 6, with "Run failed" on
+  Results after a failure. The build, Clear outputs and the failure path
+  share one placeholder routine, `CORE_Util.WriteOutputPlaceholder` (#85).
+
 - Tagged parameter tables reject blank keys and internal blank rows rather
   than truncating later matrix data and leaving correlations at zero (#48).
 
@@ -33,6 +45,9 @@ Unreleased describe integrated work, not a published version.
   CI triggers, build-time window settings and core worksheet access. Module
   comments in `M_Main`, `M_Setup` and `CORE_Util` were corrected; no code
   changed (#40).
+- The structure, validation and README pages describe the VBA sync tools.
+  The workbook guide says that `Dev_ExportModules` exports only from a
+  workbook in the repository root or `dist\` (#77).
 - Post-closeout documentation consistency: milestone names use their live
   titles with the em dash; completed work (#2, #6, #7, #8, #23, #31) is no
   longer described as pending; source archives are described as omitting the
@@ -44,6 +59,28 @@ Unreleased describe integrated work, not a published version.
   code changed (#59).
 
 ### Added
+
+- Excel evidence record and validator (#82), adapted from the
+  VBA-SACCR-Toolkit:
+  - `docs/EXCEL_EVIDENCE.md` defines the manual procedure, the `host.json`
+    record, the rules, the outcomes and the limits.
+  - `.github/excel-evidence-policy.json` lists the required references, the
+    regression item count and the ordered stages: build, compile and
+    regression, and the round trip in both modes.
+  - `tools/check_excel_evidence.py` checks a bundle, offline, against the
+    sources and the policy in Git at the candidate commit. It also checks
+    the policy against `M_Setup`.
+  - Offline tests use synthetic bundles. No Excel run is recorded yet (#28).
+- Excel round-trip tools (#79), from the VBA-SACCR-Toolkit:
+  - `tools/Export-FRTB-VBA.ps1` exports a workbook's VBA read-only, with
+    macros disabled, to an empty folder with `export-manifest.json`.
+  - `tools/compare_vba_export.py` compares the export with the source of a
+    commit, read from Git, in production or development mode. Re-cased
+    identifiers are ignored, and document modules must hold no code. It
+    reports the export's binding to the workbook as VERIFIED, FAIL or
+    UNVERIFIED.
+  - The workbook guide describes the round trip that #30 needs. Offline
+    tests cover the comparison; no Excel export is recorded yet.
 
 - VBA synchronization for an existing workbook (#72), modeled on the
   VBA-SACCR-Toolkit tools:
