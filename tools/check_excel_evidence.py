@@ -191,7 +191,11 @@ class Validation:
         if sha256(data) != reference["sha256"]:
             self.error(f"{stage}: log {relative} changed: its SHA-256 is not the one recorded")
             return None
-        return decode_log(data)
+        try:
+            return decode_log(data)
+        except UnicodeDecodeError as error:
+            self.error(f"{stage}: log {relative} cannot be decoded: {error}")
+            return None
 
     def candidate_line(self, stage: str, text: str) -> None:
         values = [match.group(1).strip() for match in map(CANDIDATE_LINE.match, text.splitlines()) if match]
@@ -213,7 +217,8 @@ def check_environment(check: Validation, environment: Any) -> None:
     if not str(environment.get("os", "")).startswith("Windows"):
         check.error("environment.os must identify a Windows host")
     references = environment.get("references")
-    if not isinstance(references, list) or sorted(references) != sorted(check.policy["required_references"]):
+    if (not isinstance(references, list) or not all(isinstance(item, str) for item in references)
+            or sorted(references) != sorted(check.policy["required_references"])):
         check.error("environment.references must be exactly the policy's required references")
     # The build script needs "Trust access to the VBA project object model".
     # Turning it on for the run is allowed, but the record must say so.
@@ -293,11 +298,14 @@ def check_compare(check: Validation, spec: dict[str, Any], status: str, record: 
     name = spec["name"]
 
     def single(pattern: re.Pattern[str], label: str) -> re.Match[str] | None:
+        # A comparison abandoned as hung may have stopped before printing
+        # its header lines, so they are required only of a finished run.
         found = [match for match in map(pattern.match, lines) if match]
-        if len(found) != 1:
+        if len(found) == 1:
+            return found[0]
+        if found or status != "TIMEOUT":
             check.error(f"{name}: the comparison log must hold exactly one {label} line, found {len(found)}")
-            return None
-        return found[0]
+        return None
 
     candidate = single(COMPARE_CANDIDATE, "Candidate:")
     if candidate and candidate.group(1).strip() != check.candidate:
@@ -307,7 +315,7 @@ def check_compare(check: Validation, spec: dict[str, Any], status: str, record: 
         check.error(f"{name}: the comparison ran in {mode.group(1)} mode, the stage needs {spec['mode']}")
     template = single(COMPARE_TEMPLATE, "Template:")
     expected_template = next(item["sha256"] for item in check.inventory if item["path"] == TEMPLATE)
-    if template and (template.group(1) != TEMPLATE or template.group(2) != expected_template):
+    if template is not None and (template.group(1) != TEMPLATE or template.group(2) != expected_template):
         check.error(f"{name}: the comparison names another template than the candidate's")
     results = [match for match in map(COMPARE_RESULT.match, lines) if match]
     if status == "TIMEOUT":
@@ -342,6 +350,18 @@ def validate(root: Path, candidate: str, evidence: Path) -> Validation:
         check.error(f"{evidence.name}: the record must be a JSON object")
         check.outcomes = ["EVIDENCE_INVALID"]
         return check
+    try:
+        check_record(check, record)
+    except (TypeError, AttributeError, KeyError, ValueError, OSError) as error:
+        # A malformed record is invalid evidence, never a traceback.
+        check.error(f"{evidence.name}: malformed record: {error!r}")
+    if check.errors:
+        check.outcomes = ["EVIDENCE_INVALID"]
+    return check
+
+
+def check_record(check: Validation, record: dict[str, Any]) -> None:
+    policy, sha = check.policy, check.candidate
     if record.get("schema_version") != SCHEMA_VERSION:
         check.error(f"schema_version must be {SCHEMA_VERSION}")
     if record.get("repository") != policy["repository"]:
@@ -364,7 +384,7 @@ def validate(root: Path, candidate: str, evidence: Path) -> Validation:
             if record.get(key) != empty:
                 check.error(f"an unavailable record has {key} set to {json.dumps(empty)}")
         check.outcomes = ["EVIDENCE_INVALID"] if check.errors else ["UNAVAILABLE"]
-        return check
+        return
     if execution != "manual":
         check.error("execution must be manual or unavailable")
     if record.get("availability_reason") is not None:
@@ -401,10 +421,7 @@ def validate(root: Path, candidate: str, evidence: Path) -> Validation:
         outcomes.append("EXECUTION_TIMEOUT")
     if "NOT_RUN" in check.statuses.values():
         outcomes.append("INCOMPLETE")
-    if check.errors:
-        outcomes = ["EVIDENCE_INVALID"]
     check.outcomes = outcomes or ["PASS"]
-    return check
 
 
 def write_reports(check: Validation, evidence: Path, output: Path | None, summary: Path | None) -> None:

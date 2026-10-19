@@ -406,3 +406,40 @@ def test_the_validator_reads_the_lines_the_tools_print(tmp_path):
     lines = out.getvalue().splitlines()
     for pattern in (tool.COMPARE_CANDIDATE, tool.COMPARE_MODE, tool.COMPARE_TEMPLATE, tool.COMPARE_RESULT):
         assert sum(bool(pattern.match(line)) for line in lines) == 1, (pattern.pattern, lines)
+
+
+def test_an_undecodable_utf16_log_is_invalid(bundle):
+    path = bundle.write()
+    log = bundle.folder / "round-trip-development.log"
+    log.write_bytes(b"\xff\xfe" + "Candidate: x\n".encode("utf-16-le") + b"\x00")  # an odd byte count
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record["stages"]["round_trip_development"]["log"]["sha256"] = digest(log.read_bytes())
+    path.write_text(json.dumps(record), encoding="utf-8")
+    assert_invalid(tool.validate(bundle.repo["path"], bundle.repo["sha"], path), "cannot be decoded")
+
+
+def test_non_string_references_are_invalid(bundle):
+    bundle.record["environment"]["references"] = ["Visual Basic For Applications", None]
+    assert_invalid(bundle.validate(), "required references")
+
+
+def test_a_comparison_that_hung_before_its_header_is_a_timeout(bundle):
+    bundle.logs["round-trip-production.log"] = "Comparing...\n"
+    bundle.record["stages"]["round_trip_production"]["status"] = "TIMEOUT"
+    check = bundle.validate()
+    assert check.errors == []
+    assert check.outcomes == ["EXECUTION_TIMEOUT"]
+
+
+def test_a_timed_out_comparison_still_names_the_right_candidate(bundle):
+    log = bundle.logs["round-trip-production.log"].split("RESULT=")[0]
+    bundle.logs["round-trip-production.log"] = log.replace("Candidate: ", "Candidate: 0", 1)
+    bundle.record["stages"]["round_trip_production"]["status"] = "TIMEOUT"
+    assert_invalid(bundle.validate(), "not the candidate")
+
+
+def test_an_unexpected_record_shape_is_invalid_not_a_crash(bundle, monkeypatch):
+    def broken(*_):
+        raise TypeError("unexpected shape")
+    monkeypatch.setattr(tool, "check_stage", broken)
+    assert_invalid(bundle.validate(), "malformed record")
