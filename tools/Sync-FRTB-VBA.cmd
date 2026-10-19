@@ -7,7 +7,7 @@ set "SCRIPT=%~dp0Sync-FRTB-VBA.ps1"
 
 if not exist "%SCRIPT%" (
     echo ERROR: PowerShell script not found:
-    echo   %SCRIPT%
+    call :echovar SCRIPT
     echo.
     pause
     exit /b 1
@@ -25,7 +25,7 @@ if not defined WORKBOOK (
 )
 if not exist "%WORKBOOK%" (
     echo ERROR: Workbook not found:
-    echo   %WORKBOOK%
+    call :echovar WORKBOOK
     echo.
     pause
     exit /b 1
@@ -34,9 +34,9 @@ if not exist "%WORKBOOK%" (
 echo FRTB-SA VBA synchronization from the repository checkout
 echo.
 echo Repository:
-echo   %REPO_ROOT%
+call :echovar REPO_ROOT
 echo Workbook:
-echo   %WORKBOOK%
+call :echovar WORKBOOK
 echo.
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT%" -WorkbookPath "%WORKBOOK%" -RepoRoot "%REPO_ROOT%"
@@ -53,3 +53,12 @@ if "%RC%"=="0" (
 echo.
 pause
 exit /b %RC%
+
+:echovar
+rem Prints the value of the named variable, indented. Delayed expansion
+rem inserts the value after the line is parsed, so ampersands, pipes,
+rem redirections and parentheses in a path are printed, never run.
+setlocal EnableDelayedExpansion
+echo(  !%~1!
+endlocal
+exit /b 0

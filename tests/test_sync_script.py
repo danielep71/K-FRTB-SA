@@ -187,3 +187,16 @@ def test_launchers_call_existing_scripts():
         text = (REPO_ROOT / "tools" / launcher).read_text(encoding="ascii")
         assert f"%~dp0{script}" in text
         assert (REPO_ROOT / "tools" / script).is_file()
+
+
+def test_launchers_never_echo_a_path_directly():
+    # A path may contain & | < > or parentheses; expanded into an echo line
+    # with %VAR%, cmd.exe would run the rest as a command. Paths go through
+    # the :echovar helper, which inserts the value with delayed expansion.
+    path_variables = ("SCRIPT", "WORKBOOK", "SOURCE", "REPO_ROOT", "OUTPUT", "DEFAULT_SOURCE")
+    for launcher in ("Sync-FRTB-VBA.cmd", "Sync-FRTB-VBA-Downloads.cmd", "Build-Workbook.cmd"):
+        lines = (REPO_ROOT / "tools" / launcher).read_text(encoding="ascii").splitlines()
+        for line in lines:
+            if line.strip().lower().startswith("echo"):
+                assert not any(f"%{name}%" in line for name in path_variables), (launcher, line)
+        assert "setlocal EnableDelayedExpansion" in lines and "echo(  !%~1!" in lines, launcher

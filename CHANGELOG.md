@@ -55,7 +55,9 @@ Unreleased describe integrated work, not a published version.
     writes cells or sheets.
   - Launchers: `Sync-FRTB-VBA.cmd` for the checkout,
     `Sync-FRTB-VBA-Downloads.cmd` for a downloads folder, and
-    `Build-Workbook.cmd` for a double-click build.
+    `Build-Workbook.cmd` for a double-click build. They print paths with
+    delayed expansion, so `cmd.exe` never runs characters such as `&` that a
+    path contains.
   - Offline PowerShell 7 tests cover the script's selection logic. The Excel
     run of the scripts is not yet recorded (#28).
 
