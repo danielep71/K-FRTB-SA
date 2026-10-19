@@ -76,8 +76,8 @@ Public Sub BuildWorkbook()
 End Sub
 
 
-' Buttons and window settings are not kept by a macro-free template: the
-' build from the template imports the modules and calls this procedure.
+' The XLSX retains presentation settings. Reapply them when adding the
+' macro buttons, which are deliberately excluded from the template.
 Public Sub FinishWorkbook()
     Dim names As Variant, i As Long
     SetAlerts False
@@ -175,14 +175,14 @@ End Sub
 Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle As String, _
                        ByVal lastCol As Long)
     ws.Cells(1, 2).Value = APP_NAME
-    ws.Cells(2, 2).Value = title
+    ws.Cells(2, 2).Value = SheetTitle(title)
     ws.Cells(LAYOUT_SUBTITLE_ROW, LAYOUT_FIRST_COL).Value = subtitle
     On Error Resume Next
     ws.Cells.Font.Name = FONT_NAME
     ws.Cells.Font.Size = 10
     ws.Cells.VerticalAlignment = -4108                       'xlCenter
     ws.Columns(1).ColumnWidth = 4
-    ws.Columns(2).ColumnWidth = 2.6
+    ws.Columns(2).ColumnWidth = 4
     With ws.Range(ws.Cells(1, 2), ws.Cells(1, lastCol))
         .Interior.Color = COLOR_BRAND_BAR
         .Font.Color = COLOR_BRAND_TEXT
@@ -202,9 +202,47 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
     ws.Rows(2).RowHeight = 26.1
     ws.Rows(3).RowHeight = 30
     ws.Rows(4).RowHeight = 9.95
+    With ws.PageSetup
+        .Orientation = 2                                    'xlLandscape
+        .PaperSize = 9                                      'xlPaperA4
+        .Zoom = False
+        .FitToPagesWide = 1
+        .FitToPagesTall = False
+        .LeftMargin = 18
+        .RightMargin = 18
+        .TopMargin = 36
+        .BottomMargin = 36
+        .CenterHeader = ""
+        .CenterFooter = "&""Aptos,Regular""&9Page &P of &N"
+    End With
     On Error GoTo 0
     ApplyTabColor ws
 End Sub
+
+
+Private Function SheetTitle(ByVal sheetName As String) As String
+    Select Case sheetName
+        Case SH_IN_DELTA: SheetTitle = "Delta sensitivities"
+        Case SH_IN_VEGA: SheetTitle = "Vega sensitivities"
+        Case SH_IN_CURV: SheetTitle = "Curvature sensitivities"
+        Case SH_IN_DRC: SheetTitle = "Default risk positions"
+        Case SH_IN_RRAO: SheetTitle = "Residual risk positions"
+        Case SH_OUT_SUMMARY: SheetTitle = "Calculation summary"
+        Case SH_OUT_CLASS: SheetTitle = "Capital by risk class"
+        Case SH_OUT_BUCKETS: SheetTitle = "Bucket aggregation"
+        Case SH_OUT_DRC: SheetTitle = "Default risk calculation"
+        Case SH_TEST: SheetTitle = "Regression tests"
+        Case SH_P_GENERAL: SheetTitle = "General parameters"
+        Case SH_P_GIRR: SheetTitle = "Interest rate parameters"
+        Case SH_P_CSR: SheetTitle = "Credit spread parameters"
+        Case SH_P_EQ: SheetTitle = "Equity parameters"
+        Case SH_P_COM: SheetTitle = "Commodity parameters"
+        Case SH_P_FX: SheetTitle = "Foreign exchange parameters"
+        Case SH_P_DRC: SheetTitle = "Default risk parameters"
+        Case SH_P_RRAO: SheetTitle = "Residual risk parameters"
+        Case Else: SheetTitle = sheetName
+    End Select
+End Function
 
 
 ' Tab color by role, from the sheet name: navy README, green tests, blue
@@ -359,10 +397,16 @@ Private Sub ApplyWindowSettings()
         Application.ActiveWindow.DisplayGridlines = False
         Application.ActiveWindow.FreezePanes = False
         If Left$(ws.Name, 3) = "In_" Or Left$(ws.Name, 4) = "Out_" Or ws.Name = SH_LOG Then
-            ws.Cells(LAYOUT_FIRST_DATA_ROW, 1).Select
+            ws.Cells(LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_COL + 1).Select
+            Application.ActiveWindow.FreezePanes = True
+        ElseIf ws.Name = SH_RESULTS Then
+            ws.Cells(LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_COL + 1).Select
+            Application.ActiveWindow.FreezePanes = True
+        ElseIf ws.Name = SH_CONTROL Or ws.Name = SH_TEST Or Left$(ws.Name, 2) = "P_" Then
+            ws.Cells(LAYOUT_HEADER_ROW + 2, LAYOUT_FIRST_COL + 1).Select
             Application.ActiveWindow.FreezePanes = True
         Else
-            ws.Cells(LAYOUT_HEADER_ROW, 1).Select
+            ws.Cells(4, 1).Select
             Application.ActiveWindow.FreezePanes = True
         End If
         ws.Cells(1, 1).Select
@@ -378,7 +422,7 @@ Private Sub BuildReadme()
     Set ws = GetSheet(SH_README)
     ApplyFrame ws, "ReadMe", APP_TITLE & " (Basel MAR21-MAR23) in Excel VBA. Prototype " & APP_VERSION & _
         ": results are not validated for regulatory use.", 4
-    SetWidths ws, Array(34, 150)
+    SetWidths ws, Array(55, 150)
 
     r = 5
     WriteSectionHeading ws, r, "How to use", 2
@@ -424,7 +468,9 @@ Private Function WriteGuideRows(ByVal ws As Object, ByVal r As Long, ByVal pairs
     On Error Resume Next
     With ws.Range(TableCell(ws, first, 1), TableCell(ws, r - 1, 2))
         .WrapText = True
-        .Borders.LineStyle = -4115                           'xlDash
+    End With
+    FormatBorders ws.Range(TableCell(ws, first, 1), TableCell(ws, r - 1, 2)), COLOR_GRID, -4115
+    With ws.Range(TableCell(ws, first, 1), TableCell(ws, r - 1, 2))
         .Borders(7).LineStyle = 1                            'xlEdgeLeft
         .Borders(8).LineStyle = 1                            'xlEdgeTop
         .Borders(9).LineStyle = 1                            'xlEdgeBottom
@@ -504,10 +550,35 @@ End Sub
 
 
 Private Sub ResultsPlaceholder(ByVal ws As Object)
-    TableCell(ws, LAYOUT_HEADER_ROW, 1).Value = "No results yet: press Run FRTB-SA."
+    Dim headers As Variant, i As Long
+    Select Case ws.Name
+        Case SH_RESULTS: headers = Array("Risk class", "Component", "Low", "Medium", "High")
+        Case SH_OUT_SUMMARY: headers = Array("Item", "Value")
+        Case SH_OUT_CLASS: headers = Array("RiskClass", "Component", "Scenario", "Capital", "Buckets", "AltSbUsed")
+        Case SH_OUT_BUCKETS: headers = Array("RiskClass", "Component", "Scenario", "Bucket", "Kb", "Sb", "RiskFactors", "Note")
+        Case SH_OUT_DRC: headers = Array("Obligor", "Bucket", "CreditQuality", "RW", "NetLong", "NetShort")
+        Case SH_LOG: headers = Array("Level", "Source", "Message")
+    End Select
+    WriteTableHeader ws, LAYOUT_HEADER_ROW, headers, COLOR_OUTPUT_HEADER
+    If ws.Name = SH_OUT_DRC Then
+        headers = Array("Bucket", "NetLong", "NetShort", "HBR", "WeightedLong", "WeightedShort", "DRC")
+        For i = 0 To 6
+            ws.Cells(LAYOUT_HEADER_ROW, 10 + i).Value = HeaderCaption(headers(i))
+        Next i
+        With ws.Range("J5:P5")
+            .Font.Bold = True
+            .Font.Color = COLOR_WHITE
+            .Interior.Color = COLOR_OUTPUT_HEADER
+            .WrapText = True
+            .HorizontalAlignment = -4108
+        End With
+        FormatBorders ws.Range("J5:P5"), COLOR_GRID, 1
+    End If
+    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Value = "No results yet: press Run FRTB-SA."
     On Error Resume Next
-    TableCell(ws, LAYOUT_HEADER_ROW, 1).Font.Italic = True
-    TableCell(ws, LAYOUT_HEADER_ROW, 1).Font.Color = COLOR_NOTE
+    ws.Rows(LAYOUT_FIRST_DATA_ROW).RowHeight = 20.1
+    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Font.Italic = True
+    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Font.Color = COLOR_NOTE
     On Error GoTo 0
 End Sub
 

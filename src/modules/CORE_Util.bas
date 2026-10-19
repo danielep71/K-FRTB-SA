@@ -19,7 +19,7 @@ Attribute VB_Name = "CORE_Util"
 '   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
 '   InNumberList.
 '   Sorting: BucketLess, SortLabels.
-'   Formatting: WriteTableHeader, FormatDataRows.
+'   Formatting: WriteTableHeader, FormatDataRows, HeaderCaption, FormatBorders.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
 '
 ' DEPENDENCIES
@@ -516,7 +516,7 @@ Public Sub WriteTableHeader(ByVal ws As Object, ByVal r As Long, ByVal headers A
     k = 0
     For i = LBound(headers) To UBound(headers)
         k = k + 1
-        TableCell(ws, r, k).Value = headers(i)
+        TableCell(ws, r, k).Value = HeaderCaption(headers(i))
     Next i
     On Error Resume Next
     With ws.Range(TableCell(ws, r, 1), TableCell(ws, r, k))
@@ -528,8 +528,9 @@ Public Sub WriteTableHeader(ByVal ws As Object, ByVal r As Long, ByVal headers A
         .WrapText = True
     End With
     TableCell(ws, r, 1).HorizontalAlignment = -4131          'xlLeft for the key column
-    ws.Rows(r).RowHeight = 30
+    ws.Rows(r).RowHeight = 42
     On Error GoTo 0
+    FormatBorders ws.Range(TableCell(ws, r, 1), TableCell(ws, r, k)), COLOR_GRID, 1
 End Sub
 
 
@@ -542,15 +543,55 @@ Public Sub FormatDataRows(ByVal ws As Object, ByVal r1 As Long, ByVal r2 As Long
     On Error Resume Next
     With ws.Range(TableCell(ws, r1, 1), TableCell(ws, r2, nCols))
         .Font.Size = 10
-        .Borders.LineStyle = 1                               'xlContinuous
-        .Borders.Color = COLOR_GRID
+        .RowHeight = 20.1
         If isInput Then .Interior.Color = COLOR_INPUT_CELL
     End With
+    FormatBorders ws.Range(TableCell(ws, r1, 1), TableCell(ws, r2, nCols)), COLOR_GRID, 1
     If firstNumCol > 0 And numberFormat <> "" Then
         ws.Range(TableCell(ws, r1, firstNumCol), TableCell(ws, r2, nCols)).NumberFormat = numberFormat
     End If
     On Error GoTo 0
 End Sub
+
+
+' Address each edge explicitly: collection-wide border setters are not
+' consistently implemented by spreadsheet compatibility hosts.
+Public Sub FormatBorders(ByVal target As Object, ByVal color As Long, ByVal lineStyle As Long)
+    Dim edge As Long
+    On Error Resume Next
+    For edge = 7 To 12
+        With target.Borders(edge)
+            .LineStyle = lineStyle
+            .Weight = 2                                     'xlThin
+            .Color = color
+        End With
+    Next edge
+    On Error GoTo 0
+End Sub
+
+
+' Only displayed column captions change; engine keys and positions stay fixed.
+Public Function HeaderCaption(ByVal value As Variant) As Variant
+    Select Case CStr(value)
+        Case "RiskClass": HeaderCaption = "Risk class"
+        Case "SubType": HeaderCaption = "Sub-type"
+        Case "OptionMaturity": HeaderCaption = "Option maturity (years)"
+        Case "UnderlyingMaturity": HeaderCaption = "Underlying maturity (years)"
+        Case "CreditQuality": HeaderCaption = "Credit quality"
+        Case "MarketValue": HeaderCaption = "Market value"
+        Case "GrossNotional": HeaderCaption = "Gross notional"
+        Case "CVR_Up": HeaderCaption = "CVR up"
+        Case "CVR_Down": HeaderCaption = "CVR down"
+        Case "NetLong": HeaderCaption = "Net long"
+        Case "NetShort": HeaderCaption = "Net short"
+        Case "WeightedLong": HeaderCaption = "Weighted long"
+        Case "WeightedShort": HeaderCaption = "Weighted short"
+        Case "RiskFactors": HeaderCaption = "Risk factors"
+        Case "AltSbUsed": HeaderCaption = "Alternative Sb used"
+        Case "AbsDiff": HeaderCaption = "Absolute difference"
+        Case Else: HeaderCaption = value
+    End Select
+End Function
 
 '------------------------------------------------------------------------------
 '                                 RUN LOG

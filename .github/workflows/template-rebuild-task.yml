@@ -1,0 +1,42 @@
+name: Template styling task build
+
+on:
+  push:
+    branches: ["fix/76-template-style"]
+    paths:
+      - src/modules/**
+      - tools/**
+      - .github/workflows/template-rebuild-task.yml
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Install build and test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-calc python3-uno
+          /usr/bin/python3 -m venv --system-site-packages .venv
+          .venv/bin/python -m pip install --disable-pip-version-check -r tests/requirements.txt -r .github/requirements.txt
+      - name: Generate the template from the VBA source
+        run: |
+          .venv/bin/python tools/vba_lint.py
+          .venv/bin/python tools/build_template.py
+      - name: Save the generated template on this task branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/workbook/FRTB_Template.xlsx
+          if ! git diff --cached --quiet; then
+            git commit -m "Regenerate the workbook template from reviewed styling sources"
+            git push origin HEAD:fix/76-template-style
+          fi
+      - name: Verify the rebuilt source and template
+        env:
+          REQUIRE_LIBREOFFICE: "1"
+        run: .venv/bin/python -m pytest -v tests

@@ -265,7 +265,7 @@ Private Sub WriteBucketHeader(ByVal ws As Object)
     Dim headers As Variant, i As Long
     headers = Array("Bucket", "NetLong", "NetShort", "HBR", "WeightedLong", "WeightedShort", "DRC")
     For i = 0 To 6
-        TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL + i).Value = headers(i)
+        TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL + i).Value = HeaderCaption(headers(i))
     Next i
     On Error Resume Next
     With ws.Range(TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL + 6))
@@ -285,10 +285,10 @@ Private Sub FormatBucketRows(ByVal ws As Object, ByVal nB As Long)
     On Error Resume Next
     With ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL + 6))
         .Font.Size = 10
-        .Borders.LineStyle = 1
-        .Borders.Color = COLOR_GRID
+        .RowHeight = 20.1
         .NumberFormat = "#,##0"
     End With
+    FormatBorders ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL + 6)), COLOR_GRID, 1
     ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL + 3), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL + 3)).NumberFormat = "0.0000"
     ws.Range(TableCell(ws, LAYOUT_FIRST_DATA_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW + nB, DRC_BUCKET_COL)).NumberFormat = "@"
     On Error GoTo 0

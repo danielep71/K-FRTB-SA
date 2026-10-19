@@ -17,6 +17,45 @@ def test_template_is_current_and_macro_free():
     assert build_template.check() == []
 
 
+def test_template_saved_presentation():
+    """The XLSX must look complete before any macro can run."""
+    wb = openpyxl.load_workbook(build_template.TEMPLATE)
+    for ws in wb:
+        assert ws.sheet_view.showGridLines is False, ws.title
+        expected_tab = "FF1F3864" if ws.title == "README" else "FF548235" if ws.title == "Test_Expected" else "FF2E75B6" if ws.title in ("Results", "Log") or ws.title.startswith("Out_") else "FFBF9000"
+        assert ws.sheet_properties.tabColor.rgb == expected_tab, ws.title
+        assert ws.freeze_panes == ("A4" if ws.title == "README" else "D7" if ws.title in ("Control", "Test_Expected") or ws.title.startswith("P_") else "D6"), ws.title
+        assert ws.page_setup.orientation == "landscape", ws.title
+        assert ws.page_setup.fitToWidth == 1 and ws.page_setup.fitToHeight == 0
+        assert ws.sheet_properties.pageSetUpPr.fitToPage
+        assert "Aptos" in str(ws.oddFooter)
+    for name in ("Control", "In_Delta", "In_Vega", "In_Curvature", "In_DRC", "In_RRAO"):
+        ws = wb[name]
+        row = 7 if name == "Control" else 6
+        assert ws.row_dimensions[row].height == 20.1, name
+        assert ws.cell(row, 4).border.bottom.style == "thin", name
+    assert wb["README"]["D7"].border.bottom.style == "dashed"
+    assert wb["In_Delta"]["B2"].value == "Delta sensitivities"
+    assert wb["In_Delta"]["D5"].value == "Risk class"
+    for name in ("Results", "Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC", "Log"):
+        assert wb[name]["C5"].fill.fgColor.rgb == "FF2E75B6", name
+        assert wb[name]["C6"].value == "No results yet: press Run FRTB-SA.", name
+
+
+def test_presentation_normalization_preserves_content_and_is_idempotent(tmp_path):
+    import shutil
+    import template_presentation
+
+    path = tmp_path / "template.xlsx"
+    shutil.copyfile(build_template.TEMPLATE, path)
+    before = build_template.signature(path)
+    template_presentation.normalize(path)
+    after = build_template.signature(path)
+    assert build_template.signature_differences(before, after) == []
+    template_presentation.normalize(path)
+    assert build_template.signature_differences(after, build_template.signature(path)) == []
+
+
 def _repack(source, target, part, old, new):
     """Copy a package, replacing one occurrence of old by new in one part."""
     with zipfile.ZipFile(source) as zin, zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zout:
