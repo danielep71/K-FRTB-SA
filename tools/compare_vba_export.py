@@ -169,6 +169,8 @@ def exported_components(folder: Path) -> dict[str, tuple[str, Component]]:
     for path in sorted(folder.iterdir()):
         if path.suffix.lower() not in SUFFIXES:
             continue
+        if not path.is_file():
+            raise ValueError(f"{path.name}: not a file")
         component = parse(path.read_bytes(), path.name)
         key = component.name.lower()
         if key in exported:
@@ -343,14 +345,16 @@ def main(arguments: list[str] | None = None) -> int:
         findings, recased = compare(expected, exported)
         binding, binding_findings, binding_notes = check_binding(options.export, options.workbook)
         template = sha256(committed(options.root, sha, TEMPLATE))
-    except ValueError as error:
+        workbook_digest = sha256(options.workbook.read_bytes()) if options.workbook is not None else ""
+    except (ValueError, OSError, UnicodeDecodeError) as error:
+        # An input that cannot be read is not a comparison result: exit 2.
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
     print(f"Candidate: {sha}")
     print(f"Mode:      {options.mode} ({len(expected)} modules expected, {len(exported)} components exported)")
     print(f"Template:  {TEMPLATE} sha256 {template}")
     if options.workbook is not None:
-        print(f"Workbook:  {options.workbook.name} sha256 {sha256(options.workbook.read_bytes())}")
+        print(f"Workbook:  {options.workbook.name} sha256 {workbook_digest}")
     print(f"Re-cased:  {recased} line(s) differ only in the letter case of code (ignored)")
     print(f"Binding:   {binding} - {binding_note(binding, options.export, options.workbook)}")
     for note in binding_notes:

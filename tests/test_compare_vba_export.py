@@ -233,6 +233,30 @@ def test_unreadable_inputs_exit_2(export, tmp_path):
     assert "exported twice" in output
 
 
+def test_an_unreadable_component_exits_2(export):
+    folder = export("production")
+    (folder / "broken.bas").mkdir()
+    code, output = run_tool(folder, "production")
+    assert code == 2, output
+    assert "broken.bas: not a file" in output
+    (folder / "broken.bas").rmdir()
+    (folder / "CORE_SBM.bas").chmod(0)
+    try:
+        if not os.access(folder / "CORE_SBM.bas", os.R_OK):  # root can still read it
+            code, output = run_tool(folder, "production")
+            assert code == 2, output
+            assert "Traceback" not in output
+    finally:
+        (folder / "CORE_SBM.bas").chmod(0o644)
+
+
+def test_a_component_that_is_not_cp1252_exits_2(export):
+    folder = export("production")
+    (folder / "CORE_SBM.bas").write_bytes(b'Attribute VB_Name = "CORE_SBM"\r\n\x81\r\n')
+    code, output = run_tool(folder, "production")
+    assert code == 2, output
+
+
 def test_exporter_writes_the_format_and_manifest_the_tool_reads():
     script = (ROOT / "tools" / "Export-FRTB-VBA.ps1").read_text(encoding="ascii")
     assert f"$exportFormat = '{tool.EXPORT_FORMAT}'" in script
