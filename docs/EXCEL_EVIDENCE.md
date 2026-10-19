@@ -232,10 +232,14 @@ Rules the validator applies:
   items.
 * A comparison must name its mode and the candidate's template digest. A
   pass needs `RESULT=PASS` and `binding=VERIFIED`; a failure needs
-  `RESULT=FAIL`. A `TIMEOUT` comparison shows no `RESULT=` line.
+  `RESULT=FAIL`. A `TIMEOUT` comparison shows no `RESULT=` line. It may
+  have stopped before printing its `Candidate:`, `Mode:` and `Template:`
+  lines, but any of them it did print must match.
 * Log paths must be relative, stay inside the bundle and not pass through a
   symbolic link. Logs may be UTF-8, with or without a byte-order mark, or
-  UTF-16, as PowerShell 5.1 redirection writes them.
+  UTF-16, as PowerShell 5.1 redirection writes them. A log that cannot be
+  decoded is invalid, and so is any malformed record: the validator reports
+  `EVIDENCE_INVALID` rather than stopping.
 
 **Environment and time**
 * `environment.os` must start with `Windows`.
