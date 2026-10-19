@@ -561,8 +561,8 @@ Public Sub FormatBorders(ByVal target As Object, ByVal color As Long, ByVal line
     On Error Resume Next
     For edge = 7 To 12
         With target.Borders(edge)
-            .LineStyle = lineStyle
             .Weight = 2                                     'xlThin
+            .LineStyle = lineStyle
             .Color = color
         End With
     Next edge

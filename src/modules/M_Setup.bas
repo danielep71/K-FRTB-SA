@@ -8,7 +8,7 @@ Attribute VB_Name = "M_Setup"
 '   regulatory parameters (Basel MAR21-MAR23), a synthetic sample portfolio,
 '   the buttons and the expected results of the regression test. The
 '   macro-free template src/workbook/FRTB_Template.xlsx is this build saved
-'   without VBA; FinishWorkbook adds what a template cannot hold.
+'   without VBA; FinishWorkbook adds buttons and reapplies view settings.
 '
 ' PUBLIC SURFACE
 '   BuildWorkbook: rebuild every sheet (overwrites the inputs), then
@@ -214,6 +214,13 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
         .BottomMargin = 36
         .CenterHeader = ""
         .CenterFooter = "&""Aptos,Regular""&9Page &P of &N"
+        If ws.Name = SH_README Then
+            .PrintTitleRows = "$1:$3"
+        ElseIf ws.Name = SH_CONTROL Or ws.Name = SH_TEST Or Left$(ws.Name, 2) = "P_" Then
+            .PrintTitleRows = "$1:$6"
+        Else
+            .PrintTitleRows = "$1:$5"
+        End If
     End With
     On Error GoTo 0
     ApplyTabColor ws

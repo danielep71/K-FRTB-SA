@@ -48,7 +48,8 @@ ignored) and is built from the template plus the modules, following the
 [template-based build](REPOSITORY_STRUCTURE.md#conditional-excelvba-policy).
 
 The template is generated, never edited by hand: `python3
-tools/build_template.py` rebuilds it headless in LibreOffice, and
+tools/build_template.py` rebuilds it headless in LibreOffice and normalizes
+saved view/print settings through `tools/template_presentation.py`, and
 `tools/update_expected.py` rebuilds it whenever the expected values change.
 `tests/test_template.py` fails when the committed template differs from a
 fresh build of the modules, in values or layout, or carries VBA, controls or
@@ -99,7 +100,7 @@ modules.
 
    The script opens a copy of `src\workbook\FRTB_Template.xlsx`, imports
    `src\modules` and `tests\modules`, runs `FinishWorkbook` (sheet buttons
-   and window settings), the calculation and the regression test, and saves
+   and reapplication of saved view settings), the calculation and the regression test, and saves
    `dist\K-FRTB-SA.xlsm`. `-FromSource` builds every sheet from the modules
    (`BuildWorkbook`) instead of the template; `-Production` leaves out the
    test modules; `-Template` saves a source-built, macro-free template as
@@ -181,6 +182,17 @@ and cream input cells (`FFF2CC`); output tables have blue headers
 (`2E75B6`); PASS and FAIL use green (`E2EFDA`) and red (`FFC7CE`). The font
 is Aptos and gridlines are hidden. The palette is defined once in
 `CORE_Config`.
+
+The XLSX saves colored tabs, hidden gridlines and frozen panes before any
+macro runs. Data rows are 20.1 points high, table headers are 42 points high,
+and input tables use thin gray borders. The README uses dashed internal
+separators. Display titles and column captions use readable words; engine
+sheet names, parameter codes and column positions remain unchanged.
+Initial output sheets show blue headers and a no-results message, without
+invented calculation values. Printing uses A4 landscape, one page wide with
+unlimited height, repeated heading rows and an Aptos page-number footer.
+Output print areas remain automatic so later runs are not clipped to an
+empty template's extent.
 
 | Tab | Sheet | Content |
 | --- | --- | --- |

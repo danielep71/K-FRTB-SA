@@ -7,6 +7,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Workbook presentation now survives template generation: the XLSX saves
+  hidden gridlines, role-colored tabs, frozen headers and identifiers, and
+  landscape print settings. Data-row spacing, table borders, README
+  separators, readable display labels and initial output headers follow the
+  shared toolkit style. VBA formatting and the headless build are updated
+  together, with saved-presentation and regeneration checks (#76).
+
 - Tagged parameter tables reject blank keys and internal blank rows rather
   than truncating later matrix data and leaving correlations at zero (#48).
 

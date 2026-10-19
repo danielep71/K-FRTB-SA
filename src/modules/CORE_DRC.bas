@@ -277,6 +277,7 @@ Private Sub WriteBucketHeader(ByVal ws As Object)
         .WrapText = True
     End With
     On Error GoTo 0
+    FormatBorders ws.Range(TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL), TableCell(ws, LAYOUT_HEADER_ROW, DRC_BUCKET_COL + 6)), COLOR_GRID, 1
 End Sub
 
 
