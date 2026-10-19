@@ -215,8 +215,10 @@ logged on `Log`; check the error count on `Results` after every run.
 
 1. Edit the modules in the VBA editor of a development build.
 2. Run `Dev_ExportModules` to write them back to `src\modules` and
-   `tests\modules` (the workbook must sit in the repository root or in
-   `dist\`).
+   `tests\modules`. It finds the folders only when the workbook sits in the
+   repository root or in `dist\`. A workbook kept elsewhere, for example one
+   updated from a downloads folder, cannot export: move or copy it into
+   `dist\` of the checkout first.
 3. On a machine with LibreOffice and Python, run the checks in
    [validation](validation.md). If the sample portfolio, parameters or engine
    logic changed, regenerate the expected values with
