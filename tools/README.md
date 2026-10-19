@@ -6,6 +6,9 @@ prototype (issue #20). None of them holds calculation logic.
 | Tool | Purpose |
 | --- | --- |
 | `Build-Workbook.ps1` | Builds `dist\K-FRTB-SA.xlsm` from the template and the VBA modules through Excel COM on Windows (`-FromSource` without the template; `-Template` saves a source-built template) |
+| `Build-Workbook.cmd` | Double-click launcher for `Build-Workbook.ps1`: asks for a production or development build and whether to overwrite |
+| `Sync-FRTB-VBA.ps1` | Replaces the standard modules of an existing `.xlsm` through Excel COM, from the checkout (`-Mode Production` or `Development`) or from a folder (`-SourceDir`), with a safety copy; never writes cells or sheets |
+| `Sync-FRTB-VBA.cmd`, `Sync-FRTB-VBA-Downloads.cmd` | Drag-and-drop launchers for `Sync-FRTB-VBA.ps1`: from the checkout, or from a folder that defaults to `%USERPROFILE%\Downloads` |
 | `build_template.py` | Rebuilds (or `--check`s) the macro-free template `src/workbook/FRTB_Template.xlsx` headless in LibreOffice |
 | `lo_runner.py` | Runs the VBA modules headless in LibreOffice Calc and saves the result as `.xlsx` |
 | `vba_lint.py` | Static checks approximating Excel's compile checks and the module conventions |
@@ -14,7 +17,8 @@ prototype (issue #20). None of them holds calculation logic.
 [Validation](../docs/validation.md) lists their prerequisites (Python 3,
 LibreOffice Calc with the Python UNO bridge, the pinned packages in
 `tests/requirements.txt` and `.github/requirements.txt`) and how they are used
-together.
+together. The [workbook guide](../docs/workbook-guide.md#updating-an-existing-workbook)
+describes building and updating a workbook on Windows.
 
 ## Label tooling
 

@@ -61,7 +61,11 @@ macros and saves the result as `.xlsx`.
   a compiler. Build the workbook with `tools\Build-Workbook.ps1 -RunTests`,
   run **Debug → Compile VBAProject**, and record the result as manual
   evidence.
-* **The build script** `tools/Build-Workbook.ps1` has not been executed.
+* **The build and sync scripts** `tools/Build-Workbook.ps1` and
+  `tools/Sync-FRTB-VBA.ps1`, and their `.cmd` launchers, have not been
+  executed in Excel. `tests/test_sync_script.py` runs the sync script's
+  file selection, name checks, line-ending conversion and module sets
+  offline in PowerShell 7; the Excel import, backup and save are untested.
 * **Excel-only presentation**: buttons, autofilters, frozen panes, tab
   colors and conditional styling were checked only as rendered by
   LibreOffice; `Dev_ExportModules` and the message boxes were not run.

@@ -164,8 +164,15 @@ whitespace and local documentation targets.
 3. Open `dist\K-FRTB-SA.xlsm`, then run **Debug → Compile VBAProject** in the
    VBA editor (**Alt+F11**).
 
-`-Production` leaves out the test modules; the manual import is described in
-the [workbook guide](docs/workbook-guide.md#building-the-workbook-windows-excel).
+`-Production` leaves out the test modules. Double-clicking
+`tools\Build-Workbook.cmd` runs the same build without a PowerShell prompt.
+The manual import is described in the
+[workbook guide](docs/workbook-guide.md#building-the-workbook-windows-excel).
+
+To update the VBA of a workbook you already built, drag it onto
+`tools\Sync-FRTB-VBA.cmd` for the checkout, or onto
+`tools\Sync-FRTB-VBA-Downloads.cmd` for modules in a downloads folder; see
+[updating an existing workbook](docs/workbook-guide.md#updating-an-existing-workbook).
 
 ## 3. Run
 
