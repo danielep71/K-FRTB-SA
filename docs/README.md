@@ -10,6 +10,7 @@ procedures. Keep root entry documents linked rather than copying them here.
 | Prototype formulas, parameters and open interpretations | [Methodology](methodology.md) |
 | Prototype source, template, build, sheets and inputs | [Workbook guide](workbook-guide.md) |
 | Prototype checks and missing Excel evidence | [Validation](validation.md) |
+| Recording and validating an Excel run | [Excel evidence](EXCEL_EVIDENCE.md) |
 | Documentation assets and sources | [Assets](assets/README.md) |
 | Universal integrity and dependency updates | [🧪 Repository checks](CI.md) |
 | Current capability, platform decisions, regulatory-source and validation policy | [Scope](SCOPE.md) |
