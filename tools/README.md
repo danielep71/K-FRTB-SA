@@ -14,6 +14,7 @@ prototype (issue #20). None of them holds calculation logic.
 | `build_template.py` | Rebuilds (or `--check`s) the macro-free template `src/workbook/FRTB_Template.xlsx` headless in LibreOffice |
 | `lo_runner.py` | Runs the VBA modules headless in LibreOffice Calc and saves the result as `.xlsx` |
 | `vba_lint.py` | Static checks approximating Excel's compile checks and the module conventions |
+| `check_excel_evidence.py` | Validates an Excel evidence record and its logs against the exact commit (`--evidence`), prints the source digests (`--inventory`) and checks the policy against `M_Setup` (`--check-policy`); never runs Excel. See [Excel evidence](../docs/EXCEL_EVIDENCE.md) |
 | `update_expected.py` | Regenerates (or `--check`s) the expected values embedded in `M_Setup` from the independent reference, and rebuilds the template when they change |
 
 [Validation](../docs/validation.md) lists their prerequisites (Python 3,

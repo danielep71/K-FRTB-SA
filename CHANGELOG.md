@@ -55,6 +55,17 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Excel evidence record and validator (#82), adapted from the
+  VBA-SACCR-Toolkit:
+  - `docs/EXCEL_EVIDENCE.md` defines the manual procedure, the `host.json`
+    record, the rules, the outcomes and the limits.
+  - `.github/excel-evidence-policy.json` lists the required references, the
+    regression item count and the ordered stages: build, compile and
+    regression, and the round trip in both modes.
+  - `tools/check_excel_evidence.py` checks a bundle, offline, against the
+    sources and the policy in Git at the candidate commit. It also checks
+    the policy against `M_Setup`.
+  - Offline tests use synthetic bundles. No Excel run is recorded yet (#28).
 - Excel round-trip tools (#79), from the VBA-SACCR-Toolkit:
   - `tools/Export-FRTB-VBA.ps1` exports a workbook's VBA read-only, with
     macros disabled, to an empty folder with `export-manifest.json`.
