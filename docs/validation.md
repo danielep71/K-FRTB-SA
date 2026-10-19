@@ -21,6 +21,7 @@ checked. Treat any result as unvalidated for regulatory use.
 | In-workbook regression test | run inside the reconciliation tests | `Test_RunRegression` passes all 52 items embedded by `M_Setup` |
 | Expected values current | `python3 tools/update_expected.py --check` | The values embedded in `M_Setup` equal the reference results for the sample |
 | Sync script logic | `python3 -m pytest tests/test_sync_script.py` | The functions of `tools/Sync-FRTB-VBA.ps1`, run offline in PowerShell 7: module identity from `Attribute VB_Name`, folder selection and newest copy, CRLF conversion, mode answers, module sets equal to the build sets; the launchers never echo a path directly. The PowerShell tests are skipped when `pwsh` is not installed (the hosted runner has it); no test runs Excel |
+| Export comparison logic | `python3 -m pytest tests/test_compare_vba_export.py` | `tools/compare_vba_export.py` on synthetic exports of the source at `HEAD`: an exact or re-cased export passes. These fail: changed code, comments, attributes or string case; missing, unexpected or test modules in production; document modules holding code; a changed file or another workbook against the manifest. A renamed workbook is a note. The exporter's format and read-only open match what the tool reads. No test runs Excel |
 | Template current | `python3 tools/build_template.py --check`, `tests/test_template.py` | The committed template equals a fresh build of the modules in values and layout (cell styles, number formats, explicitly set column widths and row heights, merged ranges, tab colors, frozen panes, gridlines, autofilters; automatic heights depend on the host's fonts and are not compared), carries no VBA project, controls or personal properties, and a build from it passes the regression test and reconciles with the reference |
 
 Run everything with:
@@ -67,6 +68,9 @@ macros and saves the result as `.xlsx`.
   executed in Excel. `tests/test_sync_script.py` runs the sync script's
   file selection, name checks, line-ending conversion and module sets
   offline in PowerShell 7; the Excel import, backup and save are untested.
+* **The Excel round trip** (#30): `tools/Export-FRTB-VBA.ps1` has not run
+  in Excel. `tools/compare_vba_export.py` is tested only on synthetic
+  exports, so no workbook has been compared with its source yet.
 * **Excel-only presentation**: buttons, autofilters, frozen panes, tab
   colors and conditional styling were checked only as rendered by
   LibreOffice; `Dev_ExportModules` and the message boxes were not run.

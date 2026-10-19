@@ -48,6 +48,17 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Excel round-trip tools (#79), from the VBA-SACCR-Toolkit:
+  - `tools/Export-FRTB-VBA.ps1` exports a workbook's VBA read-only, with
+    macros disabled, to an empty folder with `export-manifest.json`.
+  - `tools/compare_vba_export.py` compares the export with the source of a
+    commit, read from Git, in production or development mode. Re-cased
+    identifiers are ignored, and document modules must hold no code. It
+    reports the export's binding to the workbook as VERIFIED, FAIL or
+    UNVERIFIED.
+  - The workbook guide describes the round trip that #30 needs. Offline
+    tests cover the comparison; no Excel export is recorded yet.
+
 - VBA synchronization for an existing workbook (#72), modeled on the
   VBA-SACCR-Toolkit tools:
   - `tools/Sync-FRTB-VBA.ps1` replaces the standard modules of an `.xlsm`
