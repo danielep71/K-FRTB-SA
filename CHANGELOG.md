@@ -13,6 +13,11 @@ Unreleased describe integrated work, not a published version.
   separators, readable display labels and initial output headers follow the
   shared toolkit style. VBA formatting and the headless build are updated
   together, with saved-presentation and regeneration checks (#76).
+- **Clear outputs** and a failed run no longer remove the output sheet
+  headers. Results, the Out_* sheets and Log return to the template's empty
+  state: headers in row 5 and the note in row 6, with "Run failed" on
+  Results after a failure. The build, Clear outputs and the failure path
+  share one placeholder routine, `CORE_Util.WriteOutputPlaceholder` (#85).
 
 - Tagged parameter tables reject blank keys and internal blank rows rather
   than truncating later matrix data and leaving correlations at zero (#48).

@@ -21,6 +21,7 @@ Attribute VB_Name = "CORE_Util"
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows, HeaderCaption, FormatBorders,
 '   ExtendPrintArea.
+'   Output placeholders: WriteOutputPlaceholder.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
 '
 ' DEPENDENCIES
@@ -32,10 +33,11 @@ Attribute VB_Name = "CORE_Util"
 '
 ' ERROR POLICY
 '   GetSheet and ReadTable raise vbObjectError + ERR_APP for a missing sheet
-'   or table; KVNumber, TableNumber and ParseNumberList raise it for a
-'   required parameter that is blank or not a number. Formatting is
-'   cosmetic: a host that rejects a format property leaves the cell
-'   unformatted instead of stopping the run.
+'   or table, WriteOutputPlaceholder for a sheet that is not an output;
+'   KVNumber, TableNumber and ParseNumberList raise it for a required
+'   parameter that is blank or not a number. Formatting is cosmetic: a host
+'   that rejects a format property leaves the cell unformatted instead of
+'   stopping the run.
 '
 ' COMPATIBILITY
 '   Excel VBA; also runs in LibreOffice Calc with VBA support for the
@@ -614,6 +616,58 @@ Public Function HeaderCaption(ByVal value As Variant) As Variant
         Case Else: HeaderCaption = value
     End Select
 End Function
+
+'------------------------------------------------------------------------------
+'                           OUTPUT PLACEHOLDERS
+'------------------------------------------------------------------------------
+' Writes the empty state of an output sheet (Results, Out_*, Log) below a
+' cleared table area: the column headers in the header row (on Out_DRC also
+' the bucket table from column J) and a note in the first data row. The
+' build, Clear outputs and a failed run all show this state.
+Public Sub WriteOutputPlaceholder(ByVal ws As Object, _
+                                  Optional ByVal note As String = "No results yet: press Run FRTB-SA.", _
+                                  Optional ByVal isAlert As Boolean = False)
+    Dim headers As Variant, i As Long
+    Select Case ws.Name
+        Case SH_RESULTS: headers = Array("Risk class", "Component", "Low", "Medium", "High")
+        Case SH_OUT_SUMMARY: headers = Array("Item", "Value")
+        Case SH_OUT_CLASS: headers = Array("RiskClass", "Component", "Scenario", "Capital", "Buckets", "AltSbUsed")
+        Case SH_OUT_BUCKETS: headers = Array("RiskClass", "Component", "Scenario", "Bucket", "Kb", "Sb", "RiskFactors", "Note")
+        Case SH_OUT_DRC: headers = Array("Obligor", "Bucket", "CreditQuality", "RW", "NetLong", "NetShort")
+        Case SH_LOG: headers = Array("Level", "Source", "Message")
+        Case Else: Err.Raise vbObjectError + ERR_APP, "CORE_Util.WriteOutputPlaceholder", "Not an output sheet: " & ws.Name
+    End Select
+    WriteTableHeader ws, LAYOUT_HEADER_ROW, headers, COLOR_OUTPUT_HEADER
+    If ws.Name = SH_OUT_DRC Then
+        headers = Array("Bucket", "NetLong", "NetShort", "HBR", "WeightedLong", "WeightedShort", "DRC")
+        For i = 0 To 6
+            ws.Cells(LAYOUT_HEADER_ROW, 10 + i).Value = HeaderCaption(headers(i))
+        Next i
+        On Error Resume Next
+        With ws.Range("J5:P5")
+            .Font.Bold = True
+            .Font.Color = COLOR_WHITE
+            .Interior.Color = COLOR_OUTPUT_HEADER
+            .WrapText = True
+            .HorizontalAlignment = -4108
+        End With
+        On Error GoTo 0
+        FormatBorders ws.Range("J5:P5"), COLOR_GRID, 1
+    End If
+    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Value = note
+    On Error Resume Next
+    ws.Rows(LAYOUT_FIRST_DATA_ROW).RowHeight = 20.1
+    With TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1)
+        .Font.Italic = True
+        If isAlert Then
+            .Font.Color = COLOR_FAIL_TEXT
+            .Interior.Color = COLOR_FAIL_FILL
+        Else
+            .Font.Color = COLOR_NOTE
+        End If
+    End With
+    On Error GoTo 0
+End Sub
 
 '------------------------------------------------------------------------------
 '                                 RUN LOG

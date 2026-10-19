@@ -530,66 +530,32 @@ Private Sub BuildOutputSheets()
     Set ws = GetSheet(SH_RESULTS)
     ApplyFrame ws, "Results", "Capital by risk class, component and correlation scenario (MAR21.7), reporting currency.", 9
     SetWidths ws, Array(26, 14, 16, 16, 16)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_SUMMARY)
     ApplyFrame ws, "Out_Summary", "Key results of the last run, read by the regression test and automation.", 5
     SetWidths ws, Array(18, 20)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_CLASS)
     ApplyFrame ws, "Out_RiskClass", "Capital per risk class, component and scenario; AltSbUsed = Y when the alternative Sb of MAR21.4(5)(b) applied.", 9
     SetWidths ws, Array(12, 13, 11, 16, 9, 11)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_BUCKETS)
     ApplyFrame ws, "Out_Buckets", "Kb and Sb per bucket. Notes: ALT_SB alternative Sb, UP/DOWN selected curvature scenario, OTHER other-sector bucket.", 11
     SetWidths ws, Array(12, 13, 11, 9, 16, 16, 11, 16)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_OUT_DRC)
     ApplyFrame ws, "Out_DRC", "Net jump-to-default per obligor after seniority netting, and the hedge benefit ratio and charge per bucket (MAR22).", 18
     SetWidths ws, Array(16, 9, 13, 9, 14, 14, 3, 9, 14, 14, 10, 14, 14, 14)
-    ResultsPlaceholder ws
+    WriteOutputPlaceholder ws
 
     Set ws = GetSheet(SH_LOG)
     ApplyFrame ws, "Log", "Every rejected input row with the reason, warnings and the run status.", 6
     SetWidths ws, Array(9, 24, 110)
-    ResultsPlaceholder ws
-End Sub
-
-
-Private Sub ResultsPlaceholder(ByVal ws As Object)
-    Dim headers As Variant, i As Long
-    Select Case ws.Name
-        Case SH_RESULTS: headers = Array("Risk class", "Component", "Low", "Medium", "High")
-        Case SH_OUT_SUMMARY: headers = Array("Item", "Value")
-        Case SH_OUT_CLASS: headers = Array("RiskClass", "Component", "Scenario", "Capital", "Buckets", "AltSbUsed")
-        Case SH_OUT_BUCKETS: headers = Array("RiskClass", "Component", "Scenario", "Bucket", "Kb", "Sb", "RiskFactors", "Note")
-        Case SH_OUT_DRC: headers = Array("Obligor", "Bucket", "CreditQuality", "RW", "NetLong", "NetShort")
-        Case SH_LOG: headers = Array("Level", "Source", "Message")
-    End Select
-    WriteTableHeader ws, LAYOUT_HEADER_ROW, headers, COLOR_OUTPUT_HEADER
-    If ws.Name = SH_OUT_DRC Then
-        headers = Array("Bucket", "NetLong", "NetShort", "HBR", "WeightedLong", "WeightedShort", "DRC")
-        For i = 0 To 6
-            ws.Cells(LAYOUT_HEADER_ROW, 10 + i).Value = HeaderCaption(headers(i))
-        Next i
-        With ws.Range("J5:P5")
-            .Font.Bold = True
-            .Font.Color = COLOR_WHITE
-            .Interior.Color = COLOR_OUTPUT_HEADER
-            .WrapText = True
-            .HorizontalAlignment = -4108
-        End With
-        FormatBorders ws.Range("J5:P5"), COLOR_GRID, 1
-    End If
-    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Value = "No results yet: press Run FRTB-SA."
-    On Error Resume Next
-    ws.Rows(LAYOUT_FIRST_DATA_ROW).RowHeight = 20.1
-    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Font.Italic = True
-    TableCell(ws, LAYOUT_FIRST_DATA_ROW, 1).Font.Color = COLOR_NOTE
-    On Error GoTo 0
+    WriteOutputPlaceholder ws
 End Sub
 
 '------------------------------------------------------------------------------

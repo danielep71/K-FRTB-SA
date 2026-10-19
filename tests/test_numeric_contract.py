@@ -1,12 +1,36 @@
-"""Synthetic runtime regressions for issues #41, #45 and #48; no locale-dependent expectations."""
+"""Synthetic runtime regressions for issues #41, #45, #48 and #85; no locale-dependent expectations."""
 
 import openpyxl
 import pytest
 
+import build_template
 import frtb_reference as ref
 import lo_runner
 from conftest import require_libreoffice
 from test_vba_engine import FIRST_COL, log_rows, reconcile, sheet_rows
+
+
+OUTPUT_SHEETS = ("Results", "Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC", "Log")
+NO_RESULTS = "No results yet: press Run FRTB-SA."
+
+
+def assert_empty_state(result, name, note):
+    """The sheet shows the template's headers in row 5 and only the note below them."""
+    template = openpyxl.load_workbook(build_template.TEMPLATE)[name]
+    columns = range(FIRST_COL, FIRST_COL + 14)               # C:P, which covers the Out_DRC bucket table
+    assert [result[name].cell(5, c).value for c in columns] == [template.cell(5, c).value for c in columns], name
+    assert result[name].cell(5, FIRST_COL).fill.fgColor.rgb == template.cell(5, FIRST_COL).fill.fgColor.rgb, name
+    rows = sheet_rows(result, name)
+    assert len(rows) == 1 and str(rows[0][0]).startswith(note), (name, rows)
+    assert result[name].cell(6, FIRST_COL).font.i, name
+
+
+def test_clear_outputs_restores_the_template_placeholders(lo_default_path, tmp_path):
+    out = tmp_path / "cleared.xlsx"
+    assert lo_runner.run(out, ["M_Main.ClearOutputs"], input_book=lo_default_path) == []
+    result = openpyxl.load_workbook(out)
+    for name in OUTPUT_SHEETS:
+        assert_empty_state(result, name, NO_RESULTS)
 
 
 def test_shared_numeric_validation_and_conversion(tmp_path):
@@ -98,8 +122,8 @@ def test_invalid_table_value_stops_the_run_and_clears_outputs(case, lo_default_p
     assert len(errors) == 1 and errors[0][1] == "RunFRTB" and message in errors[0][2], errors
     # The input book holds the default run's results; a failed run must not leave them behind
     for name in ("Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC"):
-        assert sheet_rows(result, name) == [], name
-    assert str(result["Results"].cell(5, FIRST_COL).value).startswith("Run failed (see the Log sheet): ")
+        assert_empty_state(result, name, NO_RESULTS)
+    assert_empty_state(result, "Results", "Run failed (see the Log sheet): ")
 
 
 def test_reference_numeric_text_matches_the_vba_contract():
@@ -128,5 +152,5 @@ def test_blank_parameter_key_or_internal_gap_fails(lo_default_path, tmp_path, ke
     errors = log_rows(result, "ERROR")
     assert len(errors) == 1 and message in errors[0][2], errors
     for name in ("Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC"):
-        assert sheet_rows(result, name) == [], name
-    assert str(result["Results"].cell(5, FIRST_COL).value).startswith("Run failed")
+        assert_empty_state(result, name, NO_RESULTS)
+    assert_empty_state(result, "Results", "Run failed (see the Log sheet): ")
