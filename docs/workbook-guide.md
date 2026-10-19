@@ -62,7 +62,7 @@ src/
 tests/
   modules/     VBA test modules imported into development builds (TEST_*)
   *.py         independent reference, reconciliation and tooling tests
-tools/         build script, template builder, LibreOffice runner, VBA lint, expected-value generator
+tools/         build and sync scripts with their launchers, template builder, LibreOffice runner, VBA lint, expected-value generator
 docs/          methodology, workbook guide, validation, assets
 ```
 
@@ -105,12 +105,70 @@ modules.
    test modules; `-Template` saves a source-built, macro-free template as
    `dist\FRTB_Template.xlsx` for comparison with the committed one; `-Force`
    overwrites an existing file.
+
+   Without a PowerShell prompt, double-click `tools\Build-Workbook.cmd`. It
+   asks for a production or a development workbook, and whether to
+   overwrite an existing `dist\K-FRTB-SA.xlsm`. It then runs the same script,
+   with `-Production` or with `-RunTests`.
 3. Open the workbook and run **Debug → Compile VBAProject**.
 
 Manual alternative: open a copy of `src\workbook\FRTB_Template.xlsx`, open
 the VBA editor (Alt+F11), use **File > Import File** for every `.bas` file of
 `src\modules` and `tests\modules`, run `FinishWorkbook` (Alt+F8), then save
 as `.xlsm`.
+
+<a id="updating-an-existing-workbook"></a>
+
+## 🔄 Updating an existing workbook
+
+When only the VBA changed, update a workbook you already built instead of
+building a new one. `tools\Sync-FRTB-VBA.ps1` replaces its standard modules
+through Excel and leaves the cells, parameters, inputs, buttons and sheets
+as they are. It needs the same Trust Center setting as the build. Close the
+workbook in Excel first.
+
+* **From the repository checkout:** drag the `.xlsm` onto
+  `tools\Sync-FRTB-VBA.cmd`. It asks which workbook you are updating:
+  * **P**roduction imports `src\modules`;
+  * **D**evelopment also imports `tests\modules`.
+* **From a downloads folder:** drag the `.xlsm` onto
+  `tools\Sync-FRTB-VBA-Downloads.cmd`. It asks for the folder, by default
+  `%USERPROFILE%\Downloads`, and imports only the modules found there. The
+  repository files are not changed.
+  * Each file is identified by the single `Attribute VB_Name` it declares,
+    never by its file name. When several files declare the same name, for
+    example `CORE_SBM (1).bas`, the newest is taken.
+  * A new module whose name starts with `CORE_`, `M_` or `TEST_` is listed
+    separately.
+  * The list is shown for confirmation before anything is imported. Any
+    other module of the workbook stays as it is.
+  * Line endings are converted to CRLF, so modules downloaded from GitHub's
+    **Raw** view import correctly.
+
+The script first saves a copy beside the workbook
+(`<name>.pre-vba-sync.<time>.xlsm`). It removes the copy after a successful
+save and keeps it when the synchronization fails. It stops without saving if
+the sheet structure changes. A production synchronization never removes the
+test modules of a workbook; to drop them, build a new production workbook.
+
+It exits with 0 on success, 1 on failure (the workbook is not saved) and 2
+when cancelled (the workbook is not changed).
+
+From PowerShell, the same options are available without the prompts:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-FRTB-VBA.ps1 -WorkbookPath dist\K-FRTB-SA.xlsm -Mode Development
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\Sync-FRTB-VBA.ps1 -WorkbookPath dist\K-FRTB-SA.xlsm -SourceDir "$env:USERPROFILE\Downloads" -Force
+```
+
+`-NoBackup` skips the safety copy and `-Visible` shows Excel while it works.
+After a synchronization, open the workbook and run **Debug → Compile
+VBAProject**; in a development workbook, run the regression test as well.
+
+A template change needs a new build: a synchronization changes the VBA
+only, so a workbook built from an older template keeps that template's
+sheets and parameters. `git diff --stat <old-commit> HEAD --
+src/workbook/FRTB_Template.xlsx` shows whether the template changed.
 
 <a id="sheets"></a>
 
