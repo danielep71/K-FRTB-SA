@@ -8,7 +8,7 @@ set "OUTPUT=%REPO_ROOT%\dist\K-FRTB-SA.xlsm"
 
 if not exist "%SCRIPT%" (
     echo ERROR: PowerShell script not found:
-    echo   %SCRIPT%
+    call :echovar SCRIPT
     echo.
     pause
     exit /b 1
@@ -33,8 +33,10 @@ if not defined ARGS (
 )
 
 if exist "%OUTPUT%" (
+    echo The workbook exists:
+    call :echovar OUTPUT
     set "OVERWRITE="
-    set /p "OVERWRITE=%OUTPUT% exists. Overwrite it? [Y/N]: "
+    set /p "OVERWRITE=Overwrite it? [Y/N]: "
     call :overwrite
     if errorlevel 1 (
         echo CANCELLED: nothing was built.
@@ -62,3 +64,12 @@ exit /b %RC%
 :overwrite
 if /i "%OVERWRITE%"=="Y" exit /b 0
 exit /b 1
+
+:echovar
+rem Prints the value of the named variable, indented. Delayed expansion
+rem inserts the value after the line is parsed, so ampersands, pipes,
+rem redirections and parentheses in a path are printed, never run.
+setlocal EnableDelayedExpansion
+echo(  !%~1!
+endlocal
+exit /b 0
