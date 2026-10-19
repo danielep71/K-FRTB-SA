@@ -21,7 +21,9 @@ blank rows followed by more data before the next tag; blank separator rows
 between tables remain valid (#48).
 Every run clears the output sheets first and again when it fails, so a
 failed run shows "Run failed" on `Results` and leaves neither earlier nor
-partial capital behind (#45).
+partial capital behind (#45). **Clear outputs** and a failed run keep the
+column headers of every output sheet and put the note in the first data
+row, as in a new workbook (#85).
 
 Validation and conversion use the same parser. Blank/error optional values
 still use the caller's explicit default; this does not relax required-key
@@ -71,7 +73,7 @@ docs/          methodology, workbook guide, validation, assets
 | Module | Responsibility |
 | --- | --- |
 | `src/modules/CORE_Config` | Product name, sheet names, layout, palette, risk class codes, components, scenarios |
-| `src/modules/CORE_Util` | Sheet access, tagged parameter tables, conversions, table formatting, run log |
+| `src/modules/CORE_Util` | Sheet access, tagged parameter tables, conversions, table formatting, output placeholders, run log |
 | `src/modules/CORE_Params` | Control settings and `P_*` parameters; risk weight and correlation accessors |
 | `src/modules/CORE_SBM` | Delta, vega and curvature: validation, netting, bucket and cross-bucket aggregation |
 | `src/modules/CORE_DRC` | Default risk charge for non-securitizations |
