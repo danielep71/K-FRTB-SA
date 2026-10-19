@@ -378,3 +378,31 @@ def test_exit_codes_and_reports(bundle, tmp_path):
     assert run_tool("--root", root, "--evidence", str(path))[0] == 2
     assert run_tool("--root", root, "--candidate-sha", bundle.repo["sha"], "--inventory")[0] == 0
     assert run_tool("--check-policy")[0] == 0
+
+
+def test_the_validator_reads_the_lines_the_tools_print(tmp_path):
+    # The build script and the regression test print the lines the build and
+    # regression stages parse; a change to either format must fail here.
+    build = (ROOT / "tools" / "Build-Workbook.ps1").read_text(encoding="utf-8")
+    assert 'Write-Host "Regression test: $result"' in build
+    assert 'Write-Host "Saved $OutputPath"' in build
+    regression = (ROOT / "tests" / "modules" / "TEST_Regression.bas").read_text(encoding="cp1252")
+    assert '"Result: PASS (" & total & " items)"' in regression
+    assert '"Result: FAIL (" & failures & " of " & total & " items)"' in regression
+    assert tool.REGRESSION_LINE.match("Regression test: Result: PASS (52 items)")
+    assert tool.REGRESSION_LINE.match("Regression test: Result: FAIL (2 of 52 items)")
+    # The comparison tool prints the lines the round-trip stages parse.
+    import compare_vba_export
+    export = tmp_path / "export"
+    export.mkdir()
+    for folder in compare_vba_export.MODE_FOLDERS["production"]:
+        for path in (ROOT / folder).glob("*.bas"):
+            data = subprocess.run(["git", "-C", str(ROOT), "show", f"HEAD:{folder}/{path.name}"],
+                                  capture_output=True, check=True).stdout
+            (export / path.name).write_bytes(data.replace(b"\n", b"\r\n"))
+    out = io.StringIO()
+    with redirect_stdout(out):
+        assert compare_vba_export.main(["--root", str(ROOT), "--export", str(export), "--mode", "production"]) == 0
+    lines = out.getvalue().splitlines()
+    for pattern in (tool.COMPARE_CANDIDATE, tool.COMPARE_MODE, tool.COMPARE_TEMPLATE, tool.COMPARE_RESULT):
+        assert sum(bool(pattern.match(line)) for line in lines) == 1, (pattern.pattern, lines)
