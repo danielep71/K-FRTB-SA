@@ -33,6 +33,9 @@ Unreleased describe integrated work, not a published version.
   CI triggers, build-time window settings and core worksheet access. Module
   comments in `M_Main`, `M_Setup` and `CORE_Util` were corrected; no code
   changed (#40).
+- The structure, validation and README pages describe the VBA sync tools.
+  The workbook guide says that `Dev_ExportModules` exports only from a
+  workbook in the repository root or `dist\` (#77).
 - Post-closeout documentation consistency: milestone names use their live
   titles with the em dash; completed work (#2, #6, #7, #8, #23, #31) is no
   longer described as pending; source archives are described as omitting the
