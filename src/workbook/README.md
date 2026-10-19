@@ -18,9 +18,10 @@ Never edit the template by hand. Change `src/modules` and regenerate it with
 `python3 tools/build_template.py` (LibreOffice, used for the committed file)
 or compare with `tools\Build-Workbook.ps1 -Template` (Excel).
 The headless builder also runs `tools/template_presentation.py` to preserve
-view and print settings that LibreOffice's VBA compatibility layer omits.
-That step changes no cell values, formulas or styles; tab colors come from
-the existing VBA palette.
+view/print settings and README guide borders that LibreOffice's VBA
+compatibility layer omits. That step changes no cell values or formulas;
+tab colors come from the existing VBA palette, and the guide borders
+restore the dashed interiors and solid outlines specified by `WriteGuideRows`.
 `tests/test_template.py` fails when the committed file differs from a fresh
 build. See the [workbook guide](../../docs/workbook-guide.md) and
 [repository structure](../../docs/REPOSITORY_STRUCTURE.md).

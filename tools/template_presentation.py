@@ -1,13 +1,14 @@
-"""Preserve workbook view/print settings lost by headless VBA compatibility.
+"""Preserve workbook presentation lost by headless VBA compatibility.
 
-Cell content and formatting remain owned by the VBA builder. This small OOXML
-normalization step saves view and print properties that the headless host
-does not reliably expose through Excel's ActiveWindow and PageSetup APIs.
+The VBA builder owns cell content and the visual design. This OOXML step
+restores view/print properties and README guide borders that the headless
+host does not reliably expose through Excel's compatibility APIs.
 """
 
 from __future__ import annotations
 
 import re
+from copy import deepcopy
 import tempfile
 import zipfile
 from pathlib import Path
@@ -41,12 +42,47 @@ def _palette() -> dict[str, str]:
     return colors
 
 
+def _guide_borders(root, styles):
+    """Restore WriteGuideRows' dashed interiors and solid block outlines.
+
+    LibreOffice applies the block's outer edge style to its interior too.
+    Guide blocks are consecutive README rows containing both label and text.
+    Clone/deduplicate styles so no other cell or worksheet is affected.
+    """
+    borders = styles.find(_tag("borders"))
+    formats = styles.find(_tag("cellXfs"))
+    cells = {c.attrib["r"]: c for c in root.findall(f"{_tag('sheetData')}/{_tag('row')}/{_tag('c')}")}
+    def populated(address):
+        cell = cells.get(address)
+        return cell is not None and any(cell.find(_tag(t)) is not None for t in ("v", "is"))
+    rows = {int(address[1:]) for address in cells if address.startswith("C") and address[1:].isdigit() and int(address[1:]) > 3 and populated(address) and populated("D" + address[1:])}
+    def intern(collection, element):
+        serialized = ET.tostring(element)
+        for index, existing in enumerate(collection):
+            if ET.tostring(existing) == serialized:
+                return index
+        collection.append(element)
+        collection.set("count", str(len(collection)))
+        return len(collection) - 1
+    for row in sorted(rows):
+        for column in ("C", "D"):
+            cell = cells[f"{column}{row}"]
+            fmt = deepcopy(formats[int(cell.get("s", "0"))])
+            border = deepcopy(borders[int(fmt.get("borderId", "0"))])
+            for side, interior in (("left", column == "D"), ("right", column == "C"), ("top", row - 1 in rows), ("bottom", row + 1 in rows)):
+                _child(border, side, style="dashed" if interior else "thin")
+            fmt.set("borderId", str(intern(borders, border)))
+            fmt.set("applyBorder", "1")
+            cell.set("s", str(intern(formats, fmt)))
+
+
 def normalize(path: Path) -> None:
-    """Normalize only views, tab colors and printing; never values or formulas."""
+    """Restore presentation only; never change cell values or formulas."""
     palette = _palette()
     with zipfile.ZipFile(path) as archive:
         parts = {item.filename: archive.read(item.filename) for item in archive.infolist()}
     book = ET.fromstring(parts["xl/workbook.xml"])
+    styles = ET.fromstring(parts["xl/styles.xml"])
     relations = {r.attrib["Id"]: r.attrib["Target"] for r in ET.fromstring(parts["xl/_rels/workbook.xml.rels"])}
     names = _child(book, "definedNames")
     for defined in list(names):
@@ -57,6 +93,8 @@ def normalize(path: Path) -> None:
         target = relations[sheet.attrib[f"{{{REL}}}id"]]
         target = "xl/" + target.lstrip("/").removeprefix("xl/")
         root = ET.fromstring(parts[target])
+        if name == "README":
+            _guide_borders(root, styles)
         props = root.find(_tag("sheetPr"))
         if props is None:
             props = ET.Element(_tag("sheetPr"))
@@ -111,6 +149,7 @@ def normalize(path: Path) -> None:
     sheets_index = list(book).index(book.find(_tag("sheets")))
     book.insert(sheets_index + 1, names)
     parts["xl/workbook.xml"] = ET.tostring(book, encoding="utf-8", xml_declaration=True)
+    parts["xl/styles.xml"] = ET.tostring(styles, encoding="utf-8", xml_declaration=True)
     with tempfile.NamedTemporaryFile(dir=path.parent, suffix=".xlsx", delete=False) as temp:
         replacement = Path(temp.name)
     try:

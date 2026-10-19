@@ -35,6 +35,9 @@ def test_template_saved_presentation():
         assert ws.row_dimensions[row].height == 20.1, name
         assert ws.cell(row, 4).border.bottom.style == "thin", name
     assert wb["README"]["D7"].border.bottom.style == "dashed"
+    assert wb["README"]["C6"].border.top.style == "thin"
+    assert wb["README"]["C6"].border.right.style == "dashed"
+    assert wb["README"]["D12"].border.bottom.style == "thin"
     assert wb["In_Delta"]["B2"].value == "Delta sensitivities"
     assert wb["In_Delta"]["D5"].value == "Risk class"
     for name in ("Results", "Out_Summary", "Out_RiskClass", "Out_Buckets", "Out_DRC", "Log"):
@@ -74,7 +77,7 @@ def test_signature_detects_layout_changes(tmp_path):
     base = build_template.signature(template)
     control = build_template.sheet_parts(template)["Control"]
     control_xml = zipfile.ZipFile(template).read(control).decode("utf-8")
-    sheet_pr = re.search(r"<sheetPr[^>]*>", control_xml).group(0)
+    tab_color = re.search(r"<tabColor[^>]*/>", control_xml).group(0)
 
     unchanged = tmp_path / "unchanged.xlsx"
     _repack(template, unchanged, control, "", "")
@@ -83,7 +86,10 @@ def test_signature_detects_layout_changes(tmp_path):
     cases = {
         "width": (control, 'width="34.75"', 'width="60"'),
         "height": (control, 'ht="26.1"', 'ht="40"'),
-        "tab": (control, sheet_pr, sheet_pr + '<tabColor rgb="FF00FF00"/>'),
+        "tab": (control, tab_color, '<tabColor rgb="FF00FF00"/>'),
+        "gridlines": (control, 'showGridLines="0"', 'showGridLines="1"'),
+        "freeze": (control, 'topLeftCell="D7"', 'topLeftCell="D8"'),
+        "print": (control, 'orientation="landscape"', 'orientation="portrait"'),
         "fill": ("xl/styles.xml", "FF265A99", "FF265A98"),
         "number_format": ("xl/styles.xml", 'formatCode="0.0##%"', 'formatCode="0.00%"'),
     }

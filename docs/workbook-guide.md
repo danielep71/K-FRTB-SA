@@ -49,7 +49,8 @@ ignored) and is built from the template plus the modules, following the
 
 The template is generated, never edited by hand: `python3
 tools/build_template.py` rebuilds it headless in LibreOffice and normalizes
-saved view/print settings through `tools/template_presentation.py`, and
+saved view/print settings and README guide borders through
+`tools/template_presentation.py`, and
 `tools/update_expected.py` rebuilds it whenever the expected values change.
 `tests/test_template.py` fails when the committed template differs from a
 fresh build of the modules, in values or layout, or carries VBA, controls or
