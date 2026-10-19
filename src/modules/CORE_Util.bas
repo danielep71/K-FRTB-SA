@@ -19,7 +19,8 @@ Attribute VB_Name = "CORE_Util"
 '   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
 '   InNumberList.
 '   Sorting: BucketLess, SortLabels.
-'   Formatting: WriteTableHeader, FormatDataRows, HeaderCaption, FormatBorders.
+'   Formatting: WriteTableHeader, FormatDataRows, HeaderCaption, FormatBorders,
+'   ExtendPrintArea.
 '   Log: ResetLog, LogMessage, LogErrorCount, LogWarningCount.
 '
 ' DEPENDENCIES
@@ -531,6 +532,7 @@ Public Sub WriteTableHeader(ByVal ws As Object, ByVal r As Long, ByVal headers A
     ws.Rows(r).RowHeight = 42
     On Error GoTo 0
     FormatBorders ws.Range(TableCell(ws, r, 1), TableCell(ws, r, k)), COLOR_GRID, 1
+    ExtendPrintArea ws, r, LAYOUT_FIRST_COL + k - 1
 End Sub
 
 
@@ -550,6 +552,26 @@ Public Sub FormatDataRows(ByVal ws As Object, ByVal r1 As Long, ByVal r2 As Long
     If firstNumCol > 0 And numberFormat <> "" Then
         ws.Range(TableCell(ws, r1, firstNumCol), TableCell(ws, r2, nCols)).NumberFormat = numberFormat
     End If
+    On Error GoTo 0
+    ExtendPrintArea ws, r2, LAYOUT_FIRST_COL + nCols - 1
+End Sub
+
+
+' Grow bounded print areas with the explicitly formatted tables, rather than
+' UsedRange (whole-column/row formatting may make it excessively large).
+' Output sheets remain unbounded because their results grow at runtime.
+Public Sub ExtendPrintArea(ByVal ws As Object, ByVal lastRow As Long, ByVal lastCol As Long)
+    Dim current As Object, oldLast As Long
+    If ws.Name = SH_RESULTS Or ws.Name = SH_LOG Or Left$(ws.Name, 4) = "Out_" Then Exit Sub
+    On Error Resume Next
+    If ws.PageSetup.PrintArea <> "" Then
+        Set current = ws.Range(ws.PageSetup.PrintArea)
+        oldLast = current.Row + current.Rows.Count - 1
+        If oldLast > lastRow Then lastRow = oldLast
+        oldLast = current.Column + current.Columns.Count - 1
+        If oldLast > lastCol Then lastCol = oldLast
+    End If
+    ws.PageSetup.PrintArea = ws.Range(ws.Cells(1, 2), ws.Cells(lastRow, lastCol)).Address
     On Error GoTo 0
 End Sub
 

@@ -22,6 +22,8 @@ view/print settings and README guide borders that LibreOffice's VBA
 compatibility layer omits. That step changes no cell values or formulas;
 tab colors come from the existing VBA palette, and the guide borders
 restore the dashed interiors and solid outlines specified by `WriteGuideRows`.
+The VBA builder grows non-output print areas with the formatted table extents,
+so Excel source builds use the same bounded areas without Python normalization.
 `tests/test_template.py` fails when the committed file differs from a fresh
 build. See the [workbook guide](../../docs/workbook-guide.md) and
 [repository structure](../../docs/REPOSITORY_STRUCTURE.md).

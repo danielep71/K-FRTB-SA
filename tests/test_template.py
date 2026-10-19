@@ -17,6 +17,17 @@ def test_template_is_current_and_macro_free():
     assert build_template.check() == []
 
 
+def test_source_build_print_areas_match_template(tmp_path):
+    """VBA source builds set print extents without the OOXML normalizer."""
+    require_libreoffice()
+    out = tmp_path / "source-print-areas.xlsx"
+    assert lo_runner.run(out, ["M_Setup.BuildWorkbook"]) == []
+    source = openpyxl.load_workbook(out)
+    template = openpyxl.load_workbook(build_template.TEMPLATE)
+    for ws in source:
+        assert str(ws.print_area) == str(template[ws.title].print_area), ws.title
+
+
 def test_template_saved_presentation():
     """The XLSX must look complete before any macro can run."""
     wb = openpyxl.load_workbook(build_template.TEMPLATE)

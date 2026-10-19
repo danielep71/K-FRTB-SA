@@ -203,6 +203,7 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
     ws.Rows(3).RowHeight = 30
     ws.Rows(4).RowHeight = 9.95
     With ws.PageSetup
+        .PrintArea = ""
         .Orientation = 2                                    'xlLandscape
         .PaperSize = 9                                      'xlPaperA4
         .Zoom = False
@@ -223,6 +224,7 @@ Private Sub ApplyFrame(ByVal ws As Object, ByVal title As String, ByVal subtitle
         End If
     End With
     On Error GoTo 0
+    ExtendPrintArea ws, 4, lastCol
     ApplyTabColor ws
 End Sub
 
@@ -487,6 +489,7 @@ Private Function WriteGuideRows(ByVal ws As Object, ByVal r As Long, ByVal pairs
     ws.Range(TableCell(ws, first, 2), TableCell(ws, r - 1, 2)).Font.Size = 9
     ws.Range(ws.Rows(first), ws.Rows(r - 1)).RowHeight = 33.95
     On Error GoTo 0
+    ExtendPrintArea ws, r - 1, LAYOUT_FIRST_COL + 1
     WriteGuideRows = r
 End Function
 
