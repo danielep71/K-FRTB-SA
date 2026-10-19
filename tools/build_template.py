@@ -4,7 +4,7 @@ The template src/workbook/FRTB_Template.xlsx is the workbook that
 M_Setup.BuildWorkbook produces, saved without a VBA project, without sheet
 buttons and without personal document properties. Builds start from it and
 import the modules of src/modules (and tests/modules); M_Setup.FinishWorkbook
-then adds the buttons and window settings a template cannot hold.
+then adds the buttons and reapplies the saved view settings.
 
 The build runs headless in LibreOffice Calc. tools/Build-Workbook.ps1
 -Template produces the same content through Excel.
@@ -29,6 +29,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 import lo_runner  # noqa: E402
+import template_presentation  # noqa: E402
 
 TEMPLATE = lo_runner.TEMPLATE
 
@@ -52,6 +53,7 @@ def build(output: Path) -> None:
     errors = lo_runner.run(output, ["M_Setup.BuildWorkbook"], post_process=_strip)
     if errors:
         raise RuntimeError("; ".join(errors))
+    template_presentation.normalize(output)
 
 
 def _color(c) -> str | None:
@@ -135,6 +137,11 @@ def signature(path: Path) -> dict:
             "freeze": ws.freeze_panes,
             "gridlines": ws.sheet_view.showGridLines,
             "autofilter": ws.auto_filter.ref,
+            "print": (ws.page_setup.orientation, ws.page_setup.paperSize,
+                      ws.page_setup.fitToWidth, ws.page_setup.fitToHeight,
+                      ws.sheet_properties.pageSetUpPr.fitToPage,
+                      str(ws.print_area), ws.print_title_rows,
+                      str(ws.oddHeader), str(ws.oddFooter)),
         }
     return {"order": wb.sheetnames, "sheets": sheets}
 
@@ -146,7 +153,7 @@ def signature_differences(a: dict, b: dict, limit: int = 5) -> list[str]:
         out.append(f"sheet order differs: {a['order']} vs {b['order']}")
     for name in sorted(a["sheets"].keys() & b["sheets"].keys()):
         sa, sb = a["sheets"][name], b["sheets"][name]
-        for key in ("columns", "rows", "merged", "tab", "freeze", "gridlines", "autofilter"):
+        for key in ("columns", "rows", "merged", "tab", "freeze", "gridlines", "autofilter", "print"):
             if sa[key] != sb[key]:
                 out.append(f"{name}: {key} differs")
         for coord in sorted(sa["cells"].keys() ^ sb["cells"].keys()):

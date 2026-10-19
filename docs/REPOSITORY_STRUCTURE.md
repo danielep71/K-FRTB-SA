@@ -18,7 +18,7 @@ The layout separates source, tests, documentation, and tools while distinguishin
 | `docs/assets/` | Documentation images and their sources |
 | `docs/evidence/` | Dated, sanitized evidence records bound to reviewed commits |
 | `docs/Milestones/` | Detailed milestone guides |
-| `tools/` | Tooling index; prototype build, VBA synchronization into an existing workbook and their `.cmd` launchers, LibreOffice runner, VBA lint, expected-value generator and Excel evidence validator; label tooling remains in `.github/scripts/` |
+| `tools/` | Tooling index; prototype build, VBA synchronization into an existing workbook and their `.cmd` launchers, read-only VBA export and source comparison, LibreOffice runner, VBA lint, expected-value generator and Excel evidence validator; label tooling remains in `.github/scripts/` |
 | `.github/` | Labels, forms, universal maintenance/analytics workflows, prototype checks, dependency updates and the Excel evidence policy |
 | Root | Entry documentation, licenses, contribution/setup guidance, and repository-control files |
 

@@ -7,6 +7,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- Workbook presentation now survives template generation: the XLSX saves
+  hidden gridlines, role-colored tabs, frozen headers and identifiers, and
+  landscape print settings. Data-row spacing, table borders, README
+  separators, readable display labels and initial output headers follow the
+  shared toolkit style. VBA formatting and the headless build are updated
+  together, with saved-presentation and regeneration checks (#76).
+
 - Tagged parameter tables reject blank keys and internal blank rows rather
   than truncating later matrix data and leaving correlations at zero (#48).
 
@@ -59,6 +66,16 @@ Unreleased describe integrated work, not a published version.
     sources and the policy in Git at the candidate commit. It also checks
     the policy against `M_Setup`.
   - Offline tests use synthetic bundles. No Excel run is recorded yet (#28).
+- Excel round-trip tools (#79), from the VBA-SACCR-Toolkit:
+  - `tools/Export-FRTB-VBA.ps1` exports a workbook's VBA read-only, with
+    macros disabled, to an empty folder with `export-manifest.json`.
+  - `tools/compare_vba_export.py` compares the export with the source of a
+    commit, read from Git, in production or development mode. Re-cased
+    identifiers are ignored, and document modules must hold no code. It
+    reports the export's binding to the workbook as VERIFIED, FAIL or
+    UNVERIFIED.
+  - The workbook guide describes the round trip that #30 needs. Offline
+    tests cover the comparison; no Excel export is recorded yet.
 
 - VBA synchronization for an existing workbook (#72), modeled on the
   VBA-SACCR-Toolkit tools:
