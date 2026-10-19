@@ -123,8 +123,8 @@ as `.xlsm`.
 
 When only the VBA changed, update a workbook you already built instead of
 building a new one. `tools\Sync-FRTB-VBA.ps1` replaces its standard modules
-through Excel and leaves the cells, parameters, inputs, buttons and sheets
-as they are. It needs the same Trust Center setting as the build. Close the
+through Excel and leaves the cells, parameters, inputs, buttons, sheets and
+calculation settings as they are. It needs the same Trust Center setting as the build. Close the
 workbook in Excel first.
 
 * **From the repository checkout:** drag the `.xlsm` onto

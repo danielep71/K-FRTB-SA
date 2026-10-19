@@ -28,7 +28,8 @@
 
     Each imported module replaces the standard module of the same name. The
     script never writes cells, formulas, names, formatting, buttons or
-    sheets, and stops without saving if the sheet structure changes. A copy
+    sheets, saves the workbook with its own calculation settings, and stops
+    without saving if the sheet structure changes. A copy
     of the workbook is saved beside it first (*.pre-vba-sync.<time>.xlsm) and
     removed after a successful save; it is kept when the synchronization
     fails. A template change needs a new build, not a synchronization.
@@ -98,7 +99,6 @@ if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
 
 $vbextStdModule = 1
 $xlCalculationManual = -4135
-$xlCalculationAutomatic = -4105
 $msoAutomationSecurityForceDisable = 3
 
 # With -SourceDir, a module the repository does not have yet is offered for
@@ -394,10 +394,15 @@ try {
     $excel.AutomationSecurity = $msoAutomationSecurityForceDisable
 
     # Some Excel builds reject Calculation changes until a workbook is open.
+    # The first workbook opened sets the calculation mode, which is saved
+    # with it: keep the workbook's own settings and restore them before the
+    # save, so that only the VBA changes.
     $workbook = $excel.Workbooks.Open($workbookFullPath, 0, $false)
     if ($workbook.ReadOnly) {
         throw 'The workbook opened read-only. Close it in every other Excel instance.'
     }
+    $originalCalculation = $excel.Calculation
+    $originalCalculateBeforeSave = $excel.CalculateBeforeSave
     $excel.Calculation = $xlCalculationManual
     $excel.CalculateBeforeSave = $false
     $before = Get-SheetSnapshot -Workbook $workbook
@@ -443,8 +448,8 @@ try {
         throw 'The sheet structure changed during the synchronization. The workbook was not saved.'
     }
 
-    $excel.Calculation = $xlCalculationAutomatic
-    $excel.CalculateBeforeSave = $true
+    $excel.Calculation = $originalCalculation
+    $excel.CalculateBeforeSave = $originalCalculateBeforeSave
     $workbook.Save()
     $saved = $true
 
