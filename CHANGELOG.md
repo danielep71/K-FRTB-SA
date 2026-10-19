@@ -45,6 +45,20 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- VBA synchronization for an existing workbook (#72), modeled on the
+  VBA-SACCR-Toolkit tools:
+  - `tools/Sync-FRTB-VBA.ps1` replaces the standard modules of an `.xlsm`
+    through Excel. A production workbook takes `src/modules`; a development
+    workbook adds `tests/modules`. With `-SourceDir`, only the modules found
+    in a folder are imported, identified by their `Attribute VB_Name`.
+  - The script keeps a safety copy if the synchronization fails, and never
+    writes cells or sheets.
+  - Launchers: `Sync-FRTB-VBA.cmd` for the checkout,
+    `Sync-FRTB-VBA-Downloads.cmd` for a downloads folder, and
+    `Build-Workbook.cmd` for a double-click build.
+  - Offline PowerShell 7 tests cover the script's selection logic. The Excel
+    run of the scripts is not yet recorded (#28).
+
 - Release procedure and version convention in `RELEASING.md` (SemVer, `v`
   tags on main, changelog cut on request, evidence by stage) and the v0.0.1
   setup closeout record with the verification readback, including the

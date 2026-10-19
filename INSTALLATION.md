@@ -70,8 +70,12 @@ remaining methodology questions in [Scope](docs/SCOPE.md).
   `python3 tools/vba_lint.py` and `REQUIRE_LIBREOFFICE=1 python3 -m pytest tests`
   as described in [Validation](docs/validation.md).
 - Workbook on Windows: desktop Excel and PowerShell; run
-  `tools\Build-Workbook.ps1 -RunTests` as described in the
+  `tools\Build-Workbook.ps1 -RunTests` (or double-click
+  `tools\Build-Workbook.cmd`) as described in the
   [workbook guide](docs/workbook-guide.md#building-the-workbook-windows-excel).
+  To update an existing workbook from the checkout or a downloads folder, use
+  `tools\Sync-FRTB-VBA.cmd` or `tools\Sync-FRTB-VBA-Downloads.cmd`; see
+  [updating an existing workbook](docs/workbook-guide.md#updating-an-existing-workbook).
 
 The macro-free template `src/workbook/FRTB_Template.xlsx` is generated from
 `src/modules` (`python3 tools/build_template.py`); see the
