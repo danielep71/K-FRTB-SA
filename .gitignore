@@ -59,15 +59,24 @@
 
 
 #------------------------------------------------------------------------------
-# BUILD OUTPUT
+# BUILD AND RELEASE OUTPUT
 #------------------------------------------------------------------------------
-# tools/Build-Workbook.ps1 writes dist/K-FRTB-SA.xlsm by default.
+# tools/Build-Workbook.ps1 writes dist/K-FRTB-SA.xlsm by default; build/ and
+# release-assets/ hold local packages (docs/REPOSITORY_STRUCTURE.md). Root
+# anchoring keeps a nested directory of the same name trackable.
+/build/
 /dist/
+/release-assets/
 
 
 #------------------------------------------------------------------------------
 # LOCAL TEST OUTPUT
 #------------------------------------------------------------------------------
+# test-results/ receives the evidence validator reports
+# (docs/EXCEL_EVIDENCE.md) and the label workflow outputs.
+/test-results/
+/test-output/
+
 .pytest_cache/
 
 
@@ -131,6 +140,10 @@ Icon?
 
 *.nppBackup
 session.xml
+
+.cursor/
+.aider*
+.continue/
 
 
 #------------------------------------------------------------------------------
