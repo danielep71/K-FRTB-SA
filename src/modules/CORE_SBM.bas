@@ -32,9 +32,8 @@ Attribute VB_Name = "CORE_SBM"
 '   Basel Framework MAR21.4-MAR21.101.
 '
 ' COMPATIBILITY
-'   Excel VBA; no references beyond the defaults.
-'
-' UPDATED  2026-10-17
+'   Excel VBA; also runs in LibreOffice Calc with VBA support for the
+'   automated tests. No references beyond the defaults.
 '==============================================================================
 
 '------------------------------------------------------------------------------

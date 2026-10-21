@@ -125,7 +125,7 @@ async function fetchLabelsPage(repository, token, page) {
         Accept: "application/vnd.github+json",
         Authorization: `Bearer ${token}`,
         "X-GitHub-Api-Version": API_VERSION,
-        "User-Agent": "canonical-vba-label-drift"
+        "User-Agent": "mkt-ftrb-sa-label-drift"
       }
     });
     if (response.ok) {

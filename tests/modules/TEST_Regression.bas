@@ -24,10 +24,10 @@ Attribute VB_Name = "TEST_Regression"
 '   A missing output counts as FAIL; a missing sheet raises (CORE_Util).
 '
 ' COMPATIBILITY
-'   Excel VBA; no references beyond the defaults. Development build only:
-'   tools/Build-Workbook.ps1 -Production leaves this module out.
-'
-' UPDATED  2026-10-17
+'   Excel VBA; also runs in LibreOffice Calc with VBA support for the
+'   automated tests. No references beyond the defaults.
+'   Development build only: tools/Build-Workbook.ps1 -Production leaves
+'   this module out.
 '==============================================================================
 
 '------------------------------------------------------------------------------

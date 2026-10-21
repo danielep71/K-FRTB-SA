@@ -21,9 +21,8 @@ Attribute VB_Name = "CORE_Config"
 '   No procedure raises.
 '
 ' COMPATIBILITY
-'   Excel VBA; no references beyond the defaults.
-'
-' UPDATED  2026-10-17
+'   Excel VBA; also runs in LibreOffice Calc with VBA support for the
+'   automated tests. No references beyond the defaults.
 '==============================================================================
 
 '------------------------------------------------------------------------------
