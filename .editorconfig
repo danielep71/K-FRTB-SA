@@ -7,8 +7,9 @@
 #   launchers for Windows, the GitHub configuration and the documentation.
 #
 # POLICY
-#   - VBA modules (.bas), PowerShell scripts and cmd launchers use CRLF; every
-#     other text file uses LF.
+#   - Exported VBA source (.bas modules, and .cls and .frm if the project
+#     adds class or form modules), PowerShell scripts and cmd launchers use
+#     CRLF; every other text file uses LF.
 #   - VBA and Python use 4-space indentation; YAML, JSON and JavaScript use 2.
 #   - Trailing whitespace is removed except in Markdown, where two trailing
 #     spaces can mark an explicit line break.
@@ -37,10 +38,10 @@ tab_width = 4
 
 
 #------------------------------------------------------------------------------
-# EXPORTED VBA MODULES
+# EXPORTED VBA SOURCE
 #------------------------------------------------------------------------------
 # Do not set charset here: preserve the VBE/system-code-page export contract.
-[*.bas]
+[*.{bas,cls,frm}]
 end_of_line = crlf
 
 

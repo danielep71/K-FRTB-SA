@@ -6,8 +6,10 @@
 #   behavior, GitHub language reporting and source archives.
 #
 # POLICY
-#   - The exported VBA modules (.bas) are normalized in Git and checked out as
-#     CRLF, as the VBE imports and exports them.
+#   - Exported VBA source (.bas modules, and .cls and .frm if the project
+#     adds class or form modules) is normalized in Git and checked out as
+#     CRLF, as the VBE imports and exports it. A form's .frx companion is
+#     binary.
 #   - The PowerShell scripts and cmd launchers for Windows are checked out as
 #     CRLF; every other text file as LF.
 #   - The workbook template, built workbooks, images and archives are binary:
@@ -48,6 +50,7 @@
 # REUSABLE ATTRIBUTE POLICIES
 #------------------------------------------------------------------------------
 [attr]vba-source    text eol=crlf diff=vba linguist-language=VBA
+[attr]vba-form-bin  binary merge=binary linguist-generated
 [attr]office-doc    binary merge=binary -linguist-detectable
 [attr]opaque        binary merge=binary
 
@@ -61,9 +64,14 @@
 
 
 #------------------------------------------------------------------------------
-# EXPORTED VBA MODULES
+# EXPORTED VBA SOURCE
 #------------------------------------------------------------------------------
+# docs/REPOSITORY_STRUCTURE.md: commit exported .bas, .cls and .frm files and
+# keep each .frx beside its .frm.
 *.bas   vba-source
+*.cls   vba-source
+*.frm   vba-source
+*.frx   vba-form-bin
 
 
 #------------------------------------------------------------------------------
@@ -89,6 +97,8 @@
 *.txt           text eol=lf
 *.yml           text eol=lf
 *.json          text eol=lf
+# Traffic history data on the traffic-history branch (docs/TRAFFIC_HISTORY.md).
+*.csv           text eol=lf
 
 .editorconfig   text eol=lf
 .gitattributes  text eol=lf
