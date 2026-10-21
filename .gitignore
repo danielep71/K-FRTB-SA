@@ -1,48 +1,47 @@
 #==============================================================================
-# Canonical VBA project template .gitignore
+# .gitignore
 #------------------------------------------------------------------------------
 # PURPOSE
-#   Keep the repository source-first, reviewable, reproducible, and safe to
-#   clone. Ignore workstation state, generated output, secrets, caches, and
-#   unintended Office packages while preserving authoritative source and
-#   repository evidence.
+#   Keep K-FRTB-SA source-first and safe to clone: the VBA modules, the
+#   macro-free template, the tools, the tests and the documentation are
+#   tracked; built workbooks, Office lock files, local environments, caches
+#   and secrets are not.
 #
 # REPOSITORY POLICY
-#   - Exported VBA source and UserForm companions are version-controlled.
-#   - Generated Office packages are ignored unless an exact path is approved.
-#   - Repository configuration, documentation, tests, tools, and visual assets are source.
-#   - Python, Node, and R development caches are excluded without hiding manifests.
+#   - The exported VBA modules of src/modules and tests/modules are the source
+#     of the workbook code.
+#   - The only tracked Office package is src/workbook/FRTB_Template.xlsx.
+#     Built workbooks (dist/K-FRTB-SA.xlsm), the safety copies of
+#     tools/Sync-FRTB-VBA.ps1 and any other workbook stay out.
+#   - Excel evidence bundles are kept outside the checkout; only their dated
+#     Markdown records go under docs/evidence/ (docs/EXCEL_EVIDENCE.md).
 #
 # SAFETY RULE
-#   Never add broad rules for exported VBA source, documentation, repository
-#   automation, or evidence directories. Exceptions for intentional Office
-#   packages must use exact rooted paths.
+#   Never add broad rules for the VBA modules, documentation, tools, tests or
+#   .github. An exception for another Office package must use its exact
+#   rooted path.
 #==============================================================================
 
 
 #------------------------------------------------------------------------------
-# MICROSOFT OFFICE TEMPORARY / LOCK / RECOVERY FILES
+# OFFICE TEMPORARY / LOCK / RECOVERY FILES
 #------------------------------------------------------------------------------
+# Excel lock files (~$*), LibreOffice lock files and backups.
 ~$*
 .~lock.*#
-*.laccdb
-*.ldb
 
 *.tmp
 *.temp
 *.bak
 *.backup
 *.xlk
-*.asd
-*.wbk
 
 
 #------------------------------------------------------------------------------
-# GENERATED OFFICE PACKAGES
+# WORKBOOKS
 #------------------------------------------------------------------------------
-# Office packages are generated or release artifacts by default. These global
-# rules prevent an accidental workbook saved anywhere in the tree from becoming
-# source. Re-include an intentional package only by its exact rooted path.
+# A workbook saved anywhere in the tree is build output, a local copy or a
+# safety copy, never source.
 *.xls
 *.xlsx
 *.xlsm
@@ -55,54 +54,30 @@
 *.xll
 *.xlw
 
-*.docm
-*.dotm
-*.pptm
-*.potm
-*.ppsm
-*.accdb
-*.accde
-*.accdr
-*.mdb
-*.mde
-*.ade
-
-# Example for a deliberately version-controlled workbook:
-# !/examples/Project-demo.xlsm
-
-# Approved repository workbook template; keep this exception exact and rooted.
+# The macro-free template that builds start from (src/workbook/README.md).
 !/src/workbook/FRTB_Template.xlsx
 
 
 #------------------------------------------------------------------------------
-# RELEASE / BUILD STAGING
+# BUILD AND RELEASE OUTPUT
 #------------------------------------------------------------------------------
-# Root anchoring prevents a generated-directory name from hiding an
-# authoritative nested source or evidence directory.
-/release-assets/
+# tools/Build-Workbook.ps1 writes dist/K-FRTB-SA.xlsm by default; build/ and
+# release-assets/ hold local packages (docs/REPOSITORY_STRUCTURE.md). Root
+# anchoring keeps a nested directory of the same name trackable.
 /build/
-/out/
-/output/
-/outputs/
 /dist/
+/release-assets/
 
 
 #------------------------------------------------------------------------------
-# LOCAL TEST / CERTIFICATION OUTPUT
+# LOCAL TEST OUTPUT
 #------------------------------------------------------------------------------
-/test-output/
+# test-results/ receives the evidence validator reports
+# (docs/EXCEL_EVIDENCE.md) and the label workflow outputs.
 /test-results/
-/coverage/
-/htmlcov/
-
-.coverage
-.coverage.*
-coverage.xml
+/test-output/
 
 .pytest_cache/
-.hypothesis/
-.tox/
-.nox/
 
 
 #------------------------------------------------------------------------------
@@ -146,10 +121,10 @@ Icon?
 
 
 #------------------------------------------------------------------------------
-# EDITOR / IDE / LOCAL ASSISTANT STATE
+# EDITOR / IDE STATE
 #------------------------------------------------------------------------------
-# Project-wide configuration belongs in the repository; personal workspaces do
-# not. Re-include a specific shared editor file explicitly if one is introduced.
+# Project-wide configuration belongs in the repository (.editorconfig);
+# personal workspaces do not.
 .vscode/
 .idea/
 .vs/
@@ -159,8 +134,6 @@ Icon?
 *.code-workspace
 *.suo
 *.user
-*.userosscache
-*.sln.docstates
 *.swp
 *.swo
 *~
@@ -184,6 +157,7 @@ session.xml
 #------------------------------------------------------------------------------
 # LOGS / CRASH DUMPS
 #------------------------------------------------------------------------------
+# Build, sync and comparison logs belong in the evidence bundle, not here.
 *.log
 *.dmp
 *.dump
@@ -207,69 +181,21 @@ session.xml
 #------------------------------------------------------------------------------
 # PYTHON CACHE / LOCAL ENVIRONMENTS
 #------------------------------------------------------------------------------
-# Source, manifests, lock files, and requirements remain trackable.
+# tests/requirements.txt and .github/requirements.txt remain trackable.
 __pycache__/
 *.py[cod]
-*$py.class
-*.egg-info/
-.eggs/
-pip-wheel-metadata/
 
 .mypy_cache/
-.pyright/
 .ruff_cache/
-.ipynb_checkpoints/
 
+# .venv-ci/ is the environment of the Repository integrity workflow.
 .venv/
 .venv-ci/
 venv/
 
 
 #------------------------------------------------------------------------------
-# NODE / JAVASCRIPT LOCAL DEPENDENCIES
+# NODE
 #------------------------------------------------------------------------------
-# Package manifests and lock files remain trackable. Only installed dependencies,
-# machine caches, and diagnostic logs are ignored.
+# The label scripts in .github/scripts use only Node built-in modules.
 node_modules/
-.npm/
-.pnpm-store/
-.yarn/cache/
-.yarn/unplugged/
-.yarn/install-state.gz
-.yarn/build-state.yml
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-
-#------------------------------------------------------------------------------
-# R SESSION / LOCAL LIBRARY STATE
-#------------------------------------------------------------------------------
-# R source, project files, renv.lock, and benchmark evidence remain trackable.
-.Rhistory
-.RData
-.Ruserdata
-.Rproj.user/
-
-renv/library/
-renv/staging/
-renv/local/
-
-
-#------------------------------------------------------------------------------
-# AUTHORITATIVE CONTENT THAT MUST REMAIN TRACKABLE
-#------------------------------------------------------------------------------
-# These are documentation guardrails, not negation rules:
-#   *.bas, *.cls, *.frm, *.frx, *.xml
-#   src/**, examples/**, tests/**, tools/**
-#   demo/**, test/** only for documented legacy/profile alternatives
-#   docs/**, benchmark/**, evidence/**
-#   *.md, *.txt, *.yml, *.yaml, *.json, *.csv
-#   assets/**, images/**, .github/**
-#   .editorconfig, .gitattributes, .gitignore
-#
-# Do not ignore exported VBA extensions or authoritative source, documentation,
-# benchmark, evidence, asset, or .github directories.
-#==============================================================================

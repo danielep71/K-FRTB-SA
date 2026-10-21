@@ -41,9 +41,7 @@ Attribute VB_Name = "CORE_Util"
 '
 ' COMPATIBILITY
 '   Excel VBA; also runs in LibreOffice Calc with VBA support for the
-'   automated reconciliation. No references beyond the defaults.
-'
-' UPDATED  2026-10-17
+'   automated tests. No references beyond the defaults.
 '==============================================================================
 
 '------------------------------------------------------------------------------

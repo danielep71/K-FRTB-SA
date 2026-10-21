@@ -68,14 +68,17 @@ Do not retain every disposable log as authoritative evidence.
 
 The root controls already define:
 
-- `.editorconfig`: LF for documentation/configuration/tooling, 2-space
-  indentation for JavaScript/JSON/YAML, and CRLF/4 spaces for exported VBA.
+- `.editorconfig`: CRLF for exported VBA source (`.bas`, `.cls`, `.frm`),
+  PowerShell scripts and cmd launchers, LF for everything else; 4-space
+  indentation for VBA and Python, 2 spaces for JavaScript, JSON and YAML.
 - `.gitattributes`: text normalization, VBA working-tree CRLF and diff driver,
-  LF supporting text, and binary Office packages/UserForm companions.
-- `.gitignore`: generated output, Office locks, secrets, caches, and local
+  CRLF for the Windows scripts, LF for other text, and binary workbooks,
+  form binaries (`.frx`), images and archives.
+- `.gitignore`: built workbooks, Office locks, secrets, caches, and local
   environments, with the exact approved workbook-template exception.
 
-VBA encoding is intentionally not forced. Do not add working-tree encoding
+All three describe this repository's file types only (#87). VBA encoding is
+intentionally not forced: the modules are ASCII (`tools/vba_lint.py`). Do not add working-tree encoding
 or renormalize existing files without a separate justified compatibility
 check. Markdown may retain intentional hard-break spaces.
 The settings describe file handling; they do not select an engine platform.

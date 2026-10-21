@@ -43,7 +43,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
             root = Path(directory)
             subprocess.run(["git", "init", "-q", str(root)], check=True)
             (root / ".gitattributes").write_text((source / ".gitattributes").read_text() + "\n*.fixture opaque\n")
-            names = ["image.webp", "icon.ico", "font.woff2", "slides.pptx", "archive.7z", "custom.fixture"]
+            names = ["preview.png", "screenshot.jpeg", "bundle.zip", "K-FRTB-SA.xlsm", "template.xlsx", "custom.fixture"]
             for name in names + ["bad.txt"]:
                 (root / name).write_bytes(b"\x00\xff\x10")
             binary = checker.binary_paths(root, names + ["bad.txt"])

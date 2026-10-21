@@ -28,18 +28,17 @@ Attribute VB_Name = "M_Main"
 '   A run error is logged, stored in LastRunStatus, noted on Results and
 '   shown in a message box by RunFRTB; RunFRTB_Silent never shows a dialog.
 '   Every run first clears the output sheets, and a failed run clears them
-'   again, so it leaves neither earlier nor partial capital behind. A parameter that is blank or not a number is a
-'   run error. Errors in the input rows are not VBA errors: they are listed
-'   on the Log sheet.
+'   again, so it leaves neither earlier nor partial capital behind. A
+'   parameter that is blank or not a number is a run error. Errors in the
+'   input rows are not VBA errors: they are listed on the Log sheet.
 '
 ' KNOWN DEVIATION
 '   The sheet buttons call this module directly, and it writes the Results
 '   and Out_Summary sheets itself; there is no separate UI layer yet.
 '
 ' COMPATIBILITY
-'   Excel VBA; no references beyond the defaults.
-'
-' UPDATED  2026-10-17
+'   Excel VBA; also runs in LibreOffice Calc with VBA support for the
+'   automated tests. No references beyond the defaults.
 '==============================================================================
 
 '------------------------------------------------------------------------------
