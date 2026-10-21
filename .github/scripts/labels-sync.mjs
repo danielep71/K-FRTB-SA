@@ -331,7 +331,7 @@ async function githubRequest(repository, token, method, suffix, body) {
         Accept: "application/vnd.github+json",
         Authorization: `Bearer ${token}`,
         "X-GitHub-Api-Version": API_VERSION,
-        "User-Agent": "canonical-vba-labels-sync"
+        "User-Agent": "mkt-ftrb-sa-labels-sync"
       },
       body: body === undefined ? undefined : JSON.stringify(body)
     });

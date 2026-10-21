@@ -1,19 +1,40 @@
 Attribute VB_Name = "TEST_Numeric"
 '==============================================================================
 ' MODULE: TEST_Numeric
+'------------------------------------------------------------------------------
 ' PURPOSE
-'   Assert numeric validation/conversion contracts with synthetic values.
+'   Assert the numeric validation and conversion contracts of CORE_Util
+'   with synthetic values: invariant numeric text, typed numbers, rejected
+'   text and required parameters that fail with their key and source.
+'
 ' PUBLIC SURFACE
-'   Test_NumericContracts_Silent: raise on any failed numeric contract.
+'   Test_NumericContracts_Silent: return 1 when every contract holds; raise
+'   on the first one that fails.
+'
 ' DEPENDENCIES
-'   CORE_Util; development builds only, no worksheet state is modified.
+'   CORE_Util.
+'
+' STATE OWNERSHIP
+'   None: no sheet or workbook state is read or changed.
+'
 ' ERROR POLICY
-'   A failed assertion raises an application error; no dialogs are shown.
+'   A failed assertion raises vbObjectError + ERR_APP; no dialogs are shown.
+'
 ' COMPATIBILITY
-'   Excel VBA and LibreOffice VBA compatibility; no extra references.
+'   Excel VBA; also runs in LibreOffice Calc with VBA support for the
+'   automated tests. No references beyond the defaults.
+'   Development build only: tools/Build-Workbook.ps1 -Production leaves
+'   this module out.
 '==============================================================================
+
+'------------------------------------------------------------------------------
+'                              MODULE SETTINGS
+'------------------------------------------------------------------------------
 Option Explicit
 
+'------------------------------------------------------------------------------
+'                              PUBLIC MACROS
+'------------------------------------------------------------------------------
 Public Function Test_NumericContracts_Silent() As Long
     Dim inputs As Variant, expected As Variant, invalid As Variant, item As Variant
     Dim i As Long, parsed As Double, captured As Long
@@ -51,7 +72,9 @@ Public Function Test_NumericContracts_Silent() As Long
     Test_NumericContracts_Silent = 1
 End Function
 
-
+'------------------------------------------------------------------------------
+'                               ASSERTIONS
+'------------------------------------------------------------------------------
 Private Sub AssertInvalidRequired(ByVal item As Variant)
     Dim kv As New Collection, parsed As Double, captured As Long, detail As String
     kv.Add item, "RW"

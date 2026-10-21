@@ -12,7 +12,8 @@
       the export helper), for a workbook that is used to calculate.
     - Development: the production modules and the test modules of
       tests\modules, for a workbook that runs the regression test. The
-      tests change the input sheets; never run them on real data.
+      regression test compares the outputs of the last run with the expected
+      results of the sample portfolio and writes only to Test_Expected.
 
     With -SourceDir only the modules found in that folder are imported, for
     example modules downloaded for a test, without copying them into the

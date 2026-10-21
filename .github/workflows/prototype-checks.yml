@@ -1,10 +1,13 @@
 name: Prototype checks
 run-name: Prototype checks — ${{ github.ref_name }} @ ${{ github.sha }}
 
-# Static lint of the VBA modules, hand-calculated reference tests, and
-# reconciliation of the VBA engine executed headless in LibreOffice with the
-# independent Python reference. Excel itself is not available on hosted
-# runners, so Excel compilation and runtime remain manual evidence.
+# Static lint of the VBA modules, then the whole pytest suite: hand-calculated
+# reference tests, reconciliation of the VBA engine executed headless in
+# LibreOffice with the independent Python reference, the template and runtime
+# contract tests, and offline tests of the tools (sync script, export
+# comparison, evidence validator, repository maintenance). Excel itself is
+# not available on hosted runners, so Excel compilation and runtime remain
+# manual evidence (docs/EXCEL_EVIDENCE.md).
 
 on:
   pull_request:

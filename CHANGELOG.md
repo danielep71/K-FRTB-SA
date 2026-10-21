@@ -155,6 +155,18 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Comments in the non-Markdown files now describe this repository (#87).
+  - The sync script no longer claims that the tests change the input
+    sheets: the regression test writes only to `Test_Expected`.
+  - Module headers drop the unmaintained `UPDATED` date. `TEST_Numeric`
+    follows the common header layout, and every COMPATIBILITY section names
+    Excel and LibreOffice, except `M_Dev`, which needs Excel.
+  - The prototype-checks workflow describes the whole suite it runs.
+  - `.editorconfig`, `.gitattributes` and `.gitignore` cover only this
+    repository's file types, with the same effect on every tracked file.
+  - The label scripts identify themselves by this repository's name.
+  - The social preview says "Excel / VBA workbook" instead of "toolkit".
+
 - Removed `AGENTS.md` at the owner's request. Its rules duplicated the
   governance, contribution, scope and CI documents, which remain
   authoritative; CONTRIBUTING now also states the US English convention
