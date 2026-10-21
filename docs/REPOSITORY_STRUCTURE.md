@@ -68,12 +68,12 @@ Do not retain every disposable log as authoritative evidence.
 
 The root controls already define:
 
-- `.editorconfig`: CRLF for the VBA modules, PowerShell scripts and cmd
-  launchers, LF for everything else; 4-space indentation for VBA and Python,
-  2 spaces for JavaScript, JSON and YAML.
+- `.editorconfig`: CRLF for exported VBA source (`.bas`, `.cls`, `.frm`),
+  PowerShell scripts and cmd launchers, LF for everything else; 4-space
+  indentation for VBA and Python, 2 spaces for JavaScript, JSON and YAML.
 - `.gitattributes`: text normalization, VBA working-tree CRLF and diff driver,
   CRLF for the Windows scripts, LF for other text, and binary workbooks,
-  images and archives.
+  form binaries (`.frx`), images and archives.
 - `.gitignore`: built workbooks, Office locks, secrets, caches, and local
   environments, with the exact approved workbook-template exception.
 
