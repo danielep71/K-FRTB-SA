@@ -1,17 +1,12 @@
 {
   "schema_version": 1,
   "repository": "danielep71/MKT-FTRB-SA",
-  "collected_at_utc": "2026-10-20T09:35:37.785168+00:00",
+  "collected_at_utc": "2026-10-21T09:33:06.561077+00:00",
   "source_commit_sha": "00cbe7a9206e38bd7d8a8f5c02190ce3a94f56e9",
   "views": {
     "count": 33,
     "uniques": 1,
     "views": [
-      {
-        "timestamp": "2026-10-06T00:00:00Z",
-        "count": 0,
-        "uniques": 0
-      },
       {
         "timestamp": "2026-10-07T00:00:00Z",
         "count": 0,
@@ -76,18 +71,18 @@
         "timestamp": "2026-10-19T00:00:00Z",
         "count": 0,
         "uniques": 0
+      },
+      {
+        "timestamp": "2026-10-20T00:00:00Z",
+        "count": 0,
+        "uniques": 0
       }
     ]
   },
   "clones": {
-    "count": 1899,
-    "uniques": 423,
+    "count": 1976,
+    "uniques": 449,
     "clones": [
-      {
-        "timestamp": "2026-10-06T00:00:00Z",
-        "count": 0,
-        "uniques": 0
-      },
       {
         "timestamp": "2026-10-07T00:00:00Z",
         "count": 0,
@@ -152,6 +147,11 @@
         "timestamp": "2026-10-19T00:00:00Z",
         "count": 503,
         "uniques": 163
+      },
+      {
+        "timestamp": "2026-10-20T00:00:00Z",
+        "count": 77,
+        "uniques": 36
       }
     ]
   },
