@@ -155,6 +155,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Maintenance audit: refresh the roadmap's dated issue inventory and remove
+  unnecessary third-person wording from current guidance, forms and the PR
+  template. Approval requirements and historical evidence are preserved (#93).
+
 - Comments in the non-Markdown files now describe this repository (#87).
   - The sync script no longer claims that the tests change the input
     sheets: the regression test writes only to `Test_Expected`.

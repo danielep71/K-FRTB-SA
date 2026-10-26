@@ -52,7 +52,7 @@ reuse a number, or tag a release branch.
 ## 📝 Changelog
 
 [CHANGELOG.md](CHANGELOG.md) collects integrated changes under
-`[Unreleased]`. When the owner requests a release, a task PR moves the
+`[Unreleased]`. When a release is explicitly requested, a task PR moves the
 entries that belong to that version into a dated version section. Main can
 carry work from more than one line: move only the entries of the released
 milestone and leave the others under `[Unreleased]`.
@@ -65,7 +65,7 @@ milestone and leave the others under `[Unreleased]`.
 2. **Milestone closeout**: the closeout issue reconciles every issue and PR
    and links the evidence below. Closing the milestone does not merge main,
    create a tag or publish a release.
-3. **Integration into main** happens only on the owner's explicit request,
+3. **Integration into main** happens only on explicit request,
    through a release-to-main PR with a merge commit. While work continues,
    the release branch is then fast-forwarded to that merge with an
    expected-head guard. Once its milestone is closed and fully integrated,
@@ -73,7 +73,7 @@ milestone and leave the others under `[Unreleased]`.
    [release-branch lifecycle](docs/GOVERNANCE.md#release-branch-lifecycle).
 4. **Tag candidate**: the main commit whose whole tree both satisfies the
    version's contents rule below and carries the version's completion
-   record and dated changelog section. On the owner's request, a task PR
+   record and dated changelog section. On explicit request, a task PR
    dates the section and it reaches main through step 3. A tag exposes the
    entire tree, so release notes can neither exclude files from it nor add
    the missing closeout to it. Git source archives of the tag omit only the
@@ -81,13 +81,13 @@ milestone and leave the others under `[Unreleased]`.
    `.editorconfig` and `.github/`), as [Installation](INSTALLATION.md) notes.
    - If no main commit meets both conditions, there is no tag candidate.
      The version is then recorded by its closed milestone and closeout
-     record. Tagging it needs a separate owner decision on how a complete
+     record. Tagging it needs a separate explicit decision on how a complete
      candidate is prepared and validated.
 5. **Validate the exact candidate**: run the stage's checks on a fresh
    checkout of that commit and confirm that the hosted `Repository integrity`
    run passed on it. Record the commands, results and run URL in the closeout
    or release notes. Evidence from another commit does not count.
-6. **Tag**: on the owner's request, create an annotated tag on the
+6. **Tag**: on explicit request, create an annotated tag on the
    validated candidate, then push it:
 
    ```sh
@@ -109,7 +109,7 @@ before the setup closeout:
 
 The setup baseline is recorded by the closed v0.0.1 milestone and the
 [setup closeout record](docs/evidence/2026-10-18-setup-closeout.md). The
-owner deferred the tag on October 18, 2026.
+tag was deferred on October 18, 2026.
 
 ## 📦 Contents and evidence by stage
 
@@ -127,4 +127,4 @@ are not Excel evidence. Never fabricate workbook or Excel results.
 ## 🚫 Not part of a release
 
 A tag or release does not change repository visibility, publish a website or
-certify regulatory compliance. Each of those needs a separate owner decision.
+certify regulatory compliance. Each of those needs a separate explicit decision.

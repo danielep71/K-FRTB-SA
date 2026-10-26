@@ -1,6 +1,6 @@
 # Roadmap
 
-This roadmap records the milestone plan the owner approved on October 18, 2026,
+This roadmap records the milestone plan approved on October 18, 2026,
 from the repository setup to the first certified release. Milestones carry no
 dates or release promises. Each milestone after v0.2.0 is created on GitHub
 when its predecessor has fixed its scope, as [governance](GOVERNANCE.md)
@@ -68,9 +68,25 @@ integration branch `release/v0.1.0`.
 | [#48](https://github.com/danielep71/MKT-FTRB-SA/issues/48) | Closed | Reject blank keys and gaps in required parameter tables |
 | [#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51) | Closed | Retire the setup line: Dependabot targets and branch guidance |
 | [#55](https://github.com/danielep71/MKT-FTRB-SA/issues/55) | Closed | This milestone plan |
-| [#59](https://github.com/danielep71/MKT-FTRB-SA/issues/59) | Closed | Post-closeout documentation consistency (closed by the change that adds this row) |
+| [#59](https://github.com/danielep71/MKT-FTRB-SA/issues/59) | Closed | Post-closeout documentation consistency |
+| [#62](https://github.com/danielep71/MKT-FTRB-SA/issues/62) | Closed | Historical setup-branch deletion and corrected guidance |
+| [#66](https://github.com/danielep71/MKT-FTRB-SA/issues/66) | Closed | Obsolete release-branch lifecycle |
+| [#68](https://github.com/danielep71/MKT-FTRB-SA/issues/68) | Closed | Remove duplicated AGENTS.md guidance |
+| [#72](https://github.com/danielep71/MKT-FTRB-SA/issues/72) | Open | VBA synchronization implemented; desktop Excel and Windows verification pending #28 |
+| [#76](https://github.com/danielep71/MKT-FTRB-SA/issues/76) | Closed | Saved template style and source-build print areas |
+| [#77](https://github.com/danielep71/MKT-FTRB-SA/issues/77) | Closed | Synchronization-tool documentation |
+| [#79](https://github.com/danielep71/MKT-FTRB-SA/issues/79) | Open | Read-only export and comparison implemented; actual Excel round trip pending #28/#30 |
+| [#82](https://github.com/danielep71/MKT-FTRB-SA/issues/82) | Open | Evidence contract and validator implemented; actual Excel bundle pending #28 |
+| [#85](https://github.com/danielep71/MKT-FTRB-SA/issues/85) | Open | Output-placeholder fix verified in LibreOffice; desktop Excel verification pending #28 |
+| [#87](https://github.com/danielep71/MKT-FTRB-SA/issues/87) | Closed | Repository-specific comments and supported file policies |
+| [#93](https://github.com/danielep71/MKT-FTRB-SA/issues/93) | Open | Maintenance-audit documentation reconciliation |
 
-States were read back on October 18, 2026, and #59 closes with this table; the live milestone is authoritative.
+States were read back on October 26, 2026; the live milestone is authoritative.
+At that checkpoint main and release/v0.1.0 both pointed to `a1705b9`, after
+integrations #84 (template, export and evidence tools, output-placeholder fix),
+#89 (comment and file-policy cleanup) and #92 (numpy test dependency). These
+merges do not supply desktop Excel evidence. The v0.1.0 guide and evaluation
+record remain outstanding under #32.
 
 The open methodology interpretations are documented as limits in the
 [methodology](methodology.md); deciding them ([#29](https://github.com/danielep71/MKT-FTRB-SA/issues/29))
