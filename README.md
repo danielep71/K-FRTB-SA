@@ -18,11 +18,11 @@
 
 <br>
 
-[![Last commit](https://img.shields.io/github/last-commit/danielep71/MKT-FTRB-SA?style=flat-square&label=last%20commit&color=217346)](https://github.com/danielep71/MKT-FTRB-SA/commits)
-[![P1 issues](https://img.shields.io/github/issues/danielep71/MKT-FTRB-SA/P1?style=flat-square&label=P1&color=B60205)](https://github.com/danielep71/MKT-FTRB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP1)
-[![P2 issues](https://img.shields.io/github/issues/danielep71/MKT-FTRB-SA/P2?style=flat-square&label=P2&color=D93F0B)](https://github.com/danielep71/MKT-FTRB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP2)
-[![P3 issues](https://img.shields.io/github/issues/danielep71/MKT-FTRB-SA/P3?style=flat-square&label=P3&color=FBCA04)](https://github.com/danielep71/MKT-FTRB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP3)
-[![Stars](https://img.shields.io/github/stars/danielep71/MKT-FTRB-SA?style=flat-square&color=bf8700)](https://github.com/danielep71/MKT-FTRB-SA/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/danielep71/K-FRTB-SA?style=flat-square&label=last%20commit&color=217346)](https://github.com/danielep71/K-FRTB-SA/commits)
+[![P1 issues](https://img.shields.io/github/issues/danielep71/K-FRTB-SA/P1?style=flat-square&label=P1&color=B60205)](https://github.com/danielep71/K-FRTB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP1)
+[![P2 issues](https://img.shields.io/github/issues/danielep71/K-FRTB-SA/P2?style=flat-square&label=P2&color=D93F0B)](https://github.com/danielep71/K-FRTB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP2)
+[![P3 issues](https://img.shields.io/github/issues/danielep71/K-FRTB-SA/P3?style=flat-square&label=P3&color=FBCA04)](https://github.com/danielep71/K-FRTB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP3)
+[![Stars](https://img.shields.io/github/stars/danielep71/K-FRTB-SA?style=flat-square&color=bf8700)](https://github.com/danielep71/K-FRTB-SA/stargazers)
 
 <br>
 
@@ -58,7 +58,7 @@
 
 > [!IMPORTANT]
 > **Version 0.1.0 is a prototype** of the
-> [v0.1.0 — SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+> [v0.1.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 > milestone (issue #20). It implements the Basel standardized approach
 > (MAR21-MAR23) in Excel VBA with parameters checked against the BIS text,
 > and every output is reconciled with an independent Python reference. It has
@@ -142,8 +142,8 @@ milestone 2. The setup branch `release/v0.0.1` was deleted after the v0.0.1
 closeout; its history is on main. See [branch governance](docs/GOVERNANCE.md).
 
 ```sh
-git clone --branch release/v0.1.0 https://github.com/danielep71/MKT-FTRB-SA.git
-cd MKT-FTRB-SA
+git clone --branch release/v0.1.0 https://github.com/danielep71/K-FRTB-SA.git
+cd K-FRTB-SA
 python3 tools/vba_lint.py
 ```
 
@@ -263,9 +263,9 @@ what is **not** validated yet.
 | Development branches and integration | [Governance](docs/GOVERNANCE.md) |
 | Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
 | Recorded changes | [Changelog](CHANGELOG.md) |
-| Prototype backlog | [v0.1.0 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/2) |
-| Closed setup baseline | [v0.0.1 milestone](https://github.com/danielep71/MKT-FTRB-SA/milestone/1) and [closeout record](docs/evidence/2026-10-18-setup-closeout.md) |
-| Privately report a potential vulnerability | [Private vulnerability reporting](https://github.com/danielep71/MKT-FTRB-SA/security/advisories/new) |
+| Prototype backlog | [v0.1.0 milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2) |
+| Closed setup baseline | [v0.0.1 milestone](https://github.com/danielep71/K-FRTB-SA/milestone/1) and [closeout record](docs/evidence/2026-10-18-setup-closeout.md) |
+| Privately report a potential vulnerability | [Private vulnerability reporting](https://github.com/danielep71/K-FRTB-SA/security/advisories/new) |
 
 Every issue must have **one priority label**, a milestone, and an assignee.
 P1 is reserved for confirmed calculation bugs.
@@ -287,9 +287,10 @@ prototype evaluation/closeout is #32. Traffic history is collecting daily
 ## 🏷️ Project name
 
 The documentation uses **FRTB-SA**, with the standard acronym FRTB, and the
-workbook is branded **K-FRTB-SA**. The GitHub repository identifier is
-**MKT-FTRB-SA**, which transposes the letters in FRTB; it is retained for URL
-and clone-path continuity.
+workbook is branded **K-FRTB-SA**. The GitHub repository has the same name,
+**K-FRTB-SA**, since October 26, 2026 (#95). It was created as
+**MKT-FTRB-SA**, with the letters of FRTB transposed; GitHub redirects the
+old URLs, but links and clones should use the new name.
 
 ## 📄 License
 

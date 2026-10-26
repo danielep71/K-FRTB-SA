@@ -16,7 +16,7 @@ There is no guaranteed response or remediation time and no bug-bounty program.
 
 ## 🔒 Report privately
 
-Use [GitHub private vulnerability reporting](https://github.com/danielep71/MKT-FTRB-SA/security/advisories/new).
+Use [GitHub private vulnerability reporting](https://github.com/danielep71/K-FRTB-SA/security/advisories/new).
 This channel was verified enabled in repository security settings on
 October 18, 2026 (Europe/Rome). It permits private discussion with maintainers;
 do not publish the report as an advisory yourself.

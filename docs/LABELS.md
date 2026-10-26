@@ -63,13 +63,13 @@ issues and orphaned issues remain visible. Every search should return no issues.
 
 | Check | GitHub search query |
 | --- | --- |
-| Missing assignee | `repo:danielep71/MKT-FTRB-SA is:issue no:assignee` |
-| Wrong assignee | `repo:danielep71/MKT-FTRB-SA is:issue -assignee:danielep71` |
-| Missing milestone | `repo:danielep71/MKT-FTRB-SA is:issue no:milestone` |
-| Missing priority | `repo:danielep71/MKT-FTRB-SA is:issue -label:P1 -label:P2 -label:P3` |
-| Conflicting priorities | `repo:danielep71/MKT-FTRB-SA is:issue label:P1 label:P2` |
-| Conflicting priorities | `repo:danielep71/MKT-FTRB-SA is:issue label:P1 label:P3` |
-| Conflicting priorities | `repo:danielep71/MKT-FTRB-SA is:issue label:P2 label:P3` |
+| Missing assignee | `repo:danielep71/K-FRTB-SA is:issue no:assignee` |
+| Wrong assignee | `repo:danielep71/K-FRTB-SA is:issue -assignee:danielep71` |
+| Missing milestone | `repo:danielep71/K-FRTB-SA is:issue no:milestone` |
+| Missing priority | `repo:danielep71/K-FRTB-SA is:issue -label:P1 -label:P2 -label:P3` |
+| Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P1 label:P2` |
+| Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P1 label:P3` |
+| Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P2 label:P3` |
 
 Review P1 issues individually to confirm a calculation bug is established;
 a search cannot verify the substance of that decision.
@@ -127,9 +127,9 @@ With `GITHUB_TOKEN` set securely in the environment and an explicit reviewed
 checkout, a maintainer can run live verification or reconciliation:
 
 ```sh
-node .github/scripts/labels-drift.mjs --repository danielep71/MKT-FTRB-SA
-node .github/scripts/labels-sync.mjs --mode reconcile --dry-run --repository danielep71/MKT-FTRB-SA
-node .github/scripts/labels-sync.mjs --mode reconcile --repository danielep71/MKT-FTRB-SA
+node .github/scripts/labels-drift.mjs --repository danielep71/K-FRTB-SA
+node .github/scripts/labels-sync.mjs --mode reconcile --dry-run --repository danielep71/K-FRTB-SA
+node .github/scripts/labels-sync.mjs --mode reconcile --repository danielep71/K-FRTB-SA
 ```
 
 The scripts use bounded pagination and retries. Workflow actions are pinned to

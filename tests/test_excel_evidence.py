@@ -81,7 +81,7 @@ class Bundle:
             "round-trip-production.log": compare_log(sha, "production", template, WORKBOOK_PROD),
         }
         self.record = {
-            "schema_version": 1, "repository": "danielep71/MKT-FTRB-SA", "candidate_sha": sha,
+            "schema_version": 1, "repository": "danielep71/K-FRTB-SA", "candidate_sha": sha,
             "execution": "manual", "availability_reason": None,
             "started_at": "2026-10-20T09:00:00+02:00", "finished_at": "2026-10-20T10:00:00+02:00",
             "operator": "Owner, workstation",
