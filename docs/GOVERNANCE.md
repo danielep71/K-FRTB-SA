@@ -14,7 +14,7 @@ This document owns branch, issue, review, and milestone procedures.
 
 The active integration branch is **`release/v0.1.0`** for the SA prototype
 and repository maintenance. Maintenance was approved on this branch
-and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)),
+and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)),
 until a later explicitly approved transition. It was originally approved for
 the prototype on October 17 and created from main at
 `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
@@ -91,10 +91,10 @@ reviewed head and the merge commit descends from it. If it moved, inspect
 the new work before proceeding; never reset or force an update.
 
 Record the PR, merge commit, branch readback, and applicable post-merge checks.
-PR [#13](https://github.com/danielep71/MKT-FTRB-SA/pull/13) demonstrates this
+PR [#13](https://github.com/danielep71/K-FRTB-SA/pull/13) demonstrates this
 lifecycle: merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`
 preserved both parents and the retained release branch was fast-forwarded to
-it. [CodeQL passed](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39071612077).
+it. [CodeQL passed](https://github.com/danielep71/K-FRTB-SA/actions/runs/39071612077).
 Later task PRs advance the release branch again; branches need match only at
 the integration checkpoint.
 
@@ -166,10 +166,10 @@ checklist; this document owns its detailed procedures.
 
 ### Milestone management
 
-[v0.0.1 — Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+[v0.0.1 — Repo setup](https://github.com/danielep71/K-FRTB-SA/milestone/1)
 closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
 [closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
-baseline. [v0.1.0 — SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+baseline. [v0.1.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 is active: prototype closeout and its milestone guide are tracked in #32, and
 #28 owns Excel evidence. The methodology decisions (#29) belong to v0.2.0 in
 the [milestone plan](ROADMAP.md). The live issue tracker

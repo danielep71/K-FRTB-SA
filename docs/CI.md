@@ -76,7 +76,7 @@ Do not require a check on a line before installing it there.
 
 The configuration must reach the default branch before GitHub schedules
 version updates. The temporary maintenance successor was approved in
-[#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)
+[#51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)
 on October 18, 2026: all three updater entries target `release/v0.1.0`,
 milestone 2. The setup branch `release/v0.0.1` receives no version-update
 PRs; it was deleted after the closeout (#62):
