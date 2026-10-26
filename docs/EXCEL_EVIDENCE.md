@@ -165,7 +165,7 @@ Replace every value with what was observed. This shape is not evidence.
 ```json
 {
   "schema_version": 1,
-  "repository": "danielep71/MKT-FTRB-SA",
+  "repository": "danielep71/K-FRTB-SA",
   "candidate_sha": "FULL_40_CHARACTER_SHA",
   "execution": "manual",
   "availability_reason": null,

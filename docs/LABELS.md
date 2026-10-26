@@ -12,11 +12,11 @@ issues, must have:
 - Assignee `danielep71`.
 - Exactly one priority: `P1`, `P2` or `P3`.
 - The milestone that owns its work; current prototype and repository maintenance
-  belong to **v0.1.0 — SA prototype** (milestone 2, owner-approved #51).
+  belong to **v0.1.0 — SA prototype** (milestone 2, approved in #51).
   Historical setup issues retain the closed **v0.0.1 — Repo setup** milestone.
 - An objective, acceptance checklist, dependencies and required evidence.
 
-The owner's triage convention reserves **P1 for confirmed calculation bugs**.
+The triage convention reserves **P1 for confirmed calculation bugs**.
 P2 covers material defects in correctness, robustness or maintainability. P3
 covers setup, documentation, testing and other non-blocking quality work.
 The shared P1 catalogue description is retained verbatim for cross-repository
@@ -63,13 +63,13 @@ issues and orphaned issues remain visible. Every search should return no issues.
 
 | Check | GitHub search query |
 | --- | --- |
-| Missing assignee | `repo:danielep71/MKT-FTRB-SA is:issue no:assignee` |
-| Wrong owner | `repo:danielep71/MKT-FTRB-SA is:issue -assignee:danielep71` |
-| Missing milestone | `repo:danielep71/MKT-FTRB-SA is:issue no:milestone` |
-| Missing priority | `repo:danielep71/MKT-FTRB-SA is:issue -label:P1 -label:P2 -label:P3` |
-| Conflicting priorities | `repo:danielep71/MKT-FTRB-SA is:issue label:P1 label:P2` |
-| Conflicting priorities | `repo:danielep71/MKT-FTRB-SA is:issue label:P1 label:P3` |
-| Conflicting priorities | `repo:danielep71/MKT-FTRB-SA is:issue label:P2 label:P3` |
+| Missing assignee | `repo:danielep71/K-FRTB-SA is:issue no:assignee` |
+| Wrong assignee | `repo:danielep71/K-FRTB-SA is:issue -assignee:danielep71` |
+| Missing milestone | `repo:danielep71/K-FRTB-SA is:issue no:milestone` |
+| Missing priority | `repo:danielep71/K-FRTB-SA is:issue -label:P1 -label:P2 -label:P3` |
+| Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P1 label:P2` |
+| Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P1 label:P3` |
+| Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P2 label:P3` |
 
 Review P1 issues individually to confirm a calculation bug is established;
 a search cannot verify the substance of that decision.
@@ -127,9 +127,9 @@ With `GITHUB_TOKEN` set securely in the environment and an explicit reviewed
 checkout, a maintainer can run live verification or reconciliation:
 
 ```sh
-node .github/scripts/labels-drift.mjs --repository danielep71/MKT-FTRB-SA
-node .github/scripts/labels-sync.mjs --mode reconcile --dry-run --repository danielep71/MKT-FTRB-SA
-node .github/scripts/labels-sync.mjs --mode reconcile --repository danielep71/MKT-FTRB-SA
+node .github/scripts/labels-drift.mjs --repository danielep71/K-FRTB-SA
+node .github/scripts/labels-sync.mjs --mode reconcile --dry-run --repository danielep71/K-FRTB-SA
+node .github/scripts/labels-sync.mjs --mode reconcile --repository danielep71/K-FRTB-SA
 ```
 
 The scripts use bounded pagination and retries. Workflow actions are pinned to

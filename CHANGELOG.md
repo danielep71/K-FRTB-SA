@@ -155,6 +155,20 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The repository is renamed from MKT-FTRB-SA, whose name transposed the
+  letters of FRTB, to K-FRTB-SA, the workbook's name (#95).
+  - Every link, clone command, label search and label command uses
+    `danielep71/K-FRTB-SA`, dated records included; their content is
+    unchanged.
+  - The Excel evidence policy requires `danielep71/K-FRTB-SA` as the record's
+    repository.
+  - The label scripts identify themselves as `k-frtb-sa-…`.
+  - GitHub redirects the old URLs.
+
+- Maintenance audit: refresh the roadmap's dated issue inventory and remove
+  unnecessary third-person wording from current guidance, forms and the PR
+  template. Approval requirements and historical evidence are preserved (#93).
+
 - Comments in the non-Markdown files now describe this repository (#87).
   - The sync script no longer claims that the tests change the input
     sheets: the regression test writes only to `Test_Expected`.

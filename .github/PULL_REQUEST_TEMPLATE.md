@@ -17,14 +17,14 @@ risks, dependencies, or missing evidence; write None when applicable.
 
 ## ✅ Merge checklist
 
-- [ ] Base is `release/v0.1.0` for current prototype/maintenance tasks (milestone 2), another owner-approved branch for future milestones, or this is an explicitly owner-requested release-to-main integration. The setup branch `release/v0.0.1` was deleted after the v0.0.1 closeout; do not recreate or target it.
+- [ ] Base is `release/v0.1.0` for current prototype/maintenance tasks (milestone 2), another explicitly approved branch for future milestones, or this is an explicitly requested release-to-main integration. The setup branch `release/v0.0.1` was deleted after the v0.0.1 closeout; do not recreate or target it.
 - [ ] Linked issue and PR have assignee `danielep71`, exactly one priority, and the appropriate milestone; P1 is only for confirmed calculation bugs.
 - [ ] Scope, compatibility impact, affected documentation, and CHANGELOG.md are current.
 - [ ] Applicable checks pass; any running automated review is finished and all review findings are addressed or explained and resolved.
 - [ ] Evidence and limitations are accurate; no credentials, confidential data, or undisclosed vulnerability details are included.
 
-Task PRs squash-merge into the integration branch. Owner-requested main
+Task PRs squash-merge into the integration branch. Explicitly requested main
 integrations use a merge commit. If work continues, fast-forward the release
 branch to the merge; after the milestone-final integration, delete the
 obsolete branch under the
-[release-branch lifecycle](https://github.com/danielep71/MKT-FTRB-SA/blob/main/docs/GOVERNANCE.md#release-branch-lifecycle).
+[release-branch lifecycle](https://github.com/danielep71/K-FRTB-SA/blob/main/docs/GOVERNANCE.md#release-branch-lifecycle).

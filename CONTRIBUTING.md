@@ -35,7 +35,7 @@ information and metadata explicitly.
 
 1. Fetch the repository and branch from `origin/release/v0.1.0` for current
    prototype or maintenance work (milestone 2). Future milestones need an
-   owner-approved integration branch. Confirm the PR base explicitly.
+   explicitly approved integration branch. Confirm the PR base explicitly.
 2. Reproduce the problem where applicable and make a focused change.
 3. Follow the root editing, ignore, and attribute policies. Do not include
    credentials, client data, local caches, or generated output.
@@ -102,7 +102,7 @@ commands do not execute Excel or validate FRTB calculations. A future engine
 must define its runtime and evidence contract before claiming support.
 
 Do not disclose suspected vulnerabilities in public issues or PRs. Use
-[private vulnerability reporting](https://github.com/danielep71/MKT-FTRB-SA/security/advisories/new),
+[private vulnerability reporting](https://github.com/danielep71/K-FRTB-SA/security/advisories/new),
 enabled in the [settings baseline](docs/REPOSITORY_SETTINGS.md).
 See the dedicated security and conduct policies for reporting and moderation.
 

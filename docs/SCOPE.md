@@ -32,7 +32,7 @@ regulatory applicability.
 ## Platform and environment
 
 **Excel/VBA is approved for the prototype; the long-term platform decision
-remains open.** The owner approved a committed macro-free template under
+remains open.** The approved layout places a committed macro-free template under
 src/workbook and production/workbook modules under src/modules (#30/#34).
 This is no approval of production support, an Excel-certified host matrix or
 public workbook distribution. Windows desktop Excel/PowerShell is the target
@@ -41,7 +41,7 @@ distinct compatibility runtime.
 
 | Decision or evidence | Current record and remaining work |
 | --- | --- |
-| Long-term engine language/runtime and supported platforms | Owner architecture decision informed by prototype evaluation (#32) |
+| Long-term engine language/runtime and supported platforms | Explicit architecture decision informed by prototype evaluation (#32) |
 | Basel baseline and initial jurisdiction profile | Basel MAR21-MAR23 prototype baseline in methodology; no jurisdiction profile selected |
 | Initial products/risk classes | Prototype coverage above; excluded classes rejected |
 | Inputs, units, signs, identifiers and outputs | Workbook guide and methodology; remaining interpretations in #29 |

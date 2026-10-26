@@ -5,7 +5,7 @@
 
 ## 🎯 What is collected
 
-The dedicated [traffic-history branch](https://github.com/danielep71/MKT-FTRB-SA/tree/traffic-history)
+The dedicated [traffic-history branch](https://github.com/danielep71/K-FRTB-SA/tree/traffic-history)
 holds aggregate views, clones, referring sites, and popular paths returned by
 GitHub's traffic API. It is a data branch, never merged into main or the
 development release branch. No visitor-level identities are collected.
@@ -101,12 +101,12 @@ collection do not run Excel or validate capital calculations.
 ## 📋 Live configuration record
 
 Verified on October 18, 2026 (Europe/Rome): the data-only branch exists;
-[Protect traffic history](https://github.com/danielep71/MKT-FTRB-SA/rules/25321321)
+[Protect traffic history](https://github.com/danielep71/K-FRTB-SA/rules/25321321)
 is active for its exact ref, blocks deletion and non-fast-forward updates,
 and has no bypass actors. The `analytics` environment permits the main branch
 only (one branch, zero tags) and holds the `TRAFFIC_TOKEN` environment
 secret. The first real export succeeded in
-[run 39105087826](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39105087826)
+[run 39105087826](https://github.com/danielep71/K-FRTB-SA/actions/runs/39105087826)
 and published data commit `af6a68a` on `traffic-history`; issue #23 is closed.
 Renew the fine-grained token before it expires; an expired token makes the
 daily run fail.

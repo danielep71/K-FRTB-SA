@@ -2,6 +2,9 @@
 
 Owner and maintainer: **@danielep71**.
 
+Explicit approvals and requests for integration, publication or settings
+changes in these documents must come from this repository maintainer.
+
 This document owns branch, issue, review, and milestone procedures.
 [CONTRIBUTING.md](../CONTRIBUTING.md) provides the contributor walkthrough;
 [labels and triage](LABELS.md) owns label definitions, and
@@ -10,14 +13,14 @@ This document owns branch, issue, review, and milestone procedures.
 ## Branches
 
 The active integration branch is **`release/v0.1.0`** for the SA prototype
-and repository maintenance. The owner approved maintenance on this branch
-and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)),
-until a later owner-approved transition. It was originally approved for
+and repository maintenance. Maintenance was approved on this branch
+and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)),
+until a later explicitly approved transition. It was originally approved for
 the prototype on October 17 and created from main at
 `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
 
-The v0.0.1 setup milestone is closed. The owner deleted its integration
-branch **`release/v0.0.1`** on October 18, 2026 (#62). Its closeout head
+The v0.0.1 setup milestone is closed. The integration branch
+**`release/v0.0.1`** was deleted on October 18, 2026 (#62). Its closeout head
 `b4d6c02` is on main, so no history was lost; the closed milestone and the
 [setup closeout record](evidence/2026-10-18-setup-closeout.md) remain the
 setup baseline. Do not recreate or target the branch.
@@ -25,18 +28,18 @@ setup baseline. Do not recreate or target the branch.
 | Branch | Purpose and allowed changes |
 | --- | --- |
 | `release/v0.1.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
-| `main` | Stable default branch; receives an integration branch only through a separate owner-requested PR |
+| `main` | Stable default branch; receives an integration branch only through a separate explicitly requested PR |
 | Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
 Current prototype and maintenance task PRs target **`release/v0.1.0`**,
 including Dependabot version updates. Future milestone work needs its own
-owner-approved integration branch. Task PRs are squash-merged after applicable
+explicitly approved integration branch. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
 directly to main or the release branch. Check the base explicitly when opening
 a PR: GitHub's default branch remains main.
 
 Do not open or merge a release-to-main integration PR merely to report progress.
-When the owner requests integration, open a PR from the applicable integration branch into
+When integration is explicitly requested, open a PR from the applicable integration branch into
 `main`, verify its diff, applicable checks and review findings, then merge with
 a **merge commit** to preserve ancestry. Integration does not by itself publish
 a version tag, release, workbook or website.
@@ -44,18 +47,18 @@ a version tag, release, workbook or website.
 After integration, an authorized maintainer may fast-forward the active
 integration branch to the main merge commit if work continues, using the
 existing administrator maintenance bypass and an expected-head check. At a
-milestone transition, create the next owner-approved integration branch and
+milestone transition, create the next explicitly approved integration branch and
 update this document, contribution guidance and automated PR targets together.
 
 ### Release-branch lifecycle
 
 A release branch is active while its milestone accepts work. Both release
 rulesets protect it, including a separate deletion rule with no bypass. Once
-it is **obsolete**, it is deleted (owner decision of October 18, 2026, #66).
+it is **obsolete**, it is deleted (decision of October 18, 2026, #66).
 A release branch is obsolete when all of these hold:
 
 1. its milestone is closed;
-2. its head is an ancestor of main, integrated through the owner-requested
+2. its head is an ancestor of main, integrated through the explicitly requested
    merge-commit PR;
 3. no open PR, Dependabot entry or workflow targets it;
 4. a repository-wide search finds no current document that names it as
@@ -68,7 +71,7 @@ To delete an obsolete branch:
 
 1. The milestone closeout issue, or a follow-up issue, records the branch
    head, the check of each condition and the search used for the fourth.
-2. The owner temporarily excludes the branch from ruleset 25319621, deletes
+2. The maintainer temporarily excludes the branch from ruleset 25319621, deletes
    it using the administrator bypass of ruleset 25319604, and then removes
    the exclusion.
 3. The issue records the readback: the branch is absent, its head is on
@@ -76,22 +79,22 @@ To delete an obsolete branch:
 
 `release/v0.0.1` was deleted this way (#62). Never delete an active release
 branch, force-push or reset shared history, or recreate a deleted release
-branch name; later work uses a new owner-approved branch.
+branch name; later work uses a new explicitly approved branch.
 
 ### Integration verification
 
 Before integration, record the release head and main head. After the
-owner-requested merge, inspect the resulting commit: its first parent must
+explicitly requested merge, inspect the resulting commit: its first parent must
 be the previous main head and its second parent the reviewed release head.
 Fast-forward the active release branch only if it still points to that
 reviewed head and the merge commit descends from it. If it moved, inspect
 the new work before proceeding; never reset or force an update.
 
 Record the PR, merge commit, branch readback, and applicable post-merge checks.
-PR [#13](https://github.com/danielep71/MKT-FTRB-SA/pull/13) demonstrates this
+PR [#13](https://github.com/danielep71/K-FRTB-SA/pull/13) demonstrates this
 lifecycle: merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`
 preserved both parents and the retained release branch was fast-forwarded to
-it. [CodeQL passed](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39071612077).
+it. [CodeQL passed](https://github.com/danielep71/K-FRTB-SA/actions/runs/39071612077).
 Later task PRs advance the release branch again; branches need match only at
 the integration checkpoint.
 
@@ -129,7 +132,7 @@ explicit metadata. Disabling ordinary blank issues does not enforce metadata
 or prevent maintainers from creating blank issues.
 
 GitHub serves the issue chooser and PR template from the default branch.
-Files merged into a release branch need a separate owner-requested main
+Files merged into a release branch need a separate explicitly requested main
 integration before default-branch activation. Initial forms and policies were
 activated and verified through #21/#6; the prototype-aware updates
 reached main through #58. The
@@ -163,20 +166,20 @@ checklist; this document owns its detailed procedures.
 
 ### Milestone management
 
-[v0.0.1 — Repo setup](https://github.com/danielep71/MKT-FTRB-SA/milestone/1)
+[v0.0.1 — Repo setup](https://github.com/danielep71/K-FRTB-SA/milestone/1)
 closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
 [closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
-baseline. [v0.1.0 — SA prototype](https://github.com/danielep71/MKT-FTRB-SA/milestone/2)
+baseline. [v0.1.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 is active: prototype closeout and its milestone guide are tracked in #32, and
 #28 owns Excel evidence. The methodology decisions (#29) belong to v0.2.0 in
 the [milestone plan](ROADMAP.md). The live issue tracker
 owns progress; a guide is not a substitute for completed acceptance criteria.
 
-The owner approves milestone scope and any next integration branch. Before a
+Milestone scope and any next integration branch require explicit approval. Before a
 milestone closes, its closeout issue must reconcile all associated work,
 including closed issues and PRs, confirm metadata and evidence, and record
 adopted and deferred maintenance practices. For v0.0.1, issue #8 owns that record.
-A genuine gap stays open or is explicitly respecified by the owner; moving it
+A genuine gap stays open or is explicitly respecified by the maintainer; moving it
 elsewhere does not make the original acceptance criterion pass.
 
 Closing a milestone does not authorize integration into main, a tag, a GitHub
@@ -202,7 +205,7 @@ re-reviewed only on request (`@codex review`).
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
 | Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
 | Issue/PR assignee, priority, milestone, acceptance evidence | Manual triage and completion procedure |
-| Owner-requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
+| Explicitly requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
 
 Issue #6 recorded initial default-branch activation of forms and the PR
 template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
