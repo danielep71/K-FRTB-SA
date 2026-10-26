@@ -35,7 +35,7 @@ information and metadata explicitly.
 
 1. Fetch the repository and branch from `origin/release/v0.1.0` for current
    prototype or maintenance work (milestone 2). Future milestones need an
-   owner-approved integration branch. Confirm the PR base explicitly.
+   explicitly approved integration branch. Confirm the PR base explicitly.
 2. Reproduce the problem where applicable and make a focused change.
 3. Follow the root editing, ignore, and attribute policies. Do not include
    credentials, client data, local caches, or generated output.

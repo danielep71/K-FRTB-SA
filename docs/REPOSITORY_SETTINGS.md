@@ -9,7 +9,7 @@ the observed baseline and outstanding dependencies.
 
 | Control | Before issue #2 | Verified baseline |
 | --- | --- | --- |
-| Visibility | Private | Public, changed by the owner during setup |
+| Visibility | Private | Public, changed during setup |
 | License | MIT | MIT |
 | Default branch | main | main |
 | Automatically delete merged head branches | Off | On; the release deletion rules keep release branches from automatic deletion; obsolete ones are deleted under the governance lifecycle (#66) |
@@ -35,17 +35,17 @@ conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-The v0.0.1 setup milestone closed on October 18, 2026. The owner deleted
-**`release/v0.0.1`** the same day (#62). For the deletion only, ruleset
+The v0.0.1 setup milestone closed on October 18, 2026.
+**`release/v0.0.1`** was deleted the same day (#62). For the deletion only, ruleset
 25319621 temporarily excluded that branch and stayed active for every other
-`release/**` branch; the owner then removed the exclusion, and the readback
+`release/**` branch; the exclusion was then removed, and the readback
 matches the earlier configuration. The branch's closeout head
 `b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No v0.0.1 tag
 was created.
 
 The active prototype integration branch **`release/v0.1.0`** also receives
 repository maintenance and all three Dependabot entries, milestone 2, under
-the owner decision of October 18, 2026 (#51). Shared controls were synchronized
+the decision of October 18, 2026 (#51). Shared controls were synchronized
 under #31. It matches `release/**`: readback on October 18 confirms the
 active force-push restriction and the separate deletion rule with no bypass.
 See [branch governance](GOVERNANCE.md) for task PRs, controlled active-branch
@@ -77,7 +77,7 @@ only because the required check had not run.
 - Existing label workflows separately grant issues:write only to trusted
   reconciliation, not to PR validation.
 - Public-repository fork approval currently requires approval for first-time
-  contributors; this was read back after the owner made the repository public.
+  contributors; this was read back after the repository became public.
 
 ## Security features
 
@@ -86,12 +86,12 @@ only because the required check had not run.
 | Dependency graph | Off | Enabled |
 | Dependabot alerts | Off | Enabled |
 | Low-impact development-dependency auto-dismissal | Enabled by the public-repository preset | Disabled |
-| Private vulnerability reporting | Not offered while private | Enabled after the owner's public-visibility change |
+| Private vulnerability reporting | Not offered while private | Enabled after the public-visibility change |
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
 | Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries on release/v0.1.0, milestone 2; scheduling uses the configuration on main; targets in CI.md |
-| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; changing this is a new owner settings decision (CI.md) |
+| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; changing this is a new explicit settings decision (CI.md) |
 
 [CodeQL setup evidence](https://github.com/danielep71/MKT-FTRB-SA/actions/runs/39070451926).
 The detected language at setup was **GitHub Actions**, not an FRTB calculation
@@ -119,7 +119,7 @@ issue #4 supplies contribution, milestone, and closeout guidance.
 
 ## Traffic analytics
 
-The owner authorized traffic-history collection under issue #23.
+Traffic-history collection was authorized under issue #23.
 [Traffic history](TRAFFIC_HISTORY.md) owns the workflow, dedicated data-branch
 protection, analytics environment and credential contract. A real successful
 collection is required before reporting the feature operational; branch or

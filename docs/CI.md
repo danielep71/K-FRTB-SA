@@ -75,11 +75,11 @@ Do not require a check on a line before installing it there.
 ## 🔄 Dependabot policy
 
 The configuration must reach the default branch before GitHub schedules
-version updates. The owner approved the temporary maintenance successor in
+version updates. The temporary maintenance successor was approved in
 [#51](https://github.com/danielep71/MKT-FTRB-SA/issues/51#issuecomment-6254417218)
 on October 18, 2026: all three updater entries target `release/v0.1.0`,
 milestone 2. The setup branch `release/v0.0.1` receives no version-update
-PRs; the owner deleted it after the closeout (#62):
+PRs; it was deleted after the closeout (#62):
 
 | Ecosystem and manifest location | Version-update PR target | Milestone |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ target milestone. Maintainers must still verify all metadata during triage.
 Non-default `target-branch` settings govern version updates, not security
 update PRs. The existing Dependabot alerts stay enabled; automatic security
 update PRs remain off under the recorded settings baseline. Enabling or
-retargeting them is a new owner settings decision (#2 is closed), not an
+retargeting them is a new explicit settings decision (#2 is closed), not an
 assertion made by this file. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
 
 ## Evidence boundaries
