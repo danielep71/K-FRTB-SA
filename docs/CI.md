@@ -109,7 +109,8 @@ assertion made by this file. See the [official options reference](https://docs.g
 [Keep milestones issue-only](../.github/workflows/pr-milestones.yml) removes
 milestone assignments from PRs only (#104). It handles `opened`, `reopened`,
 `edited` and `milestoned` PR activity, plus a daily full reconciliation at
-03:17 UTC and manual dispatch. The full scan includes open, closed and merged
+03:17 UTC, manual dispatch and reviewed workflow changes pushed to main.
+The full scan includes open, closed and merged
 PRs. It uses unfiltered creation-order pagination so removing assignments does
 not shift the collection. A 100-page bound, malformed response, API error or
 failed removal fails the run rather than claiming success.
@@ -125,7 +126,7 @@ idempotence and error propagation against the workflow's inline implementation.
 Default-branch activation is required. The maintainer's October 27 instruction
 to apply this rule to past and future PRs is recorded in #104; focused policy
 PRs activate it on main and synchronize release/v0.1.0. This activation does
-not integrate unrelated release work. A manual run performs the historical
+not integrate unrelated release work. The activation push performs the historical
 cleanup; daily runs also cover changes by bots whose events may not trigger
 another workflow. Event delivery and scheduled runs can be delayed or blocked
 by GitHub Actions policies or outages. If a run fails, inspect it and rerun the
