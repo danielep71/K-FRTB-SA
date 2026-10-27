@@ -9,7 +9,7 @@ Git 2.51.1, Node.js 24.19.0 and Python 3.12.14; hosted CI uses Ubuntu 24.04.
 ## Check out the active work
 
 ```sh
-git clone --branch release/v0.1.0 https://github.com/danielep71/K-FRTB-SA.git
+git clone --branch release/v0.2.0 https://github.com/danielep71/K-FRTB-SA.git
 cd K-FRTB-SA
 git branch --show-current
 git rev-parse HEAD
@@ -17,9 +17,9 @@ git --version
 node --version
 ```
 
-Current prototype and maintenance work uses `release/v0.1.0`, milestone 2,
-v0.2.0 — SA prototype (#51). The setup branch `release/v0.0.1` was deleted
-after the setup closeout (#62). Record the source commit when reporting results.
+Current prototype and maintenance work uses `release/v0.2.0`, milestone 2,
+v0.2.0 — SA prototype (#117). It supersedes `release/v0.1.0`; the setup
+branch `release/v0.0.1` was deleted after the setup closeout (#62). Record the source commit when reporting results.
 Main remains the stable default. Create focused task
 branches from the integration branch following [Governance](docs/GOVERNANCE.md).
 
@@ -60,7 +60,7 @@ an engine or Excel, test a workbook, or establish verified capital results.
 ## SA prototype (v0.2.0)
 
 The [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
-work integrates on `release/v0.1.0` (issue #20). Its approved Excel/VBA
+work integrates on `release/v0.2.0` (issue #20). Its approved Excel/VBA
 evaluation scope does not resolve the long-term platform decision or the
 remaining methodology questions in [Scope](docs/SCOPE.md).
 

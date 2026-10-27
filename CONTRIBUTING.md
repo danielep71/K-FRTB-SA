@@ -8,10 +8,10 @@ Potential vulnerabilities follow [SECURITY.md](SECURITY.md).
 
 Repository setup (milestone 1, v0.1.0 — Repo setup) is closed, and its branch
 `release/v0.0.1` was deleted (#62); its history is on main. The Excel/VBA SA
-prototype and repository maintenance use `release/v0.1.0`, milestone 2,
-v0.2.0 — SA prototype (#51).
+prototype and repository maintenance use `release/v0.2.0`, milestone 2,
+v0.2.0 — SA prototype (#117); `release/v0.1.0` is superseded.
 Read [scope and decisions](docs/SCOPE.md)
-before functional changes. The prototype is on main and release/v0.1.0 with a
+before functional changes. The prototype is on main and release/v0.2.0 with a
 committed macro-free template; Excel host evidence remains pending in #28.
 Versions and tags follow [Releasing](RELEASING.md).
 
@@ -34,7 +34,7 @@ information and metadata explicitly: issues have milestones; PRs do not.
 
 ## Make a focused change
 
-1. Fetch the repository and branch from `origin/release/v0.1.0` for current
+1. Fetch the repository and branch from `origin/release/v0.2.0` for current
    prototype or maintenance work (milestone 2). Future milestones need an
    explicitly approved integration branch. Confirm the PR base explicitly.
 2. Reproduce the problem where applicable and make a focused change.
@@ -54,7 +54,7 @@ For example:
 
 ```sh
 git fetch origin
-git switch -c chore/51-retire-setup-targets origin/release/v0.1.0
+git switch -c docs/117-release-branch origin/release/v0.2.0
 ```
 
 Use an imperative commit subject describing the change. Add a body when useful

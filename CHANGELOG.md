@@ -180,6 +180,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Prototype and maintenance work integrates on `release/v0.2.0`, created on
+  October 27, 2026 from `0eb819b`; `release/v0.1.0` is superseded and is
+  deleted under the release-branch lifecycle once milestone 2 is closed.
+  Governance, contributing, installation, the README, security, scope,
+  roadmap, releasing, CI, settings, the PR template, the issue forms,
+  Dependabot and the integrity check follow (#117).
 - The documentation names the milestones as renumbered on October 27, 2026:
   v0.1.0 — Repo setup (first v0.0.1), v0.2.0 — SA prototype and v0.3.0 —
   Regulatory baseline and certification scope (#112).

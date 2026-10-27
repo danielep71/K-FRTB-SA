@@ -82,7 +82,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
                 checker.validate_controls(root)
             workflow_path.write_text((source / ".github/workflows/integrity.yml").read_text())
             dependabot_path = root / ".github/dependabot.yml"
-            dependabot_path.write_text(dependabot_path.read_text().replace("target-branch: release/v0.1.0", "target-branch: main", 1))
+            dependabot_path.write_text(dependabot_path.read_text().replace("target-branch: release/v0.2.0", "target-branch: main", 1))
             with self.assertRaisesRegex(ValueError, "Dependabot must cover"):
                 checker.validate_controls(root)
 

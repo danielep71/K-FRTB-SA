@@ -12,12 +12,21 @@ This document owns branch, issue, review, and milestone procedures.
 
 ## Branches
 
-The active integration branch is **`release/v0.1.0`** for the SA prototype
-and repository maintenance. Maintenance was approved on this branch
-and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)),
-until a later explicitly approved transition. It was originally approved for
-the prototype on October 17 and created from main at
-`d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
+The active integration branch is **`release/v0.2.0`** for the SA prototype
+and repository maintenance, milestone 2. The owner approved it on
+October 27, 2026, after the milestone renumbering, and it was created from
+`0eb819b92e6f627099ceb1400c15ebb4404e385b`, then the head of both main and
+`release/v0.1.0` (#117).
+
+**`release/v0.1.0`** is superseded: no PR targets it. It was approved for the
+prototype on October 17, 2026 and created from main at
+`d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18);
+maintenance joined it on October 18
+([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)).
+Its whole history is in `release/v0.2.0` and on main. It is deleted under the
+[release-branch lifecycle](#release-branch-lifecycle) once milestone 2 is
+closed. Until the Dependabot configuration reaches main, version updates
+still open against it; retarget them to `release/v0.2.0`.
 
 The setup milestone, v0.1.0 — Repo setup (first named v0.0.1), is closed. The integration branch
 **`release/v0.0.1`** was deleted on October 18, 2026 (#62). Its closeout head
@@ -27,11 +36,12 @@ setup baseline. Do not recreate or target the branch.
 
 | Branch | Purpose and allowed changes |
 | --- | --- |
-| `release/v0.1.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
+| `release/v0.2.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
+| `release/v0.1.0` | Superseded on October 27, 2026; receives no PRs; deleted under the lifecycle once milestone 2 is closed |
 | `main` | Stable default branch; receives an integration branch only through a separate explicitly requested PR |
 | Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
-Current prototype and maintenance task PRs target **`release/v0.1.0`**,
+Current prototype and maintenance task PRs target **`release/v0.2.0`**,
 including Dependabot version updates. Future milestone work needs its own
 explicitly approved integration branch. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
@@ -224,7 +234,7 @@ Issue #6 recorded initial default-branch activation of forms and the PR
 template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
 policies define the reporting routes.
 Dependabot targets Actions, the CI parser and prototype test packages at
-`release/v0.1.0` without PR milestones, as detailed in [Repository checks](CI.md).
+`release/v0.2.0` without PR milestones, as detailed in [Repository checks](CI.md).
 Issue #8 completed the setup closeout; its record is
 [Setup closeout](evidence/2026-10-18-setup-closeout.md).
 
