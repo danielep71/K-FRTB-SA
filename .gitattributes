@@ -122,7 +122,9 @@ LICENSE         text eol=lf
 #------------------------------------------------------------------------------
 # IMAGES AND ARCHIVES
 #------------------------------------------------------------------------------
-# The social preview and screenshots in docs/assets; zipped evidence bundles.
+# The social preview, diagrams and screenshots in docs/assets; zipped evidence
+# bundles. SVG diagram masters are reviewable text.
+*.svg   text eol=lf
 *.png   opaque
 *.jpg   opaque
 *.jpeg  opaque
