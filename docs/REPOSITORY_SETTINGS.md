@@ -35,19 +35,22 @@ conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-The v0.0.1 setup milestone closed on October 18, 2026.
+The setup milestone (v0.1.0 — Repo setup, first named v0.0.1) closed on October 18, 2026.
 **`release/v0.0.1`** was deleted the same day (#62). For the deletion only, ruleset
 25319621 temporarily excluded that branch and stayed active for every other
 `release/**` branch; the exclusion was then removed, and the readback
 matches the earlier configuration. The branch's closeout head
-`b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No v0.0.1 tag
+`b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No setup tag
 was created.
 
-The active prototype integration branch **`release/v0.1.0`** also receives
-repository maintenance and all three Dependabot entries, with owning issues in milestone 2, under
-the decision of October 18, 2026 (#51). Shared controls were synchronized
-under #31. It matches `release/**`: readback on October 18 confirms the
-active force-push restriction and the separate deletion rule with no bypass.
+The active prototype integration branch **`release/v0.2.0`** also receives
+repository maintenance and all three Dependabot entries, with owning issues in milestone 2. It
+superseded `release/v0.1.0` on October 27, 2026 (#117), which had held them
+under the decision of October 18, 2026 (#51). Shared controls were synchronized
+under #31. Both branches match `release/**`: readback on October 18
+confirmed the active force-push restriction and the separate deletion rule
+with no bypass for `release/v0.1.0`. On October 27, 2026 the owner confirmed
+that the rulesets cover `release/v0.2.0` without change (#117).
 See [branch governance](GOVERNANCE.md) for task PRs, controlled active-branch
 fast-forward after main integration and the deletion of obsolete release
 branches. Task branches can be deleted automatically
@@ -90,7 +93,7 @@ only because the required check had not run.
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
-| Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries on release/v0.1.0; PRs have no milestone under #104; scheduling uses the configuration on main; targets in CI.md |
+| Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries, on release/v0.2.0 since #118 (active on main through #120); PRs have no milestone under #104; scheduling uses the configuration on main; targets in CI.md |
 | Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; changing this is a new explicit settings decision (CI.md) |
 
 [CodeQL setup evidence](https://github.com/danielep71/K-FRTB-SA/actions/runs/39070451926).

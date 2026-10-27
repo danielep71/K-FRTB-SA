@@ -17,6 +17,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- MAR paragraph references now cite the paragraph that holds each rule
+  (#115): netting of sensitivities MAR21.4(2) (In_Delta subtitle, CORE_SBM,
+  methodology); commodity tenors MAR21.13(1) and vega maturities MAR21.8(4)
+  (P_General); the DRC maturity floor MAR22.18 and one-year horizon MAR22.15
+  (P_DRC); the RRAO weights MAR23.8(2)(a) and (b) (P_RRAO); the DRC steps in
+  CORE_DRC; sensitivity definitions MAR21.19-26 (README sheet, methodology).
+  The template is rebuilt; no parameter value or result changes.
 - Workbook presentation now survives template generation: the XLSX saves
   hidden gridlines, role-colored tabs, frozen headers and identifiers, and
   landscape print settings. Data-row spacing, table borders, README
@@ -70,6 +77,8 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Project website with capabilities, workbook setup, methodology and validation
+  links, shared K-Risk-Engines styling, and a root README website link (#100).
 - Market risk and CVA method maps (#98): five diagrams in
   `docs/assets/market-risk/`, as SVG masters and PNGs, also published on the
   K-Risk-Engines site.
@@ -176,6 +185,34 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The workbook reports version `0.2.0-prototype`, matching milestone v0.2.0 —
+  SA prototype: `APP_VERSION`, the README sheet, the Log start line, the
+  committed template and the README badge and status callout (#113).
+- Prototype and maintenance work integrates on `release/v0.2.0`, created on
+  October 27, 2026 from `0eb819b`; `release/v0.1.0` is superseded and is
+  deleted under the release-branch lifecycle once milestone 2 is closed.
+  Governance, contributing, installation, the README, security, scope,
+  roadmap, releasing, CI, settings, the PR template and the issue forms
+  follow; the Dependabot targets moved under #118 (#117).
+- The documentation names the milestones as renumbered on October 27, 2026:
+  v0.1.0 — Repo setup (first v0.0.1), v0.2.0 — SA prototype and v0.3.0 —
+  Regulatory baseline and certification scope (#112).
+  - The roadmap moves every later milestone one step: engine v0.4.0,
+    workbook v0.5.0, independent validation v0.6.0, hardening v0.7.0, one
+    reserved v0.8.0, release candidate v0.9.0, first certified release
+    v1.0.0.
+  - Releasing, scope, installation, contributing, governance, CI, settings,
+    Excel evidence, the directory READMEs, the PR template and the issue
+    forms follow; the methodology decisions (#29) belong to v0.3.0.
+  - `release/v0.1.0` keeps its name. Dated records and earlier changelog
+    entries keep the names in effect when they were written; the setup guide
+    notes the renaming.
+- The README names the milestones by their titles after the renumbering of
+  October 27, 2026 (v0.1.0 — Repo setup, v0.2.0 — SA prototype, v0.3.0 —
+  Regulatory baseline and certification scope), states that pull requests
+  carry no milestone (#104), and lists the export, comparison and evidence
+  tooling, the Excel evidence document, the market risk diagrams and the
+  wiki (#110).
 - The market risk framework diagram is a map of approaches, without project
   names (#102).
   - Market risk: the IMA for approved desks (expected shortfall,

@@ -12,14 +12,23 @@ This document owns branch, issue, review, and milestone procedures.
 
 ## Branches
 
-The active integration branch is **`release/v0.1.0`** for the SA prototype
-and repository maintenance. Maintenance was approved on this branch
-and milestone 2 on October 18, 2026 ([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)),
-until a later explicitly approved transition. It was originally approved for
-the prototype on October 17 and created from main at
-`d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
+The active integration branch is **`release/v0.2.0`** for the SA prototype
+and repository maintenance, milestone 2. The owner approved it on
+October 27, 2026, after the milestone renumbering, and it was created from
+`0eb819b92e6f627099ceb1400c15ebb4404e385b`, then the head of both main and
+`release/v0.1.0` (#117).
 
-The v0.0.1 setup milestone is closed. The integration branch
+**`release/v0.1.0`** is superseded: no PR targets it. It was approved for the
+prototype on October 17, 2026 and created from main at
+`d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18);
+maintenance joined it on October 18
+([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)).
+Its whole history is in `release/v0.2.0` and on main. It is deleted under the
+[release-branch lifecycle](#release-branch-lifecycle) once milestone 2 is
+closed. Dependabot version updates target `release/v0.2.0` since #118,
+activated on main through #120.
+
+The setup milestone, v0.1.0 — Repo setup (first named v0.0.1), is closed. The integration branch
 **`release/v0.0.1`** was deleted on October 18, 2026 (#62). Its closeout head
 `b4d6c02` is on main, so no history was lost; the closed milestone and the
 [setup closeout record](evidence/2026-10-18-setup-closeout.md) remain the
@@ -27,11 +36,12 @@ setup baseline. Do not recreate or target the branch.
 
 | Branch | Purpose and allowed changes |
 | --- | --- |
-| `release/v0.1.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
+| `release/v0.2.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
+| `release/v0.1.0` | Superseded on October 27, 2026; receives no PRs; deleted under the lifecycle once milestone 2 is closed |
 | `main` | Stable default branch; receives an integration branch only through a separate explicitly requested PR |
 | Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
-Current prototype and maintenance task PRs target **`release/v0.1.0`**,
+Current prototype and maintenance task PRs target **`release/v0.2.0`**,
 including Dependabot version updates. Future milestone work needs its own
 explicitly approved integration branch. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
@@ -173,7 +183,7 @@ closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
 [closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
 baseline. [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 is active: prototype closeout and its milestone guide are tracked in #32, and
-#28 owns Excel evidence. The methodology decisions (#29) belong to v0.2.0 in
+#28 owns Excel evidence. The methodology decisions (#29) belong to v0.3.0 in
 the [milestone plan](ROADMAP.md). The live issue tracker
 owns progress; a guide is not a substitute for completed acceptance criteria.
 
@@ -190,7 +200,7 @@ permissions, activation and operating limits.
 Milestone scope and any next integration branch require explicit approval. Before a
 milestone closes, its closeout issue must reconcile all associated work,
 including closed issues and their linked PR evidence, confirm metadata and evidence, and record
-adopted and deferred maintenance practices. For v0.0.1, issue #8 owns that record.
+adopted and deferred maintenance practices. For the setup milestone, issue #8 owns that record.
 A genuine gap stays open or is explicitly respecified by the maintainer; moving it
 elsewhere does not make the original acceptance criterion pass.
 
@@ -224,8 +234,8 @@ Issue #6 recorded initial default-branch activation of forms and the PR
 template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
 policies define the reporting routes.
 Dependabot targets Actions, the CI parser and prototype test packages at
-`release/v0.1.0` without PR milestones, as detailed in [Repository checks](CI.md).
-Issue #8 completed the v0.0.1 closeout; its record is
+`release/v0.2.0` without PR milestones, as detailed in [Repository checks](CI.md).
+Issue #8 completed the setup closeout; its record is
 [Setup closeout](evidence/2026-10-18-setup-closeout.md).
 
 The procedures fit this project's prototype stage and release-branch

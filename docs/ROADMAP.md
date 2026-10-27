@@ -2,32 +2,38 @@
 
 This roadmap records the milestone plan approved on October 18, 2026,
 from the repository setup to the first certified release. Milestones carry no
-dates or release promises. Each milestone after v0.2.0 is created on GitHub
+dates or release promises. Each milestone after v0.3.0 is created on GitHub
 when its predecessor has fixed its scope, as [governance](GOVERNANCE.md)
 requires; the issue tracker is authoritative for current progress.
+
+On October 27, 2026 the milestones were renumbered one step up: the setup
+milestone, first named v0.0.1, became v0.1.0, and every later milestone moved
+with it. The integration branch `release/v0.2.0` superseded `release/v0.1.0`
+the same day (#117). Dated records
+keep the names in effect when they were written.
 
 ## 🗺️ Milestone plan
 
 | Milestone | Objective | Exit condition |
 | --- | --- | --- |
-| ✅ v0.0.1 — Repo setup | Repository foundations: governance, protections, CI, issue management and the release procedure | Required checks active and release procedure verified; analytics kept separate from the certification path. Closed October 18, 2026 |
-| 🧪 v0.1.0 — SA prototype | Consolidate the existing prototype: SBM for the five implemented risk classes, non-securitization DRC and RRAO | Excel build and run documented, sample reconciliation, source round trip verified and limits stated explicitly |
-| 📐 v0.2.0 — Regulatory baseline and certification scope | Fix exactly what will be certified: standard and version, any CRR profile, included products, exclusions and interpretations | Approved requirement → source → formula → parameter → test matrix; the methodology decisions the scope needs are resolved; the meaning of certification, the validator's role, the target platform and the supported Excel environments are recorded |
-| ⚙️ v0.3.0 — Calculation engine completion | Complete and correct the engine for the approved scope, progressively separating calculation from worksheet access | Every included requirement implemented with independently derived expected values, input/output contracts defined and no known calculation defect open |
-| 🗂️ v0.4.0 — Workbook and user workflow | Guided workbook use: inputs, parameters, default restore, run, diagnostics and results | Full flow verified in Excel; understandable errors, no stale results, safe application state and documented handling of confidential portfolio data |
-| 🔍 v0.5.0 — Independent validation | Validate formulas, parameters and results through a review independent of the implementation | Intermediate and final results reconciled, official cases where available, independently derived cases, and anomalies resolved or formally excluded from scope |
-| 🛡️ v0.6.0 — Operational hardening | Robustness, performance and compatibility on the supported Excel environments | Malformed inputs, representative portfolios, repeated runs, error recovery and agreed run times all pass |
+| ✅ v0.1.0 — Repo setup | Repository foundations: governance, protections, CI, issue management and the release procedure | Required checks active and release procedure verified; analytics kept separate from the certification path. Closed October 18, 2026 |
+| 🧪 v0.2.0 — SA prototype | Consolidate the existing prototype: SBM for the five implemented risk classes, non-securitization DRC and RRAO | Excel build and run documented, sample reconciliation, source round trip verified and limits stated explicitly |
+| 📐 v0.3.0 — Regulatory baseline and certification scope | Fix exactly what will be certified: standard and version, any CRR profile, included products, exclusions and interpretations | Approved requirement → source → formula → parameter → test matrix; the methodology decisions the scope needs are resolved; the meaning of certification, the validator's role, the target platform and the supported Excel environments are recorded |
+| ⚙️ v0.4.0 — Calculation engine completion | Complete and correct the engine for the approved scope, progressively separating calculation from worksheet access | Every included requirement implemented with independently derived expected values, input/output contracts defined and no known calculation defect open |
+| 🗂️ v0.5.0 — Workbook and user workflow | Guided workbook use: inputs, parameters, default restore, run, diagnostics and results | Full flow verified in Excel; understandable errors, no stale results, safe application state and documented handling of confidential portfolio data |
+| 🔍 v0.6.0 — Independent validation | Validate formulas, parameters and results through a review independent of the implementation | Intermediate and final results reconciled, official cases where available, independently derived cases, and anomalies resolved or formally excluded from scope |
+| 🛡️ v0.7.0 — Operational hardening | Robustness, performance and compatibility on the supported Excel environments | Malformed inputs, representative portfolios, repeated runs, error recovery and agreed run times all pass |
 | 📦 v0.9.0 — Release candidate and certification dossier | Freeze the candidate and prepare the certification dossier | Rebuildable package, updated manual and limits, full regression suite on the candidate and final review complete; any later change needs the relevant checks again |
 | 🏁 v1.0.0 — First certified release | Approve and publish the first certified version | Methodological, numerical and technical approval on the same commit and workbook; tag, package (rebuildable from template and sources, with recorded digests), evidence and release notes consistent |
 
-v0.7.0 and v0.8.0 are reserved for iterations the hardening or validation
-work may require. Independent expected values accompany every calculation
-increment from v0.3.0 onward; v0.5.0 is the formal review by someone other than
-the implementer, not the first check. Every milestone names its own Excel
+v0.8.0 is reserved for an iteration the hardening or validation work may
+require. Independent expected values accompany every calculation increment
+from v0.4.0 onward; v0.6.0 is the formal review by someone other than the
+implementer, not the first check. Every milestone names its own Excel
 evidence, which only a Windows desktop Excel host can produce. Versions,
 tags and release evidence follow [Releasing](../RELEASING.md).
 
-## ✅ v0.0.1 — Repo setup (closed)
+## ✅ v0.1.0 — Repo setup (closed)
 
 [Milestone](https://github.com/danielep71/K-FRTB-SA/milestone/1) ·
 [milestone guide](Milestones/v0.0.1.md) ·
@@ -50,10 +56,10 @@ The milestone closed without a tag or release. No main commit is both
 setup-only and complete, so the closed milestone and the closeout record are
 the setup baseline.
 
-## 🧪 v0.1.0 — SA prototype
+## 🧪 v0.2.0 — SA prototype
 
 [Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2),
-integration branch `release/v0.1.0`.
+integration branch `release/v0.2.0` (`release/v0.1.0` until October 27, 2026).
 
 | Issue | State | Deliverable |
 | --- | --- | --- |
@@ -85,10 +91,17 @@ States were read back on October 26, 2026; the live milestone is authoritative.
 At that checkpoint main and release/v0.1.0 both pointed to `a1705b9`, after
 integrations #84 (template, export and evidence tools, output-placeholder fix),
 #89 (comment and file-policy cleanup) and #92 (numpy test dependency). These
-merges do not supply desktop Excel evidence. The v0.1.0 guide and evaluation
-record remain outstanding under #32.
+merges do not supply desktop Excel evidence. The milestone guide and
+evaluation record remain outstanding under #32.
 
 The open methodology interpretations are documented as limits in the
 [methodology](methodology.md); deciding them ([#29](https://github.com/danielep71/K-FRTB-SA/issues/29))
-belongs to v0.2.0. The prototype informs the v0.2.0 scope and platform
+belongs to v0.3.0. The prototype informs the v0.3.0 scope and platform
 decisions; it does not complete the later milestones' exit conditions.
+
+## 📐 v0.3.0 — Regulatory baseline and certification scope
+
+[Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/3). It
+holds the methodology decisions of
+[#29](https://github.com/danielep71/K-FRTB-SA/issues/29); its exit condition is
+in the plan above.

@@ -11,7 +11,7 @@
 [![Excel VBA](https://img.shields.io/badge/Excel_VBA-source_first-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white)](#quick-start)
 [![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#quick-start)
 [![Framework](https://img.shields.io/badge/Framework-Basel_MAR21--MAR23-1f3a5f?style=for-the-badge)](docs/methodology.md)
-[![Status](https://img.shields.io/badge/Status-Prototype_0.1.0-D93F0B?style=for-the-badge)](#status)
+[![Status](https://img.shields.io/badge/Status-Prototype_0.2.0-D93F0B?style=for-the-badge)](#status)
 [![Reconciliation](https://img.shields.io/badge/Reconciliation-LibreOffice_checked-2ea44f?style=for-the-badge)](docs/validation.md)
 [![Excel evidence](https://img.shields.io/badge/Excel_evidence-pending-6E7781?style=for-the-badge)](docs/validation.md#not-validated)
 [![License](https://img.shields.io/badge/License-MIT-2ea44f?style=for-the-badge)](LICENSE)
@@ -28,6 +28,8 @@
 
 **No add-in · No external reference · No DLL · No installer · Reviewable source for every calculation**
 
+[Website](https://danielep71.github.io/K-FRTB-SA/)
+&nbsp;·&nbsp;
 [Quick start](#quick-start)
 &nbsp;·&nbsp;
 [How a run works](#how-a-run-works)
@@ -57,8 +59,8 @@
 <a id="status"></a>
 
 > [!IMPORTANT]
-> **Version 0.1.0 is a prototype** of the
-> [v0.1.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
+> **Version 0.2.0 is a prototype** of the
+> [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 > milestone (issue #20). It implements the Basel standardized approach
 > (MAR21-MAR23) in Excel VBA with parameters checked against the BIS text,
 > and every output is reconciled with an independent Python reference. It has
@@ -111,6 +113,9 @@ need to **check** an FRTB-SA number:
 | Default risk charge (DRC) | Prototype: non-securitizations |
 | Residual risk add-on (RRAO) | Prototype |
 | Independent benchmarks and runtime evidence | Python reference reconciled with the VBA run in LibreOffice; Excel evidence pending |
+| Excel round trip and evidence tooling | Read-only VBA export, source comparison and evidence validator implemented and tested offline; no Excel run yet (#28, #30) |
+| Market risk and CVA method maps | Five diagrams in [`docs/assets/market-risk/`](docs/assets/market-risk/README.md) (#98, #102) |
+| Issue-only milestones | PR milestones removed automatically (#104) |
 
 ---
 
@@ -126,7 +131,7 @@ need to **check** an FRTB-SA number:
 | RRAO | Exotic (1.0%) and other (0.1%) residual risks |
 | Input validation | Unknown risk classes, buckets, tenors, sub-types, ratings and seniorities, non-numeric amounts and the reporting currency as an FX bucket are rejected and logged |
 | Parameters | Eight `P_*` sheets with MAR references, checked against the BIS Basel Framework on 2026-10-17 |
-| Testing | Hand-calculated formula tests, an independent Python reference, headless LibreOffice runs of the VBA, an in-workbook regression test and a static VBA lint |
+| Testing | Hand-calculated formula tests, an independent Python reference, headless LibreOffice runs of the VBA, an in-workbook regression test, a static VBA lint, and offline tests of the sync, export-comparison and evidence tools |
 | Deployment | Plain exported VBA; no add-in, COM component, DLL or extra VBA reference |
 
 ---
@@ -137,12 +142,15 @@ need to **check** an FRTB-SA number:
 
 ## 1. Clone and check
 
-Prototype and repository maintenance integrate on **`release/v0.1.0`**,
-milestone 2. The setup branch `release/v0.0.1` was deleted after the v0.0.1
-closeout; its history is on main. See [branch governance](docs/GOVERNANCE.md).
+Prototype and repository maintenance integrate on **`release/v0.2.0`**,
+milestone 2, **v0.2.0 — SA prototype**. The milestones were renumbered on
+October 27, 2026, and `release/v0.2.0` superseded `release/v0.1.0` the same
+day. The setup branch `release/v0.0.1` was deleted after the setup closeout
+(milestone 1, now **v0.1.0 — Repo setup**); its history is on main. See
+[branch governance](docs/GOVERNANCE.md).
 
 ```sh
-git clone --branch release/v0.1.0 https://github.com/danielep71/K-FRTB-SA.git
+git clone --branch release/v0.2.0 https://github.com/danielep71/K-FRTB-SA.git
 cd K-FRTB-SA
 python3 tools/vba_lint.py
 ```
@@ -249,6 +257,9 @@ what is **not** validated yet.
 | Formulas, parameters, BIS check, open interpretations | [Methodology](docs/methodology.md) |
 | Source layout, build, sheets, inputs, running | [Workbook guide](docs/workbook-guide.md) |
 | Automated checks and what is not validated | [Validation](docs/validation.md) |
+| Recording a desktop Excel run and validating the record | [Excel evidence](docs/EXCEL_EVIDENCE.md) |
+| Market risk and CVA method maps | [Diagrams](docs/assets/market-risk/README.md) |
+| Guided pages on the regulation and the workbook | [Wiki](https://github.com/danielep71/K-FRTB-SA/wiki) |
 | Local setup and verification commands | [Installation](INSTALLATION.md) |
 | Source, tests, generated files, and evidence placement | [Repository structure](docs/REPOSITORY_STRUCTURE.md) |
 | Universal maintenance CI and dependency updates | [Repository checks](docs/CI.md) |
@@ -263,12 +274,14 @@ what is **not** validated yet.
 | Development branches and integration | [Governance](docs/GOVERNANCE.md) |
 | Effective repository controls and outstanding settings work | [Settings baseline](docs/REPOSITORY_SETTINGS.md) |
 | Recorded changes | [Changelog](CHANGELOG.md) |
-| Prototype backlog | [v0.1.0 milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2) |
-| Closed setup baseline | [v0.0.1 milestone](https://github.com/danielep71/K-FRTB-SA/milestone/1) and [closeout record](docs/evidence/2026-10-18-setup-closeout.md) |
+| Prototype backlog | [v0.2.0 — SA prototype milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2) |
+| Regulatory baseline and certification scope | [v0.3.0 milestone](https://github.com/danielep71/K-FRTB-SA/milestone/3) |
+| Closed setup baseline | [v0.1.0 — Repo setup milestone](https://github.com/danielep71/K-FRTB-SA/milestone/1) and [closeout record](docs/evidence/2026-10-18-setup-closeout.md) |
 | Privately report a potential vulnerability | [Private vulnerability reporting](https://github.com/danielep71/K-FRTB-SA/security/advisories/new) |
 
 Every issue must have **one priority label**, a milestone, and an assignee.
-P1 is reserved for confirmed calculation bugs.
+P1 is reserved for confirmed calculation bugs. Pull requests link to their
+issue and carry no milestone (#104).
 
 ## 📜 Regulatory basis and evidence
 

@@ -13,13 +13,17 @@ version.
 
 ## 📍 Current stage
 
-No version has been tagged or published. v0.0.1 is the **repository setup
-baseline**: labels, governance, settings, forms, CI and traffic analytics.
-It is not a working or regulatory-validated calculator. v0.1.0 is the Excel/VBA
-**SA prototype**; its LibreOffice evidence exists, but Excel host evidence
-(#28) and the Excel round trip (#30) remain open. Its open methodology
-interpretations are documented as limits; deciding them (#29) belongs to
-v0.2.0 under the [roadmap](docs/ROADMAP.md).
+No version has been tagged or published. v0.1.0, first named v0.0.1, is the
+**repository setup baseline**: labels, governance, settings, forms, CI and
+traffic analytics. It is not a working or regulatory-validated calculator.
+v0.2.0 is the Excel/VBA **SA prototype**; its LibreOffice evidence exists, but
+Excel host evidence (#28) and the Excel round trip (#30) remain open. Its open
+methodology interpretations are documented as limits; deciding them (#29)
+belongs to v0.3.0 under the [roadmap](docs/ROADMAP.md).
+
+The milestones were renumbered one step up on October 27, 2026, and the
+workbook reports the matching version `0.2.0-prototype` (#113). Dated records
+keep the names and versions in effect when they were written.
 
 <a id="version-convention"></a>
 
@@ -27,12 +31,12 @@ v0.2.0 under the [roadmap](docs/ROADMAP.md).
 
 | Item | Convention | Example |
 | --- | --- | --- |
-| Version number | [Semantic Versioning](https://semver.org/) `MAJOR.MINOR.PATCH`; before 1.0.0, MINOR marks a functional stage and PATCH a setup or maintenance increment | `0.0.1`, `0.1.0` |
-| Pre-release | SemVer pre-release identifier | `0.1.0-prototype` |
-| Milestone | Version plus a short title | `v0.1.0 — SA prototype` |
-| Integration branch | `release/` plus the tag name | `release/v0.1.0` |
-| Tag | `v` plus the version, annotated, on a main commit | `v0.0.1` |
-| Changelog section | Version and release date | `## [0.0.1] - 2026-10-18` |
+| Version number | [Semantic Versioning](https://semver.org/) `MAJOR.MINOR.PATCH`; before 1.0.0, MINOR marks a functional stage and PATCH a maintenance increment | `0.2.0`, `0.2.1` |
+| Pre-release | SemVer pre-release identifier | `0.2.0-prototype` |
+| Milestone | Version plus a short title | `v0.2.0 — SA prototype` |
+| Integration branch | `release/` plus the tag name; `release/v0.2.0` superseded `release/v0.1.0`, named before the renumbering (#117) | `release/v0.2.0` |
+| Tag | `v` plus the version, annotated, on a main commit | `v0.2.0` |
+| Changelog section | Version and release date | `## [0.2.0] - YYYY-MM-DD` |
 
 One convention applies to every line. Do not tag without the `v` prefix,
 reuse a number, or tag a release branch.
@@ -92,22 +96,22 @@ milestone and leave the others under `[Unreleased]`.
 
    ```sh
    git fetch origin
-   git tag -a v0.0.1 <candidate-commit> -m "v0.0.1 — Repo setup"
-   git push origin v0.0.1
+   git tag -a v0.2.0 <candidate-commit> -m "v0.2.0 — SA prototype"
+   git push origin v0.2.0
    ```
 
 7. **GitHub release** (optional, on request): notes that link the closeout
    issue and evidence. Attach no workbook binary unless the version's
    evidence covers it.
 
-**v0.0.1 has no tag candidate.** Main carried the v0.1.0 prototype (#39)
-before the setup closeout:
+**The setup milestone has no tag candidate.** Main carried the prototype
+(#39) before the setup closeout:
 - `7ee0ced` (#36), the last setup-only main commit, predates the closeout:
   it has no release procedure or closeout record, and its documents still
   describe completed controls as pending.
 - Every later main commit carries the prototype source and template.
 
-The setup baseline is recorded by the closed v0.0.1 milestone and the
+The setup baseline is recorded by the closed v0.1.0 — Repo setup milestone and the
 [setup closeout record](docs/evidence/2026-10-18-setup-closeout.md). The
 tag was deferred on October 18, 2026.
 
@@ -115,8 +119,8 @@ tag was deferred on October 18, 2026.
 
 | Stage | Release contents | Evidence required before tagging |
 | --- | --- | --- |
-| Setup (v0.0.x) | Source tree only; no binaries or workbooks | Closeout issue with merged PRs, green `Repository integrity` and label-drift runs, live settings readback, fresh-checkout verification and metadata audit |
-| Prototype (v0.1.x) | Source tree and the committed macro-free template; no built `.xlsm` | Setup evidence, plus the LibreOffice reconciliation suite, Excel host build, compile and regression evidence (#28), the Excel round trip (#30) and the open methodology interpretations documented as limits (decided in v0.2.0, #29) |
+| Setup (v0.1.0) | Source tree only; no binaries or workbooks | Closeout issue with merged PRs, green `Repository integrity` and label-drift runs, live settings readback, fresh-checkout verification and metadata audit |
+| Prototype (v0.2.x) | Source tree and the committed macro-free template; no built `.xlsm` | Setup evidence, plus the LibreOffice reconciliation suite, Excel host build, compile and regression evidence (#28), the Excel round trip (#30) and the open methodology interpretations documented as limits (decided in v0.3.0, #29) |
 | Functional releases | Defined by the milestone that introduces them | Prototype evidence, plus independent benchmarks, the supported-host matrix and any packaging approved in [Scope](docs/SCOPE.md) |
 
 Evidence is bound to a commit: it names the PR or commit, commands, results,

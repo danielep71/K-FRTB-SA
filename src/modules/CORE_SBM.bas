@@ -138,7 +138,7 @@ Private Sub GrowStore()
     ReDim Preserve mWS(1 To n)
 End Sub
 
-' Adds a risk factor or nets the amounts into an existing one (MAR21.4(1)).
+' Adds a risk factor or nets the amounts into an existing one (MAR21.4(2)).
 Private Sub AddRiskFactor(ByVal rc As String, ByVal bucket As String, ByVal qual As String, _
                           ByVal subType As String, ByVal t1 As Double, ByVal t2 As Double, _
                           ByVal a1 As Double, ByVal a2 As Double)

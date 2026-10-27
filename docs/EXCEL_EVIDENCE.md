@@ -14,7 +14,7 @@ authoritative for:
 
 The [workbook guide](workbook-guide.md) owns building, updating and the round
 trip. [Validation](validation.md) owns what the other checks show. Issues #28
-and #30 say which Excel results v0.1.0 needs.
+and #30 say which Excel results the SA prototype (v0.2.0) needs.
 The format is adapted from the VBA-SACCR-Toolkit's `docs/EXCEL_EVIDENCE.md`,
 reduced to the checks this project has.
 

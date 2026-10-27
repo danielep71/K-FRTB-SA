@@ -1,7 +1,7 @@
 # 🧪 Verification source and data
 
-This directory holds the verification source of the v0.1.0 prototype
-(issue #20). Expected results are derived by an independent Python reference,
+This directory holds the verification source of the SA prototype, milestone
+v0.2.0 (issue #20). Expected results are derived by an independent Python reference,
 never copied from the VBA under test.
 
 | Path | Content |

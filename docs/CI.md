@@ -77,16 +77,18 @@ Do not require a check on a line before installing it there.
 The configuration must reach the default branch before GitHub schedules
 version updates. The temporary maintenance successor was approved in
 [#51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)
-on October 18, 2026: all three updater entries target `release/v0.1.0`.
+on October 18, 2026, and the entries moved to `release/v0.2.0` with the
+integration branch on October 27 (#118); the configuration was activated
+on main through #120.
 PRs have no milestone under the issue-only policy (#104).
 The setup branch `release/v0.0.1` receives no version-update
 PRs; it was deleted after the closeout (#62):
 
 | Ecosystem and manifest location | Version-update PR target |
 | --- | --- |
-| GitHub Actions, `/` | `release/v0.1.0` |
-| pip, `/.github/requirements.txt` (PyYAML configuration parser) | `release/v0.1.0` |
-| pip, `/tests/requirements.txt` (prototype NumPy, openpyxl, pytest) | `release/v0.1.0` |
+| GitHub Actions, `/` | `release/v0.2.0` |
+| pip, `/.github/requirements.txt` (PyYAML configuration parser) | `release/v0.2.0` |
+| pip, `/tests/requirements.txt` (prototype NumPy, openpyxl, pytest) | `release/v0.2.0` |
 
 The two previous Actions entries are consolidated into one. Both pip
 manifest locations remain covered; no dependency is copied into the historical
@@ -125,7 +127,7 @@ idempotence and error propagation against the workflow's inline implementation.
 
 Default-branch activation is required. The maintainer's October 27 instruction
 to apply this rule to past and future PRs is recorded in #104; focused policy
-PRs activate it on main and synchronize release/v0.1.0. This activation does
+PRs activated it on main and synchronized release/v0.1.0. This activation does
 not integrate unrelated release work. The activation push performs the historical
 cleanup; daily runs also cover changes by bots whose events may not trigger
 another workflow. Event delivery and scheduled runs can be delayed or blocked
@@ -140,6 +142,6 @@ FRTB engine, validate formulas, certify regulation, or substitute for runtime
 and independent numerical evidence. The prototype's separate checks already
 cover VBA lint, Python reference tests and LibreOffice reconciliation on its
 branch. Excel build/compile/runtime evidence is tracked in #28, methodology
-decisions in #29 (v0.2.0); prototype synchronization was completed in #31. Future engine gates
+decisions in #29 (v0.3.0); prototype synchronization was completed in #31. Future engine gates
 must retain independently derived expectations and name the actual host and
 commit, following [Scope](SCOPE.md) and the [structure policy](REPOSITORY_STRUCTURE.md).

@@ -40,8 +40,8 @@ missing component is never silently counted as zero.
 
 Sensitivities are supplied in the reporting currency on `In_Delta`,
 `In_Vega` and `In_Curvature`; rows with the same risk factor are netted
-first (MAR21.4(1)). The workbook does not compute sensitivities: they must
-follow MAR21.18-MAR21.26 (for example, GIRR delta is the PV change for a
+first (MAR21.4(2)). The workbook does not compute sensitivities: they must
+follow MAR21.19-MAR21.26 (for example, GIRR delta is the PV change for a
 1 bp shift divided by 0.0001; equity delta is the PV change for a 1% relative
 shift divided by 0.01). Vega inputs are vega times implied volatility
 (MAR21.25). Curvature inputs are CVR+ and CVR- (MAR21.5(2)), net across
