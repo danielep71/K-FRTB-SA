@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Dependabot version updates for GitHub Actions and both pip directories target
+  `release/v0.2.0`; activation requires this configuration on `main` (#118).
+
 - Milestones contain issues only. Historical PR assignments are removed;
   trusted metadata automation reconciles future PRs and bot changes. The PR
   checklist, contribution rules and Dependabot entries follow the same policy,

@@ -110,7 +110,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
                     duplicate = copy.deepcopy(baseline)
                     duplicate["updates"].append(copy.deepcopy(entry))
                     retired = copy.deepcopy(baseline)
-                    retired["updates"][index]["target-branch"] = "release/v0.0.1"
+                    retired["updates"][index]["target-branch"] = "release/v0.1.0"
                     for broken in [missing, duplicate, retired]:
                         with self.assertRaisesRegex(ValueError, "Dependabot must cover"):
                             validate(broken)
