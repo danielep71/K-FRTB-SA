@@ -12,9 +12,14 @@ issues, must have:
 - Assignee `danielep71`.
 - Exactly one priority: `P1`, `P2` or `P3`.
 - The milestone that owns its work; current prototype and repository maintenance
-  belong to **v0.1.0 — SA prototype** (milestone 2, approved in #51).
-  Historical setup issues retain the closed **v0.0.1 — Repo setup** milestone.
+  belong to **v0.2.0 — SA prototype** (milestone 2, approved in #51).
+  Historical setup issues retain the closed **v0.1.0 — Repo setup** milestone.
 - An objective, acceptance checklist, dependencies and required evidence.
+
+PRs retain the assignee and exactly one priority, and link to their owning
+issue. **PRs must have no milestone**, including closed, merged and bot PRs.
+Milestone ownership is recorded on the issue only (#104). The metadata
+workflow removes PR assignments automatically; issue triage remains manual.
 
 The triage convention reserves **P1 for confirmed calculation bugs**.
 P2 covers material defects in correctness, robustness or maintainability. P3
@@ -60,12 +65,14 @@ the contribution workflow; live activation was verified through #21/#6.
 
 Run these repository-wide, without `is:open` or a milestone filter, so closed
 issues and orphaned issues remain visible. Every search should return no issues.
+The PR milestone search should also return zero results.
 
 | Check | GitHub search query |
 | --- | --- |
 | Missing assignee | `repo:danielep71/K-FRTB-SA is:issue no:assignee` |
 | Wrong assignee | `repo:danielep71/K-FRTB-SA is:issue -assignee:danielep71` |
 | Missing milestone | `repo:danielep71/K-FRTB-SA is:issue no:milestone` |
+| PR incorrectly assigned a milestone | `repo:danielep71/K-FRTB-SA is:pr has:milestone` |
 | Missing priority | `repo:danielep71/K-FRTB-SA is:issue -label:P1 -label:P2 -label:P3` |
 | Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P1 label:P2` |
 | Conflicting priorities | `repo:danielep71/K-FRTB-SA is:issue label:P1 label:P3` |

@@ -69,7 +69,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
         source = Path(__file__).resolve().parents[2]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for name in [".github/workflows/integrity.yml", ".github/dependabot.yml"]:
+            for name in [".github/workflows/integrity.yml", ".github/workflows/pr-milestones.yml", ".github/dependabot.yml"]:
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text((source / name).read_text())
@@ -82,7 +82,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
                 checker.validate_controls(root)
             workflow_path.write_text((source / ".github/workflows/integrity.yml").read_text())
             dependabot_path = root / ".github/dependabot.yml"
-            dependabot_path.write_text(dependabot_path.read_text().replace("target-branch: release/v0.1.0", "target-branch: main", 1))
+            dependabot_path.write_text(dependabot_path.read_text().replace("target-branch: release/v0.2.0", "target-branch: main", 1))
             with self.assertRaisesRegex(ValueError, "Dependabot must cover"):
                 checker.validate_controls(root)
 
@@ -94,6 +94,8 @@ class RepositoryIntegrityTests(unittest.TestCase):
             workflow_path = root / ".github/workflows/integrity.yml"
             workflow_path.parent.mkdir(parents=True)
             workflow_path.write_text((source / ".github/workflows/integrity.yml").read_text())
+            milestone_path = root / ".github/workflows/pr-milestones.yml"
+            milestone_path.write_text((source / ".github/workflows/pr-milestones.yml").read_text())
             dependabot_path = root / ".github/dependabot.yml"
 
             def validate(document):
@@ -108,13 +110,13 @@ class RepositoryIntegrityTests(unittest.TestCase):
                     duplicate = copy.deepcopy(baseline)
                     duplicate["updates"].append(copy.deepcopy(entry))
                     retired = copy.deepcopy(baseline)
-                    retired["updates"][index]["target-branch"] = "release/v0.0.1"
+                    retired["updates"][index]["target-branch"] = "release/v0.1.0"
                     for broken in [missing, duplicate, retired]:
                         with self.assertRaisesRegex(ValueError, "Dependabot must cover"):
                             validate(broken)
                     wrong_milestone = copy.deepcopy(baseline)
                     wrong_milestone["updates"][index]["milestone"] = 1
-                    with self.assertRaisesRegex(ValueError, "target milestone"):
+                    with self.assertRaisesRegex(ValueError, "no milestone setting"):
                         validate(wrong_milestone)
 
 

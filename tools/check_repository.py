@@ -146,6 +146,8 @@ def validate_workflow(document):
 
 
 def validate_controls(root):
+    milestone_workflow = load_yaml((root / ".github/workflows/pr-milestones.yml").read_text())
+    validate_milestone_workflow(milestone_workflow)
     workflow = load_yaml((root / ".github/workflows/integrity.yml").read_text())
     for event in ("pull_request", "push"):
         config = workflow["on"][event]
@@ -160,16 +162,30 @@ def validate_controls(root):
     if updates["version"] != 2:
         raise ValueError("Dependabot requires version 2")
     expected = {
-        ("github-actions", "/", "release/v0.1.0"),
-        ("pip", "/.github", "release/v0.1.0"),
-        ("pip", "/tests", "release/v0.1.0"),
+        ("github-actions", "/", "release/v0.2.0"),
+        ("pip", "/.github", "release/v0.2.0"),
+        ("pip", "/tests", "release/v0.2.0"),
     }
     actual = [(item["package-ecosystem"], item["directory"], item["target-branch"]) for item in updates["updates"]]
     if set(actual) != expected or len(actual) != len(expected):
-        raise ValueError("Dependabot must cover Actions, CI parser and prototype packages once each on release/v0.1.0")
+        raise ValueError("Dependabot must cover Actions, CI parser and prototype packages once each on release/v0.2.0")
     for item in updates["updates"]:
-        if item["assignees"] != ["danielep71"] or item["milestone"] != 2 or [label for label in item["labels"] if label in {"P1", "P2", "P3"}] != ["P3"]:
-            raise ValueError("Dependabot requires owner, target milestone and exactly P3")
+        if "milestone" in item:
+            raise ValueError("Dependabot PRs must have no milestone setting")
+        if item["assignees"] != ["danielep71"] or [label for label in item["labels"] if label in {"P1", "P2", "P3"}] != ["P3"]:
+            raise ValueError("Dependabot requires owner and exactly P3")
+
+
+def validate_milestone_workflow(document):
+    events = document["on"]
+    if set(events) != {"push", "pull_request_target", "schedule", "workflow_dispatch"} or events["push"] != {"branches": ["main"], "paths": [".github/workflows/pr-milestones.yml"]} or events["pull_request_target"] != {"types": ["opened", "reopened", "edited", "milestoned"]} or events["schedule"] != [{"cron": "17 3 * * *"}]:
+        raise ValueError("PR milestone workflow requires event and full-scan coverage")
+    job = document["jobs"]["reconcile"]
+    if document["permissions"] != {} or job["permissions"] != {"pull-requests": "write"}:
+        raise ValueError("PR milestone workflow permissions must be limited to metadata")
+    steps = job["steps"]
+    if len(steps) != 1 or set(steps[0]) != {"name", "env", "run"} or steps[0]["env"] != {"GH_TOKEN": "${{ github.token }}"} or "${{" in steps[0]["run"]:
+        raise ValueError("PR milestone workflow must use trusted inline code without checkout or event interpolation")
 
 
 def main():

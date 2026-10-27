@@ -19,7 +19,7 @@ until a later explicitly approved transition. It was originally approved for
 the prototype on October 17 and created from main at
 `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18).
 
-The v0.0.1 setup milestone is closed. The integration branch
+The setup milestone, v0.1.0 — Repo setup (first named v0.0.1), is closed. The integration branch
 **`release/v0.0.1`** was deleted on October 18, 2026 (#62). Its closeout head
 `b4d6c02` is on main, so no history was lost; the closed milestone and the
 [setup closeout record](evidence/2026-10-18-setup-closeout.md) remain the
@@ -128,7 +128,8 @@ default to their type label and `P3`. All forms assign `danielep71`.
 Forms cannot assign a milestone, so maintainers must select it and confirm
 exactly one priority before completing triage. P1 remains limited to confirmed
 calculation bugs. API/CLI-created issues and PRs bypass form defaults and need
-explicit metadata. Disabling ordinary blank issues does not enforce metadata
+explicit metadata: assign milestones to issues only, never to PRs.
+Disabling ordinary blank issues does not enforce metadata
 or prevent maintainers from creating blank issues.
 
 GitHub serves the issue chooser and PR template from the default branch.
@@ -145,7 +146,8 @@ checklist; this document owns its detailed procedures.
    milestone, assignee, and discussion. Use the repository-wide searches in
    [Labels](LABELS.md), including closed issues and issues without milestones.
 2. Assign `danielep71`, exactly one priority, and the milestone that owns the
-   work. Apply the same metadata to development PRs. Do not create a new
+   work. Apply the assignee and priority to development PRs, link their issue,
+   and leave the PR milestone unset. Do not create a new
    milestone or infer authorization for functional scope from a version number.
 3. Keep blocked criteria unchecked and name their dependency. Split unrelated
    scope into linked issues while retaining traceability.
@@ -166,19 +168,29 @@ checklist; this document owns its detailed procedures.
 
 ### Milestone management
 
-[v0.0.1 — Repo setup](https://github.com/danielep71/K-FRTB-SA/milestone/1)
+[v0.1.0 — Repo setup](https://github.com/danielep71/K-FRTB-SA/milestone/1)
 closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
 [closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
-baseline. [v0.1.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
+baseline. [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 is active: prototype closeout and its milestone guide are tracked in #32, and
-#28 owns Excel evidence. The methodology decisions (#29) belong to v0.2.0 in
+#28 owns Excel evidence. The methodology decisions (#29) belong to v0.3.0 in
 the [milestone plan](ROADMAP.md). The live issue tracker
 owns progress; a guide is not a substitute for completed acceptance criteria.
 
+**Milestones contain issues only**, including closed milestones. PRs link to
+their owning issues and carry no milestone, whether open, closed, merged,
+human-created or bot-created. This maintainer decision of October 27, 2026
+(#104) supersedes earlier requirements to copy the issue milestone onto a PR.
+Dated closeout records retain the policy and names in effect at that time.
+The [metadata workflow](../.github/workflows/pr-milestones.yml) removes PR
+milestones on PR events and reconciles all PRs daily or by manual dispatch.
+It never changes an issue's milestone. See [Repository checks](CI.md) for
+permissions, activation and operating limits.
+
 Milestone scope and any next integration branch require explicit approval. Before a
 milestone closes, its closeout issue must reconcile all associated work,
-including closed issues and PRs, confirm metadata and evidence, and record
-adopted and deferred maintenance practices. For v0.0.1, issue #8 owns that record.
+including closed issues and their linked PR evidence, confirm metadata and evidence, and record
+adopted and deferred maintenance practices. For the setup milestone, issue #8 owns that record.
 A genuine gap stays open or is explicitly respecified by the maintainer; moving it
 elsewhere does not make the original acceptance criterion pass.
 
@@ -204,15 +216,16 @@ re-reviewed only on request (`@codex review`).
 | Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
 | Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
-| Issue/PR assignee, priority, milestone, acceptance evidence | Manual triage and completion procedure |
+| Issue/PR assignee, priority, acceptance evidence; issue milestone | Manual triage and completion procedure |
+| No milestone on any PR | Trusted metadata workflow on PR events, daily reconciliation and manual dispatch; Dependabot configuration is checked offline (#104) |
 | Explicitly requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
 
 Issue #6 recorded initial default-branch activation of forms and the PR
 template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
 policies define the reporting routes.
 Dependabot targets Actions, the CI parser and prototype test packages at
-`release/v0.1.0`, milestone 2, as detailed in [Repository checks](CI.md).
-Issue #8 completed the v0.0.1 closeout; its record is
+`release/v0.1.0` without PR milestones, as detailed in [Repository checks](CI.md).
+Issue #8 completed the setup closeout; its record is
 [Setup closeout](evidence/2026-10-18-setup-closeout.md).
 
 The procedures fit this project's prototype stage and release-branch

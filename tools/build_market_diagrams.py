@@ -1,7 +1,8 @@
 """Render the five market-risk and CVA diagrams as SVG masters and PNGs.
 
 The diagrams in docs/assets/market-risk/ map the regulatory architecture of
-FRTB-SA and CVA risk (Basel MAR20-MAR23, MAR50). They are method maps: they do
+FRTB-SA and CVA risk (Basel MAR20-MAR23 and MAR50; the framework diagram also
+cites MAR30-MAR33, MAR40, BCBS 158 and BCBS 189). They are method maps: they do
 not describe the implemented scope of K-FRTB-SA or K-CVA. The same set is
 published on the K-Risk-Engines site.
 
@@ -69,9 +70,26 @@ class Diagram:
         self.p.append(f'<text x="{x}" y="{y}" font-family="{FONT}" font-size="{size}" fill="{color}" '
                       f'font-weight="{700 if bold else 400}" text-anchor="{anchor}">{markup(t, size)}</text>')
 
-    def rect(self, x, y, w, h, fill=PALE, stroke=EDGE, r=10):
+    def rect(self, x, y, w, h, fill=PALE, stroke=EDGE, r=10, dash=False):
+        pattern = ' stroke-dasharray="7 5"' if dash else ""
         self.p.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" fill="{fill}" '
-                      f'stroke="{stroke}" stroke-width="2"/>')
+                      f'stroke="{stroke}" stroke-width="2"{pattern}/>')
+
+    def line(self, points):
+        path = " L".join(f"{x} {y}" for x, y in points)
+        self.p.append(f'<path d="M{path}" stroke="{LINK}" stroke-width="3" fill="none"/>')
+
+    def block(self, x, y, w, h, lines, fill=PALE, stroke=EDGE, dash=False):
+        """A box with centered, wrapped lines; each line is (text, size, bold, color)."""
+        self.rect(x, y, w, h, fill, stroke, dash=dash)
+        rows = [(part, size, bold, color) for text, size, bold, color in lines
+                for part in wrap_width(text, size, bold, w - 28)]
+        height = sum(size * 1.3 for _, size, _, _ in rows)
+        assert height < h - 8, (self.name, lines, height, h)
+        yy = y + (h - height) / 2
+        for part, size, bold, color in rows:
+            yy += size * 1.3
+            self.text(x + w / 2, round(yy - size * 0.32, 1), part, size, color, bold, "middle")
 
     def arrow(self, x1, y1, x2, y2):
         self.p.append(f'<path d="M{x1} {y1} L{x2} {y2}" stroke="{LINK}" stroke-width="3" fill="none" '
@@ -145,6 +163,16 @@ def wrap(paragraph, width):
     return lines
 
 
+def wrap_width(paragraph, size, bold, width):
+    """Wrap to a width in pixels, measured as rendered."""
+    lines, current = [], []
+    for word in paragraph.split(" "):
+        if current and text_width(" ".join(current + [word]), size, bold) > width:
+            lines.append(" ".join(current)); current = []
+        current.append(word)
+    return lines + [" ".join(current)]
+
+
 def boundary(x, y, cx, cy, half_w, half_h):
     """Where the segment from the node center (cx, cy) to (x, y) leaves the node."""
     dx, dy = x - cx, y - cy
@@ -152,45 +180,82 @@ def boundary(x, y, cx, cy, half_w, half_h):
     return round(cx + dx * t), round(cy + dy * t)
 
 
+GREY = "#5A6B80"; FAINT = "#C3CEDC"
+
+
+def approaches(d, y, groups, era, earlier, notes):
+    """One framework as a tree: approach headers, their components joined by a separator,
+    the earlier rules aligned below and notes. Each group is (x, w, title, scope, separator,
+    components); each component is (name, detail); each earlier rule is (x, w, text)."""
+    for x, w, title, scope, separator, components in groups:
+        d.block(x, y, w, 76, [(title, 22, True, "white"), (scope, 18, False, "#DBE7F7")], NAVY, NAVY)
+        n = len(components); cw = (w - 44 * (n - 1)) / n
+        centers = [round(x + cw / 2 + i * (cw + 44)) for i in range(n)]
+        d.line([(round(x + w / 2), y + 76), (round(x + w / 2), y + 96)])
+        if n > 1:
+            d.line([(centers[0], y + 96), (centers[-1], y + 96)])
+        for i, (name, detail) in enumerate(components):
+            d.arrow(centers[i], y + 96, centers[i], y + 118)
+            d.block(round(x + i * (cw + 44)), y + 122, round(cw), 128,
+                    [(name, 21, True, NAVY), (detail, 18, False, INK)])
+            if i:
+                d.text(round(x + i * (cw + 44) - 22), y + 196, separator, 30 if separator == "+" else 22,
+                       LINK, True, "middle")
+    d.text(40, y + 286, era, 18, GREY, True)
+    for x, w, text in earlier:
+        d.block(x, y + 300, w, 96, [(text, 18, False, GREY)], "white", FAINT, dash=True)
+    for i, note in enumerate(notes):
+        d.text(40, y + 432 + i * 26, note, 18, INK)
+
+
 def framework(out):
     d = Diagram("Market_risk_framework", "MARKET RISK AND CVA RISK",
-                "From supplied risk inputs to two distinct capital requirements", 1358)
+                "Two capital requirements, their approaches and the earlier Basel rules", 1530)
     d.text(800, 137, "K = own funds requirement       |       RWA = risk-weighted assets", 22, NAVY, False, "middle")
-    d.bar(170, 1, "DEFINE THE PERIMETER", "regulatory scope and exemptions first")
-    d.card(40, 232, 740, 184, "K-FRTB-SA | MARKET-RISK POSITIONS", [
-        "Trading-book positions, plus relevant FX and commodity risk outside the trading book.",
-        "Capture market-price movements, jump-to-default and specified residual risks."])
-    d.card(820, 232, 740, 184, "K-CVA | COVERED COUNTERPARTIES", [
-        "Covered derivatives (QCCP trades excluded); fair-valued SFTs where CVA risk is material.",
-        "Capture changes in CVA from credit spreads and market risk factors."])
-    d.arrow(410, 416, 410, 466); d.arrow(1190, 416, 1190, 466)
-    d.bar(470, 2, "SUPPLY THE RIGHT INPUTS", "pricing and exposure measurement happen upstream")
-    d.card(40, 532, 740, 270, "FRTB STANDARDIZED APPROACH", [
-        "SBM: delta, vega and curvature inputs.",
-        "DRC: position and issuer data. RRAO: gross notionals and residual-risk classification.",
-        "Not shown: the internal models approach for approved desks (MAR30–33) and the simplified "
-        "standardized approach (MAR40)."])
-    d.card(820, 532, 740, 270, "CVA CAPITAL APPROACH", [
-        "BA-CVA: exposure values, effective maturities, counterparty data and eligible hedges.",
-        "SA-CVA: regulatory CVA and hedge sensitivities; supervisory approval required.",
-        "MAR50.9: up to EUR 100 billion of non-centrally cleared notional, CVA capital may equal "
-        "100% of CCR capital."])
-    d.arrow(410, 802, 410, 849); d.arrow(1190, 802, 1190, 849)
-    d.bar(854, 3, "AGGREGATE WITHIN EACH FRAMEWORK", "CVA is a separate capital calculation")
-    d.card(40, 916, 740, 160, "FRTB-SA CAPITAL", [
-        "K_{FRTB-SA} = K_{SBM} + K_{DRC} + K_{RRAO}",
-        "SBM takes the largest total across its three correlation scenarios."], dark=True)
-    d.card(820, 916, 740, 160, "CVA CAPITAL", [
-        "SA-CVA, or BA-CVA; netting sets carved out of SA-CVA use BA-CVA (MAR50.8).",
-        "Never capitalize a netting set under both approaches."], dark=True)
-    d.arrow(410, 1076, 410, 1116); d.arrow(1190, 1076, 1190, 1116)
-    d.card(40, 1124, 740, 58, "RWA_{FRTB-SA} = 12.5 × K_{FRTB-SA}", [], green=True)
-    d.card(820, 1124, 740, 58, "RWA_{CVA} = 12.5 × K_{CVA}", [], green=True)
-    d.text(800, 1233, "Two capital contributions. No CVA charge inside the FRTB-SA three-component sum.",
-           25, NAVY, True, "middle")
-    d.foot("Sources: Basel MAR10–23, MAR30–33, MAR40 and MAR50; CRR Part Three, Titles IV and VI; Art. 92.",
-           "Conceptual architecture; not a statement of implemented coverage. Local rules and transitions "
-           "must be checked separately.")
+    d.bar(170, 1, "MARKET RISK | MAR20–33", "the IMA needs approval desk by desk; other desks use the SA")
+    approaches(d, 232, [
+        (40, 730, "INTERNAL MODELS APPROACH (IMA)", "Approved trading desks (MAR30–33)", "+", [
+            ("Expected shortfall", "Modellable risk factors (IMCC)"),
+            ("Non-modellable risk factors", "Stressed expected shortfall (SES)"),
+            ("Default risk charge", "Internal model: 99.9% VaR, one-year horizon")]),
+        (830, 730, "STANDARDIZED APPROACH (SA)", "All other desks (MAR20–23)", "+", [
+            ("Sensitivities-based method", "Delta, vega and curvature (MAR21)"),
+            ("Default risk charge", "Jump-to-default (MAR22)"),
+            ("Residual risk add-on", "Exotic and other residual risks (MAR23)")])],
+        "BEFORE THE REVISION: BASEL 2.5 (2009)", [
+            (40, 214, "VaR and stressed VaR"),
+            (298, 214, "No general charge; risks not in VaR (RNIV) in some jurisdictions"),
+            (556, 214, "Incremental risk charge: default and migration"),
+            (830, 472, "Standardized measurement method: general and specific market risk charges"),
+            (1346, 214, "No Pillar 1 charge")], [
+            "Securitization positions are out of IMA scope and use the SA (MAR30.4). IMA and SA desks combine "
+            "in the aggregate requirement of MAR33.43–33.45.",
+            "Not drawn: the simplified standardized approach for eligible banks (MAR40)."])
+    d.bar(740, 2, "CVA RISK | MAR50", "BA-CVA unless the supervisor approves SA-CVA (MAR50.7)")
+    approaches(d, 802, [
+        (40, 564, "BASIC APPROACH (BA-CVA)", "Exposure-based; the default route", "or", [
+            ("Reduced version", "No hedge recognition"),
+            ("Full version", "Recognizes eligible credit hedges")]),
+        (668, 564, "STANDARDIZED APPROACH (SA-CVA)", "Sensitivity-based; supervisory approval", "+", [
+            ("Delta risk", "Six risk classes"),
+            ("Vega risk", "Five risk classes; none for counterparty credit spread")]),
+        (1296, 264, "ALTERNATIVE", "MAR50.9; whole portfolio", "", [
+            ("100% of CCR capital", "Up to EUR 100 billion of non-centrally cleared notional; no hedges")])],
+        "BEFORE THE REVISION: BASEL III (2011)", [
+            (40, 564, "Standardized CVA risk capital charge"),
+            (668, 564, "Advanced CVA risk capital charge: VaR and stressed VaR of credit spreads, for banks with "
+                       "IMM approval"),
+            (1296, 264, "No Basel equivalent")], [
+            "Netting sets carved out of SA-CVA use BA-CVA (MAR50.8); no netting set is capitalized under both. "
+            "The revised framework has no internal model approach for CVA."])
+    d.bar(1290, 3, "TWO SEPARATE CAPITAL REQUIREMENTS", "neither includes the other")
+    d.text(800, 1384, "RWA = 12.5 × K_{market} + 12.5 × K_{CVA}", 34, NAVY, True, "middle")
+    d.text(800, 1428, "Each requirement is converted to RWA separately (MAR20.1, MAR33.46, MAR50.1).",
+           22, BLUE, False, "middle")
+    d.foot("Sources: Basel MAR20–23, MAR30–33, MAR40 and MAR50; BCBS, Revisions to the Basel II market risk "
+           "framework (2009); Basel III (2011).",
+           "Conceptual architecture; not a statement of implemented coverage. Local rules, exemptions and "
+           "transitions must be checked separately.")
     d.save(out)
 
 

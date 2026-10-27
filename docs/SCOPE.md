@@ -2,8 +2,9 @@
 
 ## Current stage
 
-Repository setup (v0.0.1) is closed. The active workstream is the SA prototype
-and repository maintenance on release/v0.1.0, milestone 2 (#51).
+Repository setup (v0.1.0 — Repo setup) is closed. The active workstream is the
+SA prototype and repository maintenance on release/v0.1.0, milestone 2,
+v0.2.0 — SA prototype (#51).
 Main and release/v0.1.0 contain the setup controls, Excel/VBA prototype,
 committed macro-free template and independent Python reference.
 The setup branch release/v0.0.1 was deleted after the closeout; its history
@@ -52,7 +53,7 @@ Maintenance tooling uses Node built-ins and Python with a pinned CI parser;
 the prototype test environment has its own packages. These are documented in
 [Repository checks](CI.md) and do not select the long-term engine platform.
 [Governance](GOVERNANCE.md) assigns current prototype and maintenance work
-to release/v0.1.0, milestone 2; the setup branch release/v0.0.1 was deleted
+to release/v0.1.0, milestone 2 (v0.2.0); the setup branch release/v0.0.1 was deleted
 (#62). Source and evidence placement follow the
 [structure policy](REPOSITORY_STRUCTURE.md).
 

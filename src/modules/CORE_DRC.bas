@@ -84,7 +84,7 @@ Public Sub RunDRC()
     ReDim pRank(1 To MaxL(n, 1))
     ReDim pJtd(1 To MaxL(n, 1))
 
-    ' 1. Gross JTD per position (MAR22.10-22.12) and maturity scaling (MAR22.17)
+    ' 1. Gross JTD per position (MAR22.9-22.13) and maturity scaling (MAR22.15-22.18)
     j = 0
     For r = LAYOUT_FIRST_DATA_ROW To LAYOUT_FIRST_DATA_ROW + n - 1
         src = SH_IN_DRC & " row " & r
@@ -166,7 +166,7 @@ Public Sub RunDRC()
         End If
     Next i
 
-    ' 3. Net long/short per obligor (MAR22.19-22.20): a short offsets a long
+    ' 3. Net long/short per obligor (MAR22.19-22.21): a short offsets a long
     ' only when it ranks the same as, or junior to, the long. Ranks run from
     ' the most junior (1) to the most senior; unused shorts carry upward.
     ReDim oRW(1 To MaxL(nObl, 1))
@@ -195,7 +195,7 @@ Public Sub RunDRC()
         oRW(o) = DrcRiskWeight(oQuality(o), found)
     Next o
 
-    ' 4. Bucket charge (MAR22.23-22.24)
+    ' 4. Bucket charge (MAR22.22-22.26)
     nB = DrcBucketCount()
     ReDim bLong(1 To nB)
     ReDim bShort(1 To nB)
