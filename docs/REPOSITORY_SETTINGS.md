@@ -93,7 +93,7 @@ only because the required check had not run.
 | Secret scanning alerts | Not offered while private | Secret Protection enabled |
 | Secret push protection | Off | Enabled |
 | CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
-| Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries, on release/v0.2.0 since #117; PRs have no milestone under #104; scheduling uses the configuration on main; targets in CI.md |
+| Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries, on release/v0.2.0 since #118 (active on main through #120); PRs have no milestone under #104; scheduling uses the configuration on main; targets in CI.md |
 | Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; changing this is a new explicit settings decision (CI.md) |
 
 [CodeQL setup evidence](https://github.com/danielep71/K-FRTB-SA/actions/runs/39070451926).

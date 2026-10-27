@@ -25,8 +25,8 @@ maintenance joined it on October 18
 ([decision in #51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)).
 Its whole history is in `release/v0.2.0` and on main. It is deleted under the
 [release-branch lifecycle](#release-branch-lifecycle) once milestone 2 is
-closed. Until the Dependabot configuration reaches main, version updates
-still open against it; retarget them to `release/v0.2.0`.
+closed. Dependabot version updates target `release/v0.2.0` since #118,
+activated on main through #120.
 
 The setup milestone, v0.1.0 — Repo setup (first named v0.0.1), is closed. The integration branch
 **`release/v0.0.1`** was deleted on October 18, 2026 (#62). Its closeout head

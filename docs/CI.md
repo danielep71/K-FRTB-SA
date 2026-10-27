@@ -78,9 +78,8 @@ The configuration must reach the default branch before GitHub schedules
 version updates. The temporary maintenance successor was approved in
 [#51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)
 on October 18, 2026, and the entries moved to `release/v0.2.0` with the
-integration branch on October 27 (#117). They take effect when the
-configuration reaches main; until then, version updates target
-`release/v0.1.0`.
+integration branch on October 27 (#118); the configuration was activated
+on main through #120.
 PRs have no milestone under the issue-only policy (#104).
 The setup branch `release/v0.0.1` receives no version-update
 PRs; it was deleted after the closeout (#62):
