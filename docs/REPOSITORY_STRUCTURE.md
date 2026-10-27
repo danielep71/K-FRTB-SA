@@ -15,10 +15,10 @@ The layout separates source, tests, documentation, and tools while distinguishin
 | `tests/` | Verification source: independent Python reference, reconciliation and tooling tests |
 | `tests/modules/` | VBA test modules imported into development builds (`TEST_*`) |
 | `docs/` | Authoritative versioned scope, governance, structure, methodology, validation, and milestone documentation |
-| `docs/assets/` | Documentation images and their sources |
+| `docs/assets/` | Documentation images and their sources; `market-risk/` holds the market risk and CVA method maps |
 | `docs/evidence/` | Dated, sanitized evidence records bound to reviewed commits |
 | `docs/Milestones/` | Detailed milestone guides |
-| `tools/` | Tooling index; prototype build, VBA synchronization into an existing workbook and their `.cmd` launchers, read-only VBA export and source comparison, LibreOffice runner, VBA lint, expected-value generator and Excel evidence validator; label tooling remains in `.github/scripts/` |
+| `tools/` | Tooling index; prototype build, VBA synchronization into an existing workbook and their `.cmd` launchers, read-only VBA export and source comparison, LibreOffice runner, VBA lint, expected-value generator, Excel evidence validator and diagram generator; label tooling remains in `.github/scripts/` |
 | `.github/` | Labels, forms, universal maintenance/analytics workflows, prototype checks, dependency updates and the Excel evidence policy |
 | Root | Entry documentation, licenses, contribution/setup guidance, and repository-control files |
 

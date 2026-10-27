@@ -67,6 +67,17 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Market risk and CVA method maps (#98): five diagrams in
+  `docs/assets/market-risk/`, as SVG masters and PNGs, also published on the
+  K-Risk-Engines site.
+  - They cover the FRTB-SA and CVA frameworks, perimeter to RWA: SBM, DRC and
+    RRAO; BA-CVA and SA-CVA, with the MAR50.8 carve-out and the MAR50.9
+    alternative. The internal models approach and the simplified standardized
+    approach are named.
+  - `tools/build_market_diagrams.py` regenerates them reproducibly with
+    CairoSVG 2.9.1.
+  - They are method maps, not the prototype's implemented scope.
+
 - Excel evidence record and validator (#82), adapted from the
   VBA-SACCR-Toolkit:
   - `docs/EXCEL_EVIDENCE.md` defines the manual procedure, the `host.json`
@@ -162,6 +173,16 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The market risk framework diagram is a map of approaches, without project
+  names (#102).
+  - Market risk: the IMA for approved desks (expected shortfall,
+    non-modellable risk factors, default risk charge) and the SA for the
+    other desks (SBM, DRC, RRAO).
+  - CVA risk: BA-CVA, reduced or full; SA-CVA, delta and vega; the MAR50.9
+    alternative.
+  - Below each approach, the earlier Basel 2.5 (2009) or Basel III (2011)
+    rule; the total is RWA = 12.5 × K for each requirement.
+  - The other four diagrams are unchanged.
 - The repository is renamed from MKT-FTRB-SA, whose name transposed the
   letters of FRTB, to K-FRTB-SA, the workbook's name (#95).
   - Every link, clone command, label search and label command uses
