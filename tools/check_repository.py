@@ -178,7 +178,7 @@ def validate_controls(root):
 
 def validate_milestone_workflow(document):
     events = document["on"]
-    if set(events) != {"pull_request_target", "schedule", "workflow_dispatch"} or events["pull_request_target"] != {"types": ["opened", "reopened", "edited", "milestoned"]} or events["schedule"] != [{"cron": "17 3 * * *"}]:
+    if set(events) != {"push", "pull_request_target", "schedule", "workflow_dispatch"} or events["push"] != {"branches": ["main"], "paths": [".github/workflows/pr-milestones.yml"]} or events["pull_request_target"] != {"types": ["opened", "reopened", "edited", "milestoned"]} or events["schedule"] != [{"cron": "17 3 * * *"}]:
         raise ValueError("PR milestone workflow requires event and full-scan coverage")
     job = document["jobs"]["reconcile"]
     if document["permissions"] != {} or job["permissions"] != {"issues": "write", "pull-requests": "read"}:
