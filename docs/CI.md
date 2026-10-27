@@ -77,30 +77,60 @@ Do not require a check on a line before installing it there.
 The configuration must reach the default branch before GitHub schedules
 version updates. The temporary maintenance successor was approved in
 [#51](https://github.com/danielep71/K-FRTB-SA/issues/51#issuecomment-6254417218)
-on October 18, 2026: all three updater entries target `release/v0.1.0`,
-milestone 2. The setup branch `release/v0.0.1` receives no version-update
+on October 18, 2026: all three updater entries target `release/v0.1.0`.
+PRs have no milestone under the issue-only policy (#104).
+The setup branch `release/v0.0.1` receives no version-update
 PRs; it was deleted after the closeout (#62):
 
-| Ecosystem and manifest location | Version-update PR target | Milestone |
-| --- | --- | --- |
-| GitHub Actions, `/` | `release/v0.1.0` | v0.1.0 |
-| pip, `/.github/requirements.txt` (PyYAML configuration parser) | `release/v0.1.0` | v0.1.0 |
-| pip, `/tests/requirements.txt` (prototype NumPy, openpyxl, pytest) | `release/v0.1.0` | v0.1.0 |
+| Ecosystem and manifest location | Version-update PR target |
+| --- | --- |
+| GitHub Actions, `/` | `release/v0.1.0` |
+| pip, `/.github/requirements.txt` (PyYAML configuration parser) | `release/v0.1.0` |
+| pip, `/tests/requirements.txt` (prototype NumPy, openpyxl, pytest) | `release/v0.1.0` |
 
 The two previous Actions entries are consolidated into one. Both pip
 manifest locations remain covered; no dependency is copied into the historical
 setup branch. The integrity gate rejects duplicate entries, retired or wrong
-targets, lost ecosystem/directory coverage and incorrect milestone metadata.
+targets, lost ecosystem/directory coverage and any `milestone` setting.
 There is no npm package manifest: the label scripts use Node built-ins. No npm updater or
 other absent ecosystem is configured. Each entry runs weekly, limits open
-PRs to five, assigns `danielep71`, and sets exactly P3 plus type labels and the
-target milestone. Maintainers must still verify all metadata during triage.
+PRs to five, assigns `danielep71`, and sets exactly P3 plus type labels.
+Maintainers must still verify all metadata during triage and put any owning
+issue in the appropriate milestone.
 
 Non-default `target-branch` settings govern version updates, not security
 update PRs. The existing Dependabot alerts stay enabled; automatic security
 update PRs remain off under the recorded settings baseline. Enabling or
 retargeting them is a new explicit settings decision (#2 is closed), not an
 assertion made by this file. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
+
+## Issue-only milestones
+
+[Keep milestones issue-only](../.github/workflows/pr-milestones.yml) removes
+milestone assignments from PRs only (#104). It handles `opened`, `reopened`,
+`edited` and `milestoned` PR activity, plus a daily full reconciliation at
+03:17 UTC and manual dispatch. The full scan includes open, closed and merged
+PRs. It uses unfiltered creation-order pagination so removing assignments does
+not shift the collection. A 100-page bound, malformed response, API error or
+failed removal fails the run rather than claiming success.
+
+The workflow runs trusted inline Python without checkout, third-party actions,
+PR code, PR text interpolation or custom secrets. Its token has `issues: write`
+for the milestone patch and `pull-requests: read` for listing; all other
+permissions are absent. Each mutation first reads the live issues endpoint and
+refuses to modify an object without a `pull_request` marker. An unset milestone
+is a no-op. Offline fixtures exercise pagination, actual issue refusal,
+idempotence and error propagation against the workflow's inline implementation.
+
+Default-branch activation is required. The maintainer's October 27 instruction
+to apply this rule to past and future PRs is recorded in #104; focused policy
+PRs activate it on main and synchronize release/v0.1.0. This activation does
+not integrate unrelated release work. A manual run performs the historical
+cleanup; daily runs also cover changes by bots whose events may not trigger
+another workflow. Event delivery and scheduled runs can be delayed or blocked
+by GitHub Actions policies or outages. If a run fails, inspect it and rerun the
+trusted workflow; do not claim synchronous assignment prevention. The query
+`repo:danielep71/K-FRTB-SA is:pr has:milestone` should return zero.
 
 ## Evidence boundaries
 

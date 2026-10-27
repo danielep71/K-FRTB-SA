@@ -69,7 +69,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
         source = Path(__file__).resolve().parents[2]
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for name in [".github/workflows/integrity.yml", ".github/dependabot.yml"]:
+            for name in [".github/workflows/integrity.yml", ".github/workflows/pr-milestones.yml", ".github/dependabot.yml"]:
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text((source / name).read_text())
@@ -94,6 +94,8 @@ class RepositoryIntegrityTests(unittest.TestCase):
             workflow_path = root / ".github/workflows/integrity.yml"
             workflow_path.parent.mkdir(parents=True)
             workflow_path.write_text((source / ".github/workflows/integrity.yml").read_text())
+            milestone_path = root / ".github/workflows/pr-milestones.yml"
+            milestone_path.write_text((source / ".github/workflows/pr-milestones.yml").read_text())
             dependabot_path = root / ".github/dependabot.yml"
 
             def validate(document):
@@ -114,7 +116,7 @@ class RepositoryIntegrityTests(unittest.TestCase):
                             validate(broken)
                     wrong_milestone = copy.deepcopy(baseline)
                     wrong_milestone["updates"][index]["milestone"] = 1
-                    with self.assertRaisesRegex(ValueError, "target milestone"):
+                    with self.assertRaisesRegex(ValueError, "no milestone setting"):
                         validate(wrong_milestone)
 
 
