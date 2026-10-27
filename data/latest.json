@@ -1,17 +1,12 @@
 {
   "schema_version": 1,
-  "repository": "danielep71/MKT-FTRB-SA",
-  "collected_at_utc": "2026-10-26T10:26:17.000074+00:00",
-  "source_commit_sha": "a1705b9877177f7a22facaed81ff157545cd7426",
+  "repository": "danielep71/K-FRTB-SA",
+  "collected_at_utc": "2026-10-27T10:00:17.054092+00:00",
+  "source_commit_sha": "46ae2286af2657fb4d5f373894f8dce64c41fb59",
   "views": {
-    "count": 42,
+    "count": 49,
     "uniques": 2,
     "views": [
-      {
-        "timestamp": "2026-10-12T00:00:00Z",
-        "count": 0,
-        "uniques": 0
-      },
       {
         "timestamp": "2026-10-13T00:00:00Z",
         "count": 0,
@@ -76,18 +71,18 @@
         "timestamp": "2026-10-25T00:00:00Z",
         "count": 0,
         "uniques": 0
+      },
+      {
+        "timestamp": "2026-10-26T00:00:00Z",
+        "count": 7,
+        "uniques": 1
       }
     ]
   },
   "clones": {
-    "count": 2191,
-    "uniques": 511,
+    "count": 2308,
+    "uniques": 531,
     "clones": [
-      {
-        "timestamp": "2026-10-12T00:00:00Z",
-        "count": 0,
-        "uniques": 0
-      },
       {
         "timestamp": "2026-10-13T00:00:00Z",
         "count": 0,
@@ -152,17 +147,28 @@
         "timestamp": "2026-10-25T00:00:00Z",
         "count": 15,
         "uniques": 10
+      },
+      {
+        "timestamp": "2026-10-26T00:00:00Z",
+        "count": 117,
+        "uniques": 40
       }
     ]
   },
   "referrers": [
     {
       "referrer": "github.com",
-      "count": 4,
-      "uniques": 1
+      "count": 7,
+      "uniques": 2
     }
   ],
   "paths": [
+    {
+      "path": "/danielep71/MKT-FTRB-SA",
+      "title": "Overview",
+      "count": 4,
+      "uniques": 2
+    },
     {
       "path": "/danielep71/MKT-FTRB-SA/branches",
       "title": "/branches",
@@ -176,20 +182,14 @@
       "uniques": 1
     },
     {
-      "path": "/danielep71/MKT-FTRB-SA",
-      "title": "Overview",
-      "count": 3,
+      "path": "/danielep71/MKT-FTRB-SA/milestones",
+      "title": "/milestones",
+      "count": 4,
       "uniques": 1
     },
     {
       "path": "/danielep71/MKT-FTRB-SA/issues/new",
       "title": "/issues/new",
-      "count": 3,
-      "uniques": 1
-    },
-    {
-      "path": "/danielep71/MKT-FTRB-SA/milestones",
-      "title": "/milestones",
       "count": 3,
       "uniques": 1
     },
@@ -206,20 +206,20 @@
       "uniques": 1
     },
     {
+      "path": "/danielep71/K-FRTB-SA",
+      "title": "Overview",
+      "count": 1,
+      "uniques": 1
+    },
+    {
+      "path": "/danielep71/K-FTRB-SA",
+      "title": "Overview",
+      "count": 1,
+      "uniques": 1
+    },
+    {
       "path": "/danielep71/MKT-FTRB-SA/actions/runs/39075111222",
       "title": "/actions/runs/39075111222",
-      "count": 1,
-      "uniques": 1
-    },
-    {
-      "path": "/danielep71/MKT-FTRB-SA/actions/workflows/traffic-export.yml",
-      "title": "/actions/workflows/traffic-export.yml",
-      "count": 1,
-      "uniques": 1
-    },
-    {
-      "path": "/danielep71/MKT-FTRB-SA/blob/main/src/workbook/FRTB_Template.xlsx",
-      "title": "/blob/main/src/workbook/FRTB_Template.xlsx",
       "count": 1,
       "uniques": 1
     }
