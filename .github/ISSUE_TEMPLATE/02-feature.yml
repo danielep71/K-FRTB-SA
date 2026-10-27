@@ -10,7 +10,7 @@ body:
   attributes:
     value: '## 🧭 Before you submit
 
-      Prototype and repository-maintenance work integrates on release/v0.1.0 (milestone 2). The setup branch release/v0.0.1 was deleted after the v0.0.1 closeout; its history is on main. The Excel/VBA prototype is also on main; Excel host evidence remains pending in #28.
+      Prototype and repository-maintenance work integrates on release/v0.1.0 (milestone 2, v0.2.0 — SA prototype). The setup branch release/v0.0.1 was deleted after the setup closeout (milestone 1, v0.1.0 — Repo setup); its history is on main. The Excel/VBA prototype is also on main; Excel host evidence remains pending in #28.
 
       Use synthetic examples only. Report potential vulnerabilities privately via [SECURITY.md](https://github.com/danielep71/K-FRTB-SA/blob/main/SECURITY.md).
 

@@ -35,12 +35,12 @@ conversation resolution is required.
 Administrative bypasses are not permissions granted to additional users or
 apps. No app bypass was added.
 
-The v0.0.1 setup milestone closed on October 18, 2026.
+The setup milestone (v0.1.0 — Repo setup, first named v0.0.1) closed on October 18, 2026.
 **`release/v0.0.1`** was deleted the same day (#62). For the deletion only, ruleset
 25319621 temporarily excluded that branch and stayed active for every other
 `release/**` branch; the exclusion was then removed, and the readback
 matches the earlier configuration. The branch's closeout head
-`b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No v0.0.1 tag
+`b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No setup tag
 was created.
 
 The active prototype integration branch **`release/v0.1.0`** also receives

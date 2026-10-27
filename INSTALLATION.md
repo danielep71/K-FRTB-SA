@@ -17,9 +17,9 @@ git --version
 node --version
 ```
 
-Current prototype and maintenance work uses `release/v0.1.0`, milestone 2
-(#51). The setup branch `release/v0.0.1` was deleted after the v0.0.1
-closeout (#62). Record the source commit when reporting results.
+Current prototype and maintenance work uses `release/v0.1.0`, milestone 2,
+v0.2.0 — SA prototype (#51). The setup branch `release/v0.0.1` was deleted
+after the setup closeout (#62). Record the source commit when reporting results.
 Main remains the stable default. Create focused task
 branches from the integration branch following [Governance](docs/GOVERNANCE.md).
 
@@ -57,9 +57,9 @@ See [Repository checks](docs/CI.md) for hosted branch coverage, Dependabot,
 failure behavior and the #2 protection handoff. These checks do not execute
 an engine or Excel, test a workbook, or establish verified capital results.
 
-## SA prototype (v0.1.0)
+## SA prototype (v0.2.0)
 
-The [v0.1.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
+The [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 work integrates on `release/v0.1.0` (issue #20). Its approved Excel/VBA
 evaluation scope does not resolve the long-term platform decision or the
 remaining methodology questions in [Scope](docs/SCOPE.md).
