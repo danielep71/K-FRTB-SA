@@ -5,6 +5,11 @@ Unreleased describe integrated work, not a published version.
 
 ## [Unreleased]
 
+### Added
+
+- Project website with capabilities, workbook setup, methodology and validation
+  links, shared K-Risk-Engines styling, and a root README website link (#100).
+
 ### Fixed
 
 - Workbook presentation now survives template generation: the XLSX saves
