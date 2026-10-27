@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The social preview image shows "PROTOTYPE 0.2.0", rendered again from its
+  HTML source with the figures unchanged, and the root README navigation links
+  the wiki after the website (#126).
 - Dependabot version updates for GitHub Actions and both pip directories target
   `release/v0.2.0`; activation requires this configuration on `main` (#118).
 
@@ -17,6 +20,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- The LibreOffice installation step of the prototype checks stops after 8
+  minutes, so a hung package mirror fails the job early instead of holding it
+  for the whole 20-minute limit (#124).
 - MAR paragraph references now cite the paragraph that holds each rule
   (#115): netting of sensitivities MAR21.4(2) (In_Delta subtitle, CORE_SBM,
   methodology); commodity tenors MAR21.13(1) and vega maturities MAR21.8(4)

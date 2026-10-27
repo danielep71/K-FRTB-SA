@@ -30,6 +30,8 @@
 
 [Website](https://danielep71.github.io/K-FRTB-SA/)
 &nbsp;·&nbsp;
+[Wiki](https://github.com/danielep71/K-FRTB-SA/wiki)
+&nbsp;·&nbsp;
 [Quick start](#quick-start)
 &nbsp;·&nbsp;
 [How a run works](#how-a-run-works)
