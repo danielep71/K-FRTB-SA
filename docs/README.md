@@ -24,8 +24,10 @@ procedures. Keep root entry documents linked rather than copying them here.
 | Effective GitHub controls | [Repository settings](REPOSITORY_SETTINGS.md) |
 | Milestone plan and current workstreams | [Roadmap](ROADMAP.md) |
 | Detailed repository-setup milestone | [v0.1.0 — Repo setup](Milestones/v0.0.1.md) (guide written as v0.0.1) |
+| Detailed prototype milestone | [v0.2.0 — SA prototype](Milestones/v0.2.0.md) |
 | Versions, tags and release evidence | [Releasing](../RELEASING.md) |
 | Setup closeout evidence | [Setup closeout](evidence/2026-10-18-setup-closeout.md) |
+| Prototype evaluation before the Excel run | [Interim evaluation](evidence/2026-10-27-prototype-evaluation.md) |
 | Recorded changes | [Changelog](../CHANGELOG.md) |
 
 Durable evidence records live in [evidence](evidence/) and milestone guides in

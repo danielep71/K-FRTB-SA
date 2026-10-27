@@ -1,0 +1,146 @@
+# 🧪 v0.2.0 prototype evaluation — interim
+
+Interim evaluation for issue #32 and the
+[v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
+milestone. Readback on October 27, 2026 (Europe/Rome), at main and
+`release/v0.2.0` = `46ae2286af2657fb4d5f373894f8dce64c41fb59`, after
+integration #128.
+
+**This record is written before any desktop Excel run.** It states what the
+prototype covers and what the evidence shows so far. It is not the
+milestone's closeout record: that follows the Excel run of #28 and replaces
+this assessment where they differ. Nothing here is regulatory validation.
+
+## 🧮 Coverage reached
+
+| Component | Implemented | Not implemented |
+| --- | --- | --- |
+| SBM | Delta, vega and curvature for GIRR, CSR non-securitization, equity, commodity and FX; low, medium and high correlation scenarios; SBM is the largest scenario total | CSR securitization (non-CTP and CTP); sensitivities and CVRs are inputs, not priced |
+| DRC | Non-securitization: gross JTD by seniority, maturity scaling with the three-month floor, netting by obligor and seniority, bucket charge with the hedge benefit ratio | Securitization and CTP DRC |
+| RRAO | Exotic and other residual risks on gross notional | Instrument classification: eligibility is an input |
+| Parameters | Editable `P_*` sheets with MAR paragraph references, checked against the BIS text (#115 corrected the citations) | Any jurisdiction profile |
+| Workbook | Input, parameter, output and log sheets; **Run FRTB-SA**, **Clear outputs** and **Run regression test** buttons; in-workbook regression test of 52 items | Excel execution not yet recorded |
+
+On the synthetic sample portfolio, with the default parameters and every
+discretion off, the total capital requirement is 3,877,792.81 EUR: SBM
+3,163,703.42 (low scenario), DRC 636,589.40 and RRAO 77,500.00. These are the
+values the regression test embeds, derived from the independent reference.
+
+## 🔎 Evidence so far
+
+| Kind | Result at this readback |
+| --- | --- |
+| Static checks | `tools/vba_lint.py`: 11 modules, 0 problems. `tools/check_repository.py` passes with 20 maintenance tests |
+| Runtime, LibreOffice | `REQUIRE_LIBREOFFICE=1 pytest` with PowerShell 7.4.6: 188 passed, 29 subtests, on `46ae228` plus this record's documentation changes. Hosted [prototype checks](https://github.com/danielep71/K-FRTB-SA/actions/runs/40480769720/job/122113987719) passed on the tree of this readback, in the re-run of #128 |
+| Independent numerical comparison | The Python reference (`tests/frtb_reference.py`) reproduces every output of the VBA run in LibreOffice, on the sample and on a variant with every discretion on and invalid rows; hand-calculated tests cover the formulas |
+| Methodology review | Parameters checked against the BIS text; six interpretations remain open (#29) |
+| Runtime, Excel | **None.** No build, compile, run, export or sync has been executed in desktop Excel (#28) |
+
+LibreOffice runs the VBA in a compatibility mode; it is not Excel. The
+reference and the VBA share one reading of MAR21–MAR23, so their agreement
+does not prove that reading is right.
+
+## 🔧 Source-first build: effort and risks
+
+The workbook is never committed. It is built from the macro-free template
+`src/workbook/FRTB_Template.xlsx` and the exported modules in `src/modules`
+(production) and `tests/modules` (tests), by `tools/Build-Workbook.ps1` in
+Excel or `tools/lo_runner.py` in LibreOffice.
+
+Around the build sit `tools/Sync-FRTB-VBA.ps1` (update an existing
+workbook), `tools/Export-FRTB-VBA.ps1` with `tools/compare_vba_export.py`
+(read-only round trip) and `tools/check_excel_evidence.py` (evidence
+validator). Each is tested offline, but none has run in Excel.
+
+| Risk | Mitigation so far | Open |
+| --- | --- | --- |
+| LibreOffice accepts VBA that Excel rejects, or the reverse | Lint and a probe function in every module catch some compile errors | Only **Debug → Compile** in Excel settles it (#28) |
+| The template was produced by LibreOffice | `tests/test_template.py` checks values, layout and saved presentation against a fresh build | An Excel-built template may differ in fonts and row heights (#28) |
+| Locale-dependent number parsing | Numeric text is parsed invariantly and rejected when invalid (#41) | Comma-decimal Excel behavior is untested |
+| Workbook and source drift apart | Read-only export and Git comparison with a workbook binding (#79) | No real export has been compared (#30) |
+| Excel settings block the build | The build script reports a missing Trust Center setting | The error path is unverified (#28) |
+
+The effort of the source-first approach is real: four PowerShell and
+Python tools, a template check and an evidence format exist only to keep
+the workbook reproducible. The v0.3.0 platform decision should weigh that
+effort.
+
+## 🗂️ Committed template
+
+The template is macro-free: no VBA project, form controls or personal
+properties. It is regenerated by `tools/build_template.py` and must equal a
+fresh build (`--check`). It carries the shared toolkit style (#76), the
+corrected MAR citations (#115) and version `0.2.0-prototype` (#113). Buttons
+and tab colors are added at build time by `M_Setup.FinishWorkbook`.
+
+## 🔌 Worksheet access in the core modules
+
+Calculation is not separated from worksheet access:
+
+- `CORE_Util` wraps sheet access (`GetSheet`, `ReadTable`, `TableCell`,
+  `ClearTableArea`, the log).
+- `CORE_SBM`, `CORE_DRC` and `CORE_RRAO` read their input sheets row by row
+  through these helpers. `CORE_SBM` and `CORE_DRC` also write and format
+  their output sheets directly.
+- Input columns are read by position. A column that is inserted, removed or
+  moved shifts the values without any header check.
+
+Separating calculation from worksheet access belongs to v0.4.0 in the
+[roadmap](../ROADMAP.md).
+
+## ⚠️ Known limits
+
+- **No Excel evidence** (#28). The build and sync scripts, the round trip and
+  the Excel-only presentation are untested in Excel.
+- **Open interpretations** (#29): the scope of the GIRR √2 discretion, covered
+  bonds, the FX curvature divisor, DRC obligor attributes, scenario ties and
+  curvature risk weights; see the
+  [methodology](../methodology.md#interpretations-and-simplifications-to-review).
+- **Input contract.** Input columns are read by position. A Control switch
+  that is not read as `TRUE` silently falls back to its default. The
+  reporting currency is read as text without validation.
+- **Scope.** The exclusions listed under coverage above; no jurisdiction
+  profile.
+- **Scale.** Only the synthetic sample and small test cases have run; the
+  engine has not been timed on large inputs.
+
+## 🧾 Issue reconciliation
+
+Readback of milestone 2 on October 27, 2026: 36 issues, no pull requests
+(#104). Every issue has the owner as assignee and exactly one priority. P1 is
+used only for the confirmed calculation bugs #41, #45 and #48.
+
+| State | Issues |
+| --- | --- |
+| Open, waiting on the Excel run of #28 | #20, #28, #30, #72, #79, #82, #85 |
+| Open, this closeout | #32 |
+| Closed | #31, #40, #41, #45, #48, #51, #55, #59, #62, #66, #68, #76, #77, #87, #93, #95, #98, #100, #102, #104, #110, #112, #113, #115, #117, #118, #124, #126 |
+
+Integrations into main recorded in the issues: #39 and #47 (calculation
+fixes), #53, #58, #61, #64, #70, #74, #84, #89 and #92 (maintenance and
+tooling), #105 and #107 (milestone policy), #120 (Dependabot), and #123 and
+#128 (October 27). #29 belongs to v0.3.0.
+
+## 🧭 Adopted and deferred scope
+
+| Item | Decision |
+| --- | --- |
+| Excel/VBA for the prototype, committed template plus exported modules | Adopted (#20, #30) |
+| Independent Python reference and LibreOffice reconciliation as the automated gate | Adopted |
+| Evidence format and offline validator for Excel runs | Adopted (#82) |
+| Project website on GitHub Pages | Adopted, live since October 27, 2026 (#100) |
+| Methodology decisions | Deferred to v0.3.0 (#29); documented as prototype limits |
+| CSR securitization, CTP, securitization DRC | Excluded |
+| Jurisdiction profile | Deferred to v0.3.0 |
+| Large-portfolio performance | Deferred to v0.7.0 |
+| Tag, GitHub release, workbook distribution | Not part of this milestone without an explicit request |
+
+## ➡️ Next steps
+
+1. Run #28 on a frozen candidate in desktop Excel for Windows, record it in
+   the [Excel evidence](../EXCEL_EVIDENCE.md) format and validate it.
+2. Close #20, #30, #72, #79, #82 and #85 on that evidence, or name what
+   failed.
+3. Write the final closeout record from this one, with the Excel results.
+4. Close the milestone; then the owner decides on a tag and on the v0.3.0
+   scope and platform.

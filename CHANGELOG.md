@@ -83,6 +83,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- The v0.2.0 — SA prototype milestone guide (`docs/Milestones/v0.2.0.md`)
+  and an interim prototype evaluation written before the Excel run
+  (`docs/evidence/2026-10-27-prototype-evaluation.md`). The roadmap lists
+  the milestone's issues as read back on October 27, 2026; the
+  documentation index and governance link both documents (#32).
 - Project website with capabilities, workbook setup, methodology and validation
   links, shared K-Risk-Engines styling, and a root README website link (#100).
 - Market risk and CVA method maps (#98): five diagrams in
