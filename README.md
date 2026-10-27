@@ -140,15 +140,15 @@ need to **check** an FRTB-SA number:
 
 ## 1. Clone and check
 
-Prototype and repository maintenance integrate on **`release/v0.1.0`**,
+Prototype and repository maintenance integrate on **`release/v0.2.0`**,
 milestone 2, **v0.2.0 — SA prototype**. The milestones were renumbered on
-October 27, 2026; the integration branch keeps its name. The setup branch
-`release/v0.0.1` was deleted after the setup closeout (milestone 1, now
-**v0.1.0 — Repo setup**); its history is on main. See
+October 27, 2026, and `release/v0.2.0` superseded `release/v0.1.0` the same
+day. The setup branch `release/v0.0.1` was deleted after the setup closeout
+(milestone 1, now **v0.1.0 — Repo setup**); its history is on main. See
 [branch governance](docs/GOVERNANCE.md).
 
 ```sh
-git clone --branch release/v0.1.0 https://github.com/danielep71/K-FRTB-SA.git
+git clone --branch release/v0.2.0 https://github.com/danielep71/K-FRTB-SA.git
 cd K-FRTB-SA
 python3 tools/vba_lint.py
 ```

@@ -8,7 +8,8 @@ requires; the issue tracker is authoritative for current progress.
 
 On October 27, 2026 the milestones were renumbered one step up: the setup
 milestone, first named v0.0.1, became v0.1.0, and every later milestone moved
-with it. The integration branch `release/v0.1.0` keeps its name. Dated records
+with it. The integration branch `release/v0.2.0` superseded `release/v0.1.0`
+the same day (#117). Dated records
 keep the names in effect when they were written.
 
 ## 🗺️ Milestone plan
@@ -58,7 +59,7 @@ the setup baseline.
 ## 🧪 v0.2.0 — SA prototype
 
 [Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2),
-integration branch `release/v0.1.0`.
+integration branch `release/v0.2.0` (`release/v0.1.0` until October 27, 2026).
 
 | Issue | State | Deliverable |
 | --- | --- | --- |
