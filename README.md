@@ -11,7 +11,7 @@
 [![Excel VBA](https://img.shields.io/badge/Excel_VBA-source_first-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white)](#quick-start)
 [![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#quick-start)
 [![Framework](https://img.shields.io/badge/Framework-Basel_MAR21--MAR23-1f3a5f?style=for-the-badge)](docs/methodology.md)
-[![Status](https://img.shields.io/badge/Status-Prototype_0.1.0-D93F0B?style=for-the-badge)](#status)
+[![Status](https://img.shields.io/badge/Status-Prototype_0.2.0-D93F0B?style=for-the-badge)](#status)
 [![Reconciliation](https://img.shields.io/badge/Reconciliation-LibreOffice_checked-2ea44f?style=for-the-badge)](docs/validation.md)
 [![Excel evidence](https://img.shields.io/badge/Excel_evidence-pending-6E7781?style=for-the-badge)](docs/validation.md#not-validated)
 [![License](https://img.shields.io/badge/License-MIT-2ea44f?style=for-the-badge)](LICENSE)
@@ -59,7 +59,7 @@
 <a id="status"></a>
 
 > [!IMPORTANT]
-> **Version 0.1.0 is a prototype** of the
+> **Version 0.2.0 is a prototype** of the
 > [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
 > milestone (issue #20). It implements the Basel standardized approach
 > (MAR21-MAR23) in Excel VBA with parameters checked against the BIS text,

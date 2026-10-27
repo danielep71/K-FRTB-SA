@@ -21,9 +21,9 @@ Excel host evidence (#28) and the Excel round trip (#30) remain open. Its open
 methodology interpretations are documented as limits; deciding them (#29)
 belongs to v0.3.0 under the [roadmap](docs/ROADMAP.md).
 
-The milestones were renumbered one step up on October 27, 2026. The
-prototype's version in the workbook is still `0.1.0-prototype`; setting it to
-0.2.0 is #113. Dated records keep the names in effect when they were written.
+The milestones were renumbered one step up on October 27, 2026, and the
+workbook reports the matching version `0.2.0-prototype` (#113). Dated records
+keep the names and versions in effect when they were written.
 
 <a id="version-convention"></a>
 

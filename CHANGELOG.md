@@ -185,6 +185,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The workbook reports version `0.2.0-prototype`, matching milestone v0.2.0 —
+  SA prototype: `APP_VERSION`, the README sheet, the Log start line, the
+  committed template and the README badge and status callout (#113).
 - Prototype and maintenance work integrates on `release/v0.2.0`, created on
   October 27, 2026 from `0eb819b`; `release/v0.1.0` is superseded and is
   deleted under the release-branch lifecycle once milestone 2 is closed.
