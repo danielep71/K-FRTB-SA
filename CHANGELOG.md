@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The social preview image shows "PROTOTYPE 0.2.0", rendered again from its
+  HTML source with the figures unchanged, and the root README navigation links
+  the wiki after the website (#126).
 - Dependabot version updates for GitHub Actions and both pip directories target
   `release/v0.2.0`; activation requires this configuration on `main` (#118).
 
