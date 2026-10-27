@@ -116,8 +116,8 @@ not shift the collection. A 100-page bound, malformed response, API error or
 failed removal fails the run rather than claiming success.
 
 The workflow runs trusted inline Python without checkout, third-party actions,
-PR code, PR text interpolation or custom secrets. Its token has `issues: write`
-for the milestone patch and `pull-requests: read` for listing; all other
+PR code, PR text interpolation or custom secrets. Its token has only
+`pull-requests: write` for PR metadata updates and listing; all other
 permissions are absent. Each mutation first reads the live issues endpoint and
 refuses to modify an object without a `pull_request` marker. An unset milestone
 is a no-op. Offline fixtures exercise pagination, actual issue refusal,
