@@ -18,7 +18,7 @@ risks, dependencies, or missing evidence; write None when applicable.
 ## ✅ Merge checklist
 
 - [ ] Base is `release/v0.1.0` for current prototype/maintenance tasks (milestone 2), another explicitly approved branch for future milestones, or this is an explicitly requested release-to-main integration. The setup branch `release/v0.0.1` was deleted after the v0.0.1 closeout; do not recreate or target it.
-- [ ] Linked issue and PR have assignee `danielep71`, exactly one priority, and the appropriate milestone; P1 is only for confirmed calculation bugs.
+- [ ] Linked issue and PR have assignee `danielep71` and exactly one priority; P1 is only for confirmed calculation bugs. The linked issue has the appropriate milestone; the PR has no milestone.
 - [ ] Scope, compatibility impact, affected documentation, and CHANGELOG.md are current.
 - [ ] Applicable checks pass; any running automated review is finished and all review findings are addressed or explained and resolved.
 - [ ] Evidence and limitations are accurate; no credentials, confidential data, or undisclosed vulnerability details are included.

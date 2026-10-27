@@ -5,6 +5,13 @@ Unreleased describe integrated work, not a published version.
 
 ## [Unreleased]
 
+### Changed
+
+- Milestones contain issues only. Historical PR assignments are removed;
+  trusted metadata automation reconciles future PRs and bot changes. The PR
+  checklist, contribution rules and Dependabot entries follow the same policy,
+  with offline regression coverage (#104).
+
 ### Fixed
 
 - Workbook presentation now survives template generation: the XLSX saves
