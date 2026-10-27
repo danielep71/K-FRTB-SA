@@ -22,8 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
-      issues: write
-      pull-requests: read
+      pull-requests: write
     steps:
       # Trusted inline code only: never check out or execute a PR's contents.
       - name: Reconcile PR metadata
