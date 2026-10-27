@@ -36,7 +36,7 @@ Option Private Module
 '------------------------------------------------------------------------------
 Public Const APP_NAME As String = "K-FRTB-SA"                'Product name in the brand bar
 Public Const APP_TITLE As String = "FRTB standardized approach"
-Public Const APP_VERSION As String = "0.1.0-prototype"
+Public Const APP_VERSION As String = "0.2.0-prototype"
 
 ' Sheet names
 Public Const SH_README As String = "README"
