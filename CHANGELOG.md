@@ -173,6 +173,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The README names the milestones by their titles after the renumbering of
+  October 27, 2026 (v0.1.0 — Repo setup, v0.2.0 — SA prototype, v0.3.0 —
+  Regulatory baseline and certification scope), states that pull requests
+  carry no milestone (#104), and lists the export, comparison and evidence
+  tooling, the Excel evidence document, the market risk diagrams and the
+  wiki (#110).
 - The market risk framework diagram is a map of approaches, without project
   names (#102).
   - Market risk: the IMA for approved desks (expected shortfall,
