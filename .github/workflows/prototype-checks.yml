@@ -47,7 +47,9 @@ jobs:
         with:
           persist-credentials: false
 
+      # A hung package mirror fails here instead of using the whole job limit.
       - name: Install LibreOffice Calc and the Python UNO bridge
+        timeout-minutes: 8
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libreoffice-calc python3-uno

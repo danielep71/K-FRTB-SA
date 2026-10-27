@@ -68,7 +68,9 @@ readback and a representative blocked PR (October 18, 2026). A task PR proves
 the hosted command; release-to-main integration and synchronization into the
 prototype branch (#31) install the workflow on the respective branch lines.
 The prototype workflow installs both requirements manifests in its own test
-environment before pytest discovers the shared maintenance tests. The
+environment before pytest discovers the shared maintenance tests. Its
+LibreOffice installation step stops after 8 minutes, within the job's
+20-minute limit, so a hung package mirror fails early (#124). The
 universal job remains a separate, runtime-independent check.
 Do not require a check on a line before installing it there.
 
