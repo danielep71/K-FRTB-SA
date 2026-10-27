@@ -77,6 +77,8 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Project website with capabilities, workbook setup, methodology and validation
+  links, shared K-Risk-Engines styling, and a root README website link (#100).
 - Market risk and CVA method maps (#98): five diagrams in
   `docs/assets/market-risk/`, as SVG masters and PNGs, also published on the
   K-Risk-Engines site.
