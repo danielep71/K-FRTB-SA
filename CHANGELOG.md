@@ -60,6 +60,17 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- Market risk and CVA method maps (#98): five diagrams in
+  `docs/assets/market-risk/`, as SVG masters and PNGs, also published on the
+  K-Risk-Engines site.
+  - They cover the FRTB-SA and CVA frameworks, perimeter to RWA: SBM, DRC and
+    RRAO; BA-CVA and SA-CVA, with the MAR50.8 carve-out and the MAR50.9
+    alternative. The internal models approach and the simplified standardized
+    approach are named.
+  - `tools/build_market_diagrams.py` regenerates them reproducibly with
+    CairoSVG 2.9.1.
+  - They are method maps, not the prototype's implemented scope.
+
 - Excel evidence record and validator (#82), adapted from the
   VBA-SACCR-Toolkit:
   - `docs/EXCEL_EVIDENCE.md` defines the manual procedure, the `host.json`
