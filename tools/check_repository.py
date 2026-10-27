@@ -181,7 +181,7 @@ def validate_milestone_workflow(document):
     if set(events) != {"push", "pull_request_target", "schedule", "workflow_dispatch"} or events["push"] != {"branches": ["main"], "paths": [".github/workflows/pr-milestones.yml"]} or events["pull_request_target"] != {"types": ["opened", "reopened", "edited", "milestoned"]} or events["schedule"] != [{"cron": "17 3 * * *"}]:
         raise ValueError("PR milestone workflow requires event and full-scan coverage")
     job = document["jobs"]["reconcile"]
-    if document["permissions"] != {} or job["permissions"] != {"issues": "write", "pull-requests": "read"}:
+    if document["permissions"] != {} or job["permissions"] != {"pull-requests": "write"}:
         raise ValueError("PR milestone workflow permissions must be limited to metadata")
     steps = job["steps"]
     if len(steps) != 1 or set(steps[0]) != {"name", "env", "run"} or steps[0]["env"] != {"GH_TOKEN": "${{ github.token }}"} or "${{" in steps[0]["run"]:
