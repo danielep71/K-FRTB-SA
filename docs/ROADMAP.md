@@ -58,7 +58,9 @@ the setup baseline.
 
 ## 🧪 v0.2.0 — SA prototype
 
-[Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2),
+[Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/2) ·
+[milestone guide](Milestones/v0.2.0.md) ·
+[interim evaluation](evidence/2026-10-27-prototype-evaluation.md),
 integration branch `release/v0.2.0` (`release/v0.1.0` until October 27, 2026).
 
 | Issue | State | Deliverable |
@@ -85,14 +87,28 @@ integration branch `release/v0.2.0` (`release/v0.1.0` until October 27, 2026).
 | [#82](https://github.com/danielep71/K-FRTB-SA/issues/82) | Open | Evidence contract and validator implemented; actual Excel bundle pending #28 |
 | [#85](https://github.com/danielep71/K-FRTB-SA/issues/85) | Open | Output-placeholder fix verified in LibreOffice; desktop Excel verification pending #28 |
 | [#87](https://github.com/danielep71/K-FRTB-SA/issues/87) | Closed | Repository-specific comments and supported file policies |
-| [#93](https://github.com/danielep71/K-FRTB-SA/issues/93) | Open | Maintenance-audit documentation reconciliation |
+| [#93](https://github.com/danielep71/K-FRTB-SA/issues/93) | Closed | Maintenance-audit documentation reconciliation |
+| [#95](https://github.com/danielep71/K-FRTB-SA/issues/95) | Closed | Repository references after the rename to K-FRTB-SA |
+| [#98](https://github.com/danielep71/K-FRTB-SA/issues/98) | Closed | Market risk and CVA method maps |
+| [#100](https://github.com/danielep71/K-FRTB-SA/issues/100) | Closed | Project website, live on GitHub Pages |
+| [#102](https://github.com/danielep71/K-FRTB-SA/issues/102) | Closed | Market risk framework diagram as a map of approaches |
+| [#104](https://github.com/danielep71/K-FRTB-SA/issues/104) | Closed | Milestones for issues only |
+| [#110](https://github.com/danielep71/K-FRTB-SA/issues/110) | Closed | Root README brought up to date |
+| [#112](https://github.com/danielep71/K-FRTB-SA/issues/112) | Closed | Documentation aligned with the renumbered milestones |
+| [#113](https://github.com/danielep71/K-FRTB-SA/issues/113) | Closed | Prototype version `0.2.0-prototype` |
+| [#115](https://github.com/danielep71/K-FRTB-SA/issues/115) | Closed | MAR paragraph references corrected |
+| [#117](https://github.com/danielep71/K-FRTB-SA/issues/117) | Closed | Integration moved to `release/v0.2.0` |
+| [#118](https://github.com/danielep71/K-FRTB-SA/issues/118) | Closed | Dependabot targets `release/v0.2.0` |
+| [#124](https://github.com/danielep71/K-FRTB-SA/issues/124) | Closed | Timeout on the LibreOffice install step |
+| [#126](https://github.com/danielep71/K-FRTB-SA/issues/126) | Closed | Preview image version 0.2.0 and README wiki link |
 
-States were read back on October 26, 2026; the live milestone is authoritative.
-At that checkpoint main and release/v0.1.0 both pointed to `a1705b9`, after
-integrations #84 (template, export and evidence tools, output-placeholder fix),
-#89 (comment and file-policy cleanup) and #92 (numpy test dependency). These
-merges do not supply desktop Excel evidence. The milestone guide and
-evaluation record remain outstanding under #32.
+States were read back on October 27, 2026; the live milestone is authoritative.
+At that checkpoint main and `release/v0.2.0` both pointed to `46ae228`, after
+integrations #123 (version 0.2.0, the branch move and the website) and #128
+(install-step timeout, preview image and wiki link). These merges do not
+supply desktop Excel evidence. The [milestone guide](Milestones/v0.2.0.md)
+and an [interim evaluation](evidence/2026-10-27-prototype-evaluation.md)
+exist; the final closeout record follows the Excel run of #28 (#32).
 
 The open methodology interpretations are documented as limits in the
 [methodology](methodology.md); deciding them ([#29](https://github.com/danielep71/K-FRTB-SA/issues/29))
