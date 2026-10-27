@@ -1,7 +1,8 @@
 """Render the five market-risk and CVA diagrams as SVG masters and PNGs.
 
 The diagrams in docs/assets/market-risk/ map the regulatory architecture of
-FRTB-SA and CVA risk (Basel MAR20-MAR23, MAR50). They are method maps: they do
+FRTB-SA and CVA risk (Basel MAR20-MAR23 and MAR50; the framework diagram also
+cites MAR30-MAR33, MAR40, BCBS 158 and BCBS 189). They are method maps: they do
 not describe the implemented scope of K-FRTB-SA or K-CVA. The same set is
 published on the K-Risk-Engines site.
 

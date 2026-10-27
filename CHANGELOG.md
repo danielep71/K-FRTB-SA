@@ -14,6 +14,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- MAR paragraph references now cite the paragraph that holds each rule
+  (#115): netting of sensitivities MAR21.4(2) (In_Delta subtitle, CORE_SBM,
+  methodology); commodity tenors MAR21.13(1) and vega maturities MAR21.8(4)
+  (P_General); the DRC maturity floor MAR22.18 and one-year horizon MAR22.15
+  (P_DRC); the RRAO weights MAR23.8(2)(a) and (b) (P_RRAO); the DRC steps in
+  CORE_DRC; sensitivity definitions MAR21.19-26 (README sheet, methodology).
+  The template is rebuilt; no parameter value or result changes.
 - Workbook presentation now survives template generation: the XLSX saves
   hidden gridlines, role-colored tabs, frozen headers and identifiers, and
   landscape print settings. Data-row spacing, table borders, README

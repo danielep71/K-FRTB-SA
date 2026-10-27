@@ -451,7 +451,7 @@ Private Sub BuildReadme()
         "Qualifier", "GIRR: curve name. CSR_NS and EQ: issuer or index. COM: commodity. FX: the currency.", _
         "Sub-type", "GIRR: YIELD, INFLATION or XCCY. CSR_NS delta: BOND or CDS. EQ delta: SPOT or REPO. COM delta: delivery location.", _
         "Tenors", "GIRR 0.25-30y, CSR 0.5-10y, COM 0-30y; vega option and GIRR underlying maturities 0.5, 1, 3, 5, 10y.", _
-        "Amounts", "Sensitivities as defined in MAR21.18-26 (for example GIRR: PV change for 1bp / 0.0001). Vega: vega x implied volatility. Curvature: CVR up and CVR down per risk factor.", _
+        "Amounts", "Sensitivities as defined in MAR21.19-26 (for example GIRR: PV change for 1bp / 0.0001). Vega: vega x implied volatility. Curvature: CVR up and CVR down per risk factor.", _
         "DRC", "Signed notional and market value (negative for shorts), maturity in years, bucket CORP, SOV or LGM, credit quality AAA ... DEFAULTED, seniority EQUITY, NON_SENIOR, SENIOR or COVERED."))
 
     r = r + 1
@@ -561,7 +561,7 @@ End Sub
 '                              INPUT SHEETS
 '------------------------------------------------------------------------------
 Private Sub BuildInputSheets()
-    BuildInputSheet SH_IN_DELTA, "Delta sensitivities in the reporting currency; rows with the same risk factor are netted (MAR21.4(1)).", _
+    BuildInputSheet SH_IN_DELTA, "Delta sensitivities in the reporting currency; rows with the same risk factor are netted (MAR21.4(2)).", _
         Array("ID", "RiskClass", "Bucket", "Qualifier", "SubType", "Tenor", "Sensitivity", "Comment"), _
         Array(10, 11, 9, 18, 13, 9, 16, 34), 7
     BuildInputSheet SH_IN_VEGA, "Vega x implied volatility per option maturity (and GIRR underlying maturity), MAR21.25.", _
@@ -648,8 +648,8 @@ Private Sub WriteParamGeneral()
     r = PutTable(ws, r + 9, "VERTICES", "Regulatory vertices (years)", Array("Code", "Value", "Reference"))
     PutRow ws, r, Array("GIRR_TENORS", "0.25,0.5,1,2,3,5,10,15,20,30", "MAR21.8(1)")
     PutRow ws, r + 1, Array("CSR_TENORS", "0.5,1,3,5,10", "MAR21.9(1)")
-    PutRow ws, r + 2, Array("COM_TENORS", "0,0.25,0.5,1,2,3,5,10,15,20,30", "MAR21.12(1)")
-    PutRow ws, r + 3, Array("VEGA_MATURITIES", "0.5,1,3,5,10", "MAR21.8(2)")
+    PutRow ws, r + 2, Array("COM_TENORS", "0,0.25,0.5,1,2,3,5,10,15,20,30", "MAR21.13(1)")
+    PutRow ws, r + 3, Array("VEGA_MATURITIES", "0.5,1,3,5,10", "MAR21.8(4)")
     FormatParamRows ws, r, r + 3, 3, 2, 2, ""
 End Sub
 
@@ -887,8 +887,8 @@ Private Sub WriteParamDrc()
     FormatParamRows ws, r, r + 3, 4, 2, 3, "3"
 
     r = PutTable(ws, r + 5, "DRC_PARAMS", "Maturity scaling (years)", Array("Code", "Value", "Reference"))
-    PutRow ws, r, Array("MIN_MATURITY", 0.25, "MAR22.17: floor of three months")
-    PutRow ws, r + 1, Array("MAX_MATURITY", 1, "MAR22.17: one-year capital horizon")
+    PutRow ws, r, Array("MIN_MATURITY", 0.25, "MAR22.18: floor of three months")
+    PutRow ws, r + 1, Array("MAX_MATURITY", 1, "MAR22.15: one-year capital horizon")
     FormatParamRows ws, r, r + 1, 3, 2, 2, ""
 
     r = PutTable(ws, r + 3, "DRC_BUCKETS", "Buckets (MAR22.22)", Array("Bucket", "Description"))
@@ -904,8 +904,8 @@ Private Sub WriteParamRrao()
     Set ws = ParamSheet(SH_P_RRAO, "Residual risk add-on risk weights.", 6)
     SetWidths ws, Array(12, 10, 40)
     r = PutTable(ws, LAYOUT_HEADER_ROW, "RRAO_RW", "Risk weights (MAR23.8)", Array("Category", "RW", "Reference"))
-    PutRow ws, r, Array("EXOTIC", 0.01, "MAR23.8(1): exotic underlying")
-    PutRow ws, r + 1, Array("OTHER", 0.001, "MAR23.8(2): other residual risks")
+    PutRow ws, r, Array("EXOTIC", 0.01, "MAR23.8(2)(a): exotic underlying")
+    PutRow ws, r + 1, Array("OTHER", 0.001, "MAR23.8(2)(b): other residual risks")
     FormatParamRows ws, r, r + 1, 3, 2, 2, "2"
 End Sub
 
