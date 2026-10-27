@@ -23,9 +23,9 @@ procedures. Keep root entry documents linked rather than copying them here.
 | Label catalogue and triage searches | [Labels](LABELS.md) |
 | Effective GitHub controls | [Repository settings](REPOSITORY_SETTINGS.md) |
 | Milestone plan and current workstreams | [Roadmap](ROADMAP.md) |
-| Detailed repository-setup milestone | [v0.0.1](Milestones/v0.0.1.md) |
+| Detailed repository-setup milestone | [v0.1.0 — Repo setup](Milestones/v0.0.1.md) (guide written as v0.0.1) |
 | Versions, tags and release evidence | [Releasing](../RELEASING.md) |
-| Setup closeout evidence | [v0.0.1 closeout](evidence/2026-10-18-setup-closeout.md) |
+| Setup closeout evidence | [Setup closeout](evidence/2026-10-18-setup-closeout.md) |
 | Recorded changes | [Changelog](../CHANGELOG.md) |
 
 Durable evidence records live in [evidence](evidence/) and milestone guides in

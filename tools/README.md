@@ -1,7 +1,7 @@
 # 🛠️ Repository tooling
 
-This directory indexes maintenance tools and the helpers of the v0.1.0
-prototype (issue #20). None of them holds calculation logic.
+This directory indexes maintenance tools and the helpers of the SA
+prototype, milestone v0.2.0 (issue #20). None of them holds calculation logic.
 
 | Tool | Purpose |
 | --- | --- |

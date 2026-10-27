@@ -1,7 +1,7 @@
 # 🧩 Production source
 
 This directory is the production-source boundary. It holds the exported VBA
-of the v0.1.0 prototype (issue #20) and the macro-free [workbook template](workbook/README.md).
+of the SA prototype, milestone v0.2.0 (issue #20), and the macro-free [workbook template](workbook/README.md).
 The prototype uses Excel/VBA to evaluate the approach; it is not the platform
 decision, which stays open in [Scope](../docs/SCOPE.md).
 
