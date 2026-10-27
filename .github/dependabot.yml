@@ -7,7 +7,6 @@ updates:
       interval: weekly
     assignees: [danielep71]
     labels: [repository, ci, P3]
-    milestone: 2
     open-pull-requests-limit: 5
   - package-ecosystem: pip
     directory: /.github
@@ -16,7 +15,6 @@ updates:
       interval: weekly
     assignees: [danielep71]
     labels: [repository, ci, P3]
-    milestone: 2
     open-pull-requests-limit: 5
   - package-ecosystem: pip
     directory: /tests
@@ -25,5 +23,4 @@ updates:
       interval: weekly
     assignees: [danielep71]
     labels: [repository, tests, P3]
-    milestone: 2
     open-pull-requests-limit: 5
