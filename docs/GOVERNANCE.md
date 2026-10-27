@@ -182,8 +182,9 @@ checklist; this document owns its detailed procedures.
 closed on October 18, 2026; its [detailed guide](Milestones/v0.0.1.md) and
 [closeout record](evidence/2026-10-18-setup-closeout.md) remain the setup
 baseline. [v0.2.0 — SA prototype](https://github.com/danielep71/K-FRTB-SA/milestone/2)
-is active: prototype closeout and its milestone guide are tracked in #32, and
-#28 owns Excel evidence. The methodology decisions (#29) belong to v0.3.0 in
+is active: its [guide](Milestones/v0.2.0.md) and
+[interim evaluation](evidence/2026-10-27-prototype-evaluation.md) exist,
+prototype closeout is tracked in #32, and #28 owns Excel evidence. The methodology decisions (#29) belong to v0.3.0 in
 the [milestone plan](ROADMAP.md). The live issue tracker
 owns progress; a guide is not a substitute for completed acceptance criteria.
 
