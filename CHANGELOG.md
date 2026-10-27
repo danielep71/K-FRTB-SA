@@ -166,6 +166,16 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The market risk framework diagram is a map of approaches, without project
+  names (#102).
+  - Market risk: the IMA for approved desks (expected shortfall,
+    non-modellable risk factors, default risk charge) and the SA for the
+    other desks (SBM, DRC, RRAO).
+  - CVA risk: BA-CVA, reduced or full; SA-CVA, delta and vega; the MAR50.9
+    alternative.
+  - Below each approach, the earlier Basel 2.5 (2009) or Basel III (2011)
+    rule; the total is RWA = 12.5 × K for each requirement.
+  - The other four diagrams are unchanged.
 - The repository is renamed from MKT-FTRB-SA, whose name transposed the
   letters of FRTB, to K-FRTB-SA, the workbook's name (#95).
   - Every link, clone command, label search and label command uses
