@@ -99,6 +99,15 @@ def test_default_run_reconciles_with_reference(lo_default_run):
     assert reconcile(lo_default_run) == []
 
 
+def tie_notes(wb):
+    return [v for row in wb["Results"].iter_rows(min_row=FIRST_DATA_ROW, values_only=True)
+            for v in row if isinstance(v, str) and v.startswith("Scenario tie")]
+
+
+def test_default_run_has_no_tie_note(lo_default_run):
+    assert tie_notes(lo_default_run) == []
+
+
 def test_default_run_has_clean_log(lo_default_run):
     assert log_rows(lo_default_run, "ERROR") == []
     assert log_rows(lo_default_run, "WARN") == []
@@ -256,3 +265,6 @@ def test_empty_inputs_give_zero_capital(lo_default_path, tmp_path):
     assert summary["TOTAL"] == 0 and summary["ERRORS"] == 0
     assert all(r[3] == 0 for r in sheet_rows(result, "Out_RiskClass"))
     assert sheet_rows(result, "Out_Buckets") == []
+    # All three scenarios are zero: Results notes the tie and reports LOW (#138)
+    assert tie_notes(result) == ["Scenario tie (LOW, MEDIUM, HIGH): same SBM total, LOW reported; "
+                                 "ties resolve in the order low, medium, high"]

@@ -88,6 +88,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- `Results` shows a note when two or three correlation scenarios give the
+  same SBM total, naming the tied scenarios and the one reported. Ties still
+  resolve in the order low, medium, high, now recorded as a reporting
+  convention; the capital and the sample results are unchanged (#138, from
+  the #29 decisions).
 - The v0.2.0 — SA prototype milestone guide (`docs/Milestones/v0.2.0.md`)
   and an interim prototype evaluation written before the Excel run
   (`docs/evidence/2026-10-27-prototype-evaluation.md`). The roadmap lists

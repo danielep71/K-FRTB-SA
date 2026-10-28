@@ -213,9 +213,10 @@ End Sub
 
 
 ' Results: capital by risk class, component and scenario, then the capital
-' requirement block and the run note.
+' requirement block, the run note and, on a scenario tie, the tie note.
 Private Sub WriteResultsSheet(ByVal best As Long, ByVal sbm As Double, ByVal drc As Double, ByVal rrao As Double)
     Dim ws As Object, r As Long, i As Long, c As Long, s As Long, blockRow As Long
+    Dim tied As String, nTied As Long
     Set ws = GetSheet(SH_RESULTS)
     ClearTableArea ws
     WriteTableHeader ws, LAYOUT_HEADER_ROW, Array("Risk class", "Component", "Low", "Medium", "High"), COLOR_OUTPUT_HEADER
@@ -254,6 +255,21 @@ Private Sub WriteResultsSheet(ByVal best As Long, ByVal sbm As Double, ByVal drc
     TableCell(ws, blockRow + 7, 1).Value = "Last run " & Format(Now, "yyyy-mm-dd hh:mm:ss") & _
         " - " & LogErrorCount() & " error(s), " & LogWarningCount() & " warning(s) on Log"
     StyleNote TableCell(ws, blockRow + 7, 1), (LogErrorCount() > 0)
+
+    ' Ties resolve in the order low, medium, high: a reporting convention, not
+    ' a reading of MAR21.7, since the capital is the same (#29, item 5)
+    For s = SCEN_LOW To SCEN_HIGH
+        If SbmScenarioTotal(s) = SbmScenarioTotal(best) Then
+            nTied = nTied + 1
+            If nTied > 1 Then tied = tied & ", "
+            tied = tied & ScenarioName(s)
+        End If
+    Next s
+    If nTied > 1 Then
+        TableCell(ws, blockRow + 8, 1).Value = "Scenario tie (" & tied & "): same SBM total, " & _
+            ScenarioName(best) & " reported; ties resolve in the order low, medium, high"
+        StyleNote TableCell(ws, blockRow + 8, 1), False
+    End If
 End Sub
 
 
