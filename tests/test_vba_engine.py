@@ -233,9 +233,11 @@ def test_variant_run_applies_discretions(lo_variant_run, lo_default_run):
     def cap(wb, rc, comp):
         return {(r[0], r[1], r[2]): r[3] for r in sheet_rows(wb, "Out_RiskClass")}[(rc, comp, "MEDIUM")]
 
-    # Specified currency and pair discretions lower the GIRR and FX delta charges
-    # (all sample FX currencies are specified against EUR, directly or as crosses)
-    assert cap(lo_variant_run, "GIRR", "DELTA") < cap(lo_default_run, "GIRR", "DELTA")
+    # Specified currency and pair discretions divide the GIRR and FX delta charges by
+    # sqrt(2): the sample GIRR is EUR and USD only, inflation and cross-currency basis
+    # included (#136), and all sample FX currencies are specified against EUR,
+    # directly or as crosses
+    assert cap(lo_variant_run, "GIRR", "DELTA") == pytest.approx(cap(lo_default_run, "GIRR", "DELTA") / math.sqrt(2))
     assert cap(lo_variant_run, "FX", "DELTA") == pytest.approx(cap(lo_default_run, "FX", "DELTA") / math.sqrt(2))
 
 

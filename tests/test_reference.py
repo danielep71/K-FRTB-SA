@@ -99,6 +99,12 @@ def test_girr_specified_currency_discretion(p):
     rfs = ref.delta_risk_factors(p, rows)
     assert rfs[0].rw == approx(0.011 / math.sqrt(2))
     assert rfs[1].rw == approx(0.011)
+    # MAR21.44 divides "the above risk weights": inflation and cross-currency basis too (#29)
+    rows = [["1", "GIRR", "EUR", "HICP", "INFLATION", None, 1], ["2", "GIRR", "USD", "EUR", "XCCY", None, 1],
+            ["3", "GIRR", "PLN", "CPI", "INFLATION", None, 1]]
+    rw = [f.rw for f in ref.delta_risk_factors(p, rows)]
+    assert rw == [approx(0.016 / math.sqrt(2)), approx(0.016 / math.sqrt(2)), approx(0.016)]
+    p.girr_specified_on = False
     infl = ref.delta_risk_factors(p, [["1", "GIRR", "EUR", "HICP", "INFLATION", None, 1]])
     assert infl[0].rw == approx(0.016)
 

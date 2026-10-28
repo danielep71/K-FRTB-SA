@@ -313,10 +313,12 @@ def delta_risk_factors(p: Params, rows):
 def delta_rw(p: Params, f: RF) -> float:
     if f.rc == "GIRR":
         if f.sub == "INFLATION":
-            return p.girr["RW_INFLATION"]
-        if f.sub == "XCCY":
-            return p.girr["RW_XCCY"]
-        rw = next(v for k, v in p.girr_rw.items() if abs(k - f.t1) < EPS)
+            rw = p.girr["RW_INFLATION"]
+        elif f.sub == "XCCY":
+            rw = p.girr["RW_XCCY"]
+        else:
+            rw = next(v for k, v in p.girr_rw.items() if abs(k - f.t1) < EPS)
+        # MAR21.44: "the above risk weights" covers MAR21.42 and MAR21.43.
         if p.girr_specified_on and (f.bucket in p.girr_specified or f.bucket == p.reporting_ccy):
             rw /= p.girr["SPECIFIED_DIVISOR"]
         return rw

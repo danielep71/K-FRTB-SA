@@ -482,22 +482,23 @@ Public Function GirrRiskWeight(ByVal ccy As String, ByVal subType As String, ByV
     Dim r As Long, rw As Double
     Select Case subType
         Case "INFLATION"
-            GirrRiskWeight = mGirrRWInflation
-            Exit Function
+            rw = mGirrRWInflation
         Case "XCCY"
-            GirrRiskWeight = mGirrRWXccy
-            Exit Function
+            rw = mGirrRWXccy
+        Case Else
+            rw = -1#
+            For r = 1 To mGirrRWCount
+                If Abs(mGirrRWTenor(r) - tenor) < 0.000001 Then
+                    rw = mGirrRWValue(r)
+                    Exit For
+                End If
+            Next r
+            If rw < 0# Then
+                Err.Raise vbObjectError + ERR_APP, "GirrRiskWeight", "No GIRR risk weight for tenor " & tenor
+            End If
     End Select
-    rw = -1#
-    For r = 1 To mGirrRWCount
-        If Abs(mGirrRWTenor(r) - tenor) < 0.000001 Then
-            rw = mGirrRWValue(r)
-            Exit For
-        End If
-    Next r
-    If rw < 0# Then
-        Err.Raise vbObjectError + ERR_APP, "GirrRiskWeight", "No GIRR risk weight for tenor " & tenor
-    End If
+    ' MAR21.44: "the above risk weights" covers the tenor, inflation and
+    ' cross-currency basis weights of MAR21.42-43 (#29)
     If mGirrSpecifiedOn Then
         If KeyExists(mGirrSpecCcy, ccy) Or ccy = mReportingCcy Then rw = rw / mGirrSpecDivisor
     End If

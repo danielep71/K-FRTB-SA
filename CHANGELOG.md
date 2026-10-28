@@ -20,6 +20,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- With `GIRR_SPECIFIED_CCY_DISCRETION` on, the sqrt(2) division of MAR21.44
+  also applies to the inflation and cross-currency basis risk weights of a
+  specified currency or the reporting currency, not only to the tenor
+  weights. The Control description, the methodology and the reference follow;
+  the sample results are unchanged because the discretion is off by default
+  (#136, from the #29 decisions).
 - A cash-equity DRC position (`EQUITY` seniority) with a maturity between
   three months and one year is rejected and logged instead of being scaled:
   MAR22.16 and its FAQ allow only three months or at least one year. The
