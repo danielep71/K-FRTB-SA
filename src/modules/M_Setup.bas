@@ -452,7 +452,7 @@ Private Sub BuildReadme()
         "Sub-type", "GIRR: YIELD, INFLATION or XCCY. CSR_NS delta: BOND or CDS. EQ delta: SPOT or REPO. COM delta: delivery location.", _
         "Tenors", "GIRR 0.25-30y, CSR 0.5-10y, COM 0-30y; vega option and GIRR underlying maturities 0.5, 1, 3, 5, 10y.", _
         "Amounts", "Sensitivities as defined in MAR21.19-26 (for example GIRR: PV change for 1bp / 0.0001). Vega: vega x implied volatility. Curvature: CVR up and CVR down per risk factor.", _
-        "DRC", "Signed notional and market value (negative for shorts), maturity in years, bucket CORP, SOV or LGM, credit quality AAA ... DEFAULTED, seniority EQUITY, NON_SENIOR, SENIOR or COVERED."))
+        "DRC", "Signed notional and market value (negative for shorts), maturity in years (cash equity: 0.25 or at least 1, MAR22.16), bucket CORP, SOV or LGM, credit quality AAA ... DEFAULTED, seniority EQUITY, NON_SENIOR, SENIOR or COVERED."))
 
     r = r + 1
     WriteSectionHeading ws, r, "Sheet map", 2
