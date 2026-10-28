@@ -7,6 +7,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The methodology states the curvature input contract the upstream pricing
+  must follow: shock sizes (MAR21.98, MAR21.99), the delta deduction, the
+  loss-positive sign, entry before the FX divisor, and no position on the
+  sqrt(2) discretions for curvature shocks. It also records that a `P_CSR`
+  override of the covered-bond risk weight applies to the whole bucket. The
+  `In_Curvature` and `P_CSR` bucket 8 descriptions follow; no calculation
+  changed (#140, from the #29 decisions).
 - The social preview image shows "PROTOTYPE 0.2.0", rendered again from its
   HTML source with the figures unchanged, and the root README navigation links
   the wiki after the website (#126).
