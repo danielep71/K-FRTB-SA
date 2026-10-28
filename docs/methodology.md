@@ -201,7 +201,11 @@ and led to these corrections in this version:
    maturity defaults to one year. Cash equity: decided on October 27, 2026
    (#29, item 4c) and implemented in #134; a maturity other than 0.25 or at
    least 1 rejects the row.
-5. **Binding scenario ties** resolve in the order low, medium, high.
+5. **Binding scenario ties** resolve in the order low, medium, high. Decided
+   on October 27, 2026 (#29, item 5) as a reporting convention, not a reading
+   of MAR21.7: the capital is the same, only the reported scenario and its
+   breakdown depend on the order. Since #138, `Results` notes a tie and names
+   the tied scenarios.
 6. **Curvature risk weights** are not used: CVRs are inputs computed by the
    bank, which also owns the question whether the sqrt(2) division applies
    to the GIRR curvature shock (not specified in MAR21.99).
