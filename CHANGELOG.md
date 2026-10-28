@@ -7,6 +7,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- `release/v0.3.0`, created on October 28, 2026 from `69e3df3`, is the
+  integration branch for milestone 3, starting with the methodology
+  decisions of #29. `release/v0.2.0` keeps the prototype closeout,
+  repository maintenance and Dependabot. Governance, contributing and the
+  roadmap name both lines (#132).
 - The social preview image shows "PROTOTYPE 0.2.0", rendered again from its
   HTML source with the figures unchanged, and the root README navigation links
   the wiki after the website (#126).

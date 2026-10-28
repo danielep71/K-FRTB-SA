@@ -117,7 +117,8 @@ decisions; it does not complete the later milestones' exit conditions.
 
 ## 📐 v0.3.0 — Regulatory baseline and certification scope
 
-[Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/3). It
-holds the methodology decisions of
+[Live milestone](https://github.com/danielep71/K-FRTB-SA/milestone/3),
+integration branch `release/v0.3.0` (#132). It holds the methodology
+decisions of
 [#29](https://github.com/danielep71/K-FRTB-SA/issues/29); its exit condition is
 in the plan above.
