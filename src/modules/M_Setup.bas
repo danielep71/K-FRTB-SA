@@ -567,7 +567,7 @@ Private Sub BuildInputSheets()
     BuildInputSheet SH_IN_VEGA, "Vega x implied volatility per option maturity (and GIRR underlying maturity), MAR21.25.", _
         Array("ID", "RiskClass", "Bucket", "Qualifier", "SubType", "OptionMaturity", "UnderlyingMaturity", "Sensitivity", "Comment"), _
         Array(10, 11, 9, 18, 13, 15, 18, 16, 34), 8
-    BuildInputSheet SH_IN_CURV, "Curvature risk CVR up and CVR down per risk factor, net across instruments (MAR21.5(2)).", _
+    BuildInputSheet SH_IN_CURV, "Curvature risk CVR up and CVR down per risk factor, net across instruments, positive for a loss and before the FX divisor; shocks per MAR21.98-99 (MAR21.5).", _
         Array("ID", "RiskClass", "Bucket", "Qualifier", "SubType", "CVR_Up", "CVR_Down", "Comment"), _
         Array(10, 11, 9, 18, 13, 14, 14, 34), 6
     BuildInputSheet SH_IN_DRC, "Positions for the default risk charge: signed notional and market value, maturity in years, optional LGD override (MAR22).", _
@@ -700,7 +700,7 @@ Private Sub WriteParamCsr()
     PutRow ws, r + 4, Array(5, "Consumer goods and services, transportation and storage, administrative services", "IG", 5, "NAME", 0.03)
     PutRow ws, r + 5, Array(6, "Technology, telecommunications", "IG", 6, "NAME", 0.02)
     PutRow ws, r + 6, Array(7, "Health care, utilities, professional and technical activities", "IG", 7, "NAME", 0.015)
-    PutRow ws, r + 7, Array(8, "Covered bonds (1.5% for AA- or better at the bank's discretion, fn 17: not modeled)", "IG", 8, "NAME", 0.025)
+    PutRow ws, r + 7, Array(8, "Covered bonds (1.5% for AA- or better at the bank's discretion, fn 17: not modeled; an override applies to the whole bucket)", "IG", 8, "NAME", 0.025)
     PutRow ws, r + 8, Array(9, "Sovereigns incl. central banks, MDBs", "HY", 1, "NAME", 0.02)
     PutRow ws, r + 9, Array(10, "Local government, government-backed non-financials, education, public administration", "HY", 2, "NAME", 0.04)
     PutRow ws, r + 10, Array(11, "Financials incl. government-backed financials", "HY", 3, "NAME", 0.12)

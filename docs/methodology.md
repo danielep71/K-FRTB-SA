@@ -62,6 +62,31 @@ together; no inflation or cross-currency basis curvature) and FX, one per
 issuer for CSR (bond and CDS curves together), one per issuer for equity and
 one per commodity (all delivery locations together) (MAR21.8-MAR21.14).
 
+### Curvature input contract (MAR21.5, MAR21.98, MAR21.99)
+
+The workbook does not price instruments and applies no curvature risk
+weight, so the system that computes the CVRs must apply the prescribed
+shocks (#29, item 6):
+
+| Risk class | Shock to the curvature risk factor | Delta deducted for each instrument |
+| --- | --- | --- |
+| FX, EQ | Relative shift equal to the delta risk weight of the risk factor (MAR21.98) | Its delta sensitivity to the risk factor |
+| GIRR, CSR_NS, COM | Parallel shift of all tenors of every curve of the risk factor by the highest delta risk weight of the bucket; for GIRR, the 0.25-year weight (MAR21.99) | The sum of its delta sensitivities to all tenors of the relevant curves |
+
+- **Sign.** CVRs are positive for a loss (MAR21.5(1)):
+  `CVR_k+ = -sum_i [V_i(x_k^(RW+)) - V_i(x_k) - RW_k * s_ik]` and
+  `CVR_k- = -sum_i [V_i(x_k^(RW-)) - V_i(x_k) + RW_k * s_ik]`.
+- **Granularity.** One row per curvature risk factor, as defined above, net
+  across instruments.
+- **FX divisor.** Enter FX CVRs before any division by 1.5: the workbook
+  applies `FX_CURVATURE_DIVISOR` itself.
+- **sqrt(2) discretions.** MAR21.98 and MAR21.99 do not say whether the
+  sqrt(2) divisions of MAR21.44 (GIRR) and MAR21.88 (FX) also reduce the
+  curvature shock. The workbook takes no position: the upstream pricing must
+  follow the reading of the bank's supervisor and record it.
+- **Scenarios.** The shocks do not depend on the correlation scenario; only
+  the aggregation does (MAR21.6, MAR21.100, MAR21.101).
+
 ## 🧮 Sensitivities-based method
 
 ### Aggregation (MAR21.4)
@@ -192,7 +217,11 @@ and led to these corrections in this version:
    MAR21.43, so the discretion divides those weights too.
 2. **Covered bonds.** The 1.5% risk weight for covered bonds rated AA- or
    better (MAR21.53 fn 17, bank's discretion) is not modeled: bucket 8 uses
-   2.5%. Override the risk weight on `P_CSR` to apply it.
+   2.5%. Decided on October 27, 2026 (#29, item 2) and documented in #140:
+   an override of the bucket 8 risk weight on `P_CSR` changes every covered
+   bond in the bucket, whatever its rating, so use it only when all of them
+   are rated AA- or better. Modeling the discretion per position is a v0.3.0
+   scope item only if covered bonds are in the certified product scope.
 3. **FX curvature divisor.** The setting divides all FX CVRs. MAR21.98
    applies it to options not referencing the reporting currency, and to all
    FX instruments only with supervisory approval.
@@ -207,5 +236,8 @@ and led to these corrections in this version:
    breakdown depend on the order. Since #138, `Results` notes a tie and names
    the tied scenarios.
 6. **Curvature risk weights** are not used: CVRs are inputs computed by the
-   bank, which also owns the question whether the sqrt(2) division applies
-   to the GIRR curvature shock (not specified in MAR21.99).
+   bank. Decided on October 27, 2026 (#29, item 6) and documented in #140:
+   the bank's pricing follows the
+   [curvature input contract](#curvature-input-contract-mar215-mar2198-mar2199),
+   and the workbook takes no position on whether the sqrt(2) divisions
+   reduce the curvature shock.
