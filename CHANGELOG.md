@@ -27,6 +27,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- A DRC obligor whose positions name different buckets is logged as an error
+  and skipped with all its positions, instead of taking the first position's
+  bucket (MAR22.22). When its positions differ in credit quality, the worst
+  one, with the highest risk weight, applies with a warning, instead of the
+  first one (MAR22.24). The reference, the methodology and the tests follow;
+  the sample results are unchanged (#142, from the #29 decisions).
 - With `GIRR_SPECIFIED_CCY_DISCRETION` on, the sqrt(2) division of MAR21.44
   also applies to the inflation and cross-currency basis risk weights of a
   specified currency or the reporting currency, not only to the tenor

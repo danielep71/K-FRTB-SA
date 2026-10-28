@@ -174,7 +174,10 @@ Table 13): 100% everywhere except 77.78% for equity large cap and indices.
    (`EQUITY` seniority) takes a maturity of three months or at least one
    year (MAR22.16 and its FAQ); any other maturity rejects the row (#134).
 3. Netting per obligor: a short offsets a long only when it ranks the same as
-   or junior to the long (MAR22.19). Shorts are applied from the most junior
+   or junior to the long (MAR22.19). An obligor belongs to one bucket: one
+   whose positions name different buckets is rejected with all its positions
+   (MAR22.22). When its positions differ in credit quality, the worst one, with
+   the highest risk weight, applies with a warning (MAR22.24; #142). Shorts are applied from the most junior
    rank upward, which maximizes the eligible offset.
 4. Per bucket (corporates, sovereigns, local governments and municipalities):
    `HBR = sum net long / (sum net long + sum |net short|)` and
@@ -225,11 +228,14 @@ and led to these corrections in this version:
 3. **FX curvature divisor.** The setting divides all FX CVRs. MAR21.98
    applies it to options not referencing the reporting currency, and to all
    FX instruments only with supervisory approval.
-4. **DRC obligor attributes.** Bucket and credit quality come from the
-   obligor's first position; differing values are logged as warnings. Blank
-   maturity defaults to one year. Cash equity: decided on October 27, 2026
-   (#29, item 4c) and implemented in #134; a maturity other than 0.25 or at
-   least 1 rejects the row.
+4. **DRC obligor attributes.** Decided on October 27, 2026 (#29, items 4a
+   and 4b) and implemented in #142: an obligor split across buckets is an
+   input error, and its positions are skipped; differing credit qualities
+   resolve to the worst, with a warning. The full MAR22.24 FAQ procedure for
+   several external ratings is not modeled, since the input carries one
+   credit quality per position. Blank maturity defaults to one year. Cash
+   equity: decided on October 27, 2026 (#29, item 4c) and implemented in
+   #134; a maturity other than 0.25 or at least 1 rejects the row.
 5. **Binding scenario ties** resolve in the order low, medium, high. Decided
    on October 27, 2026 (#29, item 5) as a reporting convention, not a reading
    of MAR21.7: the capital is the same, only the reported scenario and its

@@ -326,6 +326,28 @@ def test_drc_buckets_do_not_offset(p):
     assert total == approx(6.0)
 
 
+def test_drc_obligor_split_across_buckets_is_rejected(p):
+    # MAR22.22 (#29, item 4a): every position of a split obligor is excluded
+    rows = [drc_row("A", "CORP", "BBB", "SENIOR", 100, 100), drc_row("A", "SOV", "BBB", "SENIOR", -50, -50),
+            drc_row("B", "CORP", "BBB", "SENIOR", 100, 100)]
+    total, obl, buckets = ref.drc(p, rows)
+    assert list(obl) == ["B"]
+    assert total == approx(0.06 * 75)
+    assert buckets["SOV"][:2] == (0, 0)
+
+
+def test_drc_obligor_takes_the_worst_credit_quality(p):
+    # MAR22.24 (#29, item 4b): the highest risk weight, in either order
+    for first, second in (("A", "BBB"), ("BBB", "A")):
+        rows = [drc_row("A", "CORP", first, "SENIOR", 100, 100), drc_row("A", "CORP", second, "SENIOR", 100, 100)]
+        total, obl, _ = ref.drc(p, rows)
+        assert obl["A"][1:3] == ("BBB", approx(0.06))
+        assert total == approx(0.06 * 150)
+    # Equal risk weights keep the first quality
+    rows = [drc_row("A", "CORP", "UNRATED", "SENIOR", 100, 100), drc_row("A", "CORP", "BB", "SENIOR", 100, 100)]
+    assert ref.drc(p, rows)[1]["A"][1] == "UNRATED"
+
+
 # --------------------------------------------------------------------------
 # RRAO
 # --------------------------------------------------------------------------
