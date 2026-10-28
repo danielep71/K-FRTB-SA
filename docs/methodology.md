@@ -77,9 +77,13 @@ shocks (#29, item 6):
   `CVR_k+ = -sum_i [V_i(x_k^(RW+)) - V_i(x_k) - RW_k * s_ik]` and
   `CVR_k- = -sum_i [V_i(x_k^(RW-)) - V_i(x_k) + RW_k * s_ik]`.
 - **Granularity.** One row per curvature risk factor, as defined above, net
-  across instruments.
+  across instruments. For FX, use up to two rows per risk factor: one for the
+  options that reference the reporting currency, with `RefReportingCcy` TRUE,
+  and one for the others; the rows are netted after the divisor.
 - **FX divisor.** Enter FX CVRs before any division by 1.5: the workbook
-  applies `FX_CURVATURE_DIVISOR` itself.
+  applies `FX_CURVATURE_DIVISOR` or `FX_CURVATURE_DIVISOR_ALL` itself.
+  `RefReportingCcy` accepts TRUE, FALSE or blank (FALSE); any other value
+  rejects the row.
 - **sqrt(2) discretions.** MAR21.98 and MAR21.99 do not say whether the
   sqrt(2) divisions of MAR21.44 (GIRR) and MAR21.88 (FX) also reduce the
   curvature shock. The workbook takes no position: the upstream pricing must
@@ -162,7 +166,8 @@ Table 13): 100% everywhere except 77.78% for equity large cap and indices.
 | --- | --- |
 | `GIRR_SPECIFIED_CCY_DISCRETION` | GIRR delta risk weights, including the inflation and cross-currency basis weights, divided by sqrt(2) for EUR, USD, GBP, AUD, JPY, SEK, CAD and the reporting currency (MAR21.44; #136) |
 | `FX_SPECIFIED_PAIR_DISCRETION` | FX risk weight divided by sqrt(2) for the specified pairs and their first-order crosses (MAR21.88, fn 23) |
-| `FX_CURVATURE_DIVISOR` | All FX CVRs divided by 1.5 (MAR21.98; applying it to all FX instruments needs supervisory approval) |
+| `FX_CURVATURE_DIVISOR` | FX CVRs of options that do not reference the reporting currency (`RefReportingCcy` not TRUE on `In_Curvature`) divided by 1.5 (MAR21.98) |
+| `FX_CURVATURE_DIVISOR_ALL` | All FX CVRs divided by 1.5: the MAR21.98 alternative that needs supervisory approval and curvature sensitivities for all currencies, including shocks to the reporting currency; it overrides `FX_CURVATURE_DIVISOR` |
 
 ## 💳 Default risk capital, non-securitizations (MAR22)
 
@@ -225,9 +230,12 @@ and led to these corrections in this version:
    bond in the bucket, whatever its rating, so use it only when all of them
    are rated AA- or better. Modeling the discretion per position is a v0.3.0
    scope item only if covered bonds are in the certified product scope.
-3. **FX curvature divisor.** The setting divides all FX CVRs. MAR21.98
-   applies it to options not referencing the reporting currency, and to all
-   FX instruments only with supervisory approval.
+3. **FX curvature divisor.** Decided on October 27, 2026 (#29, item 3) and
+   implemented in #144: `FX_CURVATURE_DIVISOR` divides only the rows not
+   flagged as referencing the reporting currency, and
+   `FX_CURVATURE_DIVISOR_ALL`, labeled as needing supervisory approval,
+   divides every FX row. The workbook does not check that the curvature
+   sensitivities cover all currencies, a condition of that approval.
 4. **DRC obligor attributes.** Decided on October 27, 2026 (#29, items 4a
    and 4b) and implemented in #142: an obligor split across buckets is an
    input error, and its positions are skipped; differing credit qualities

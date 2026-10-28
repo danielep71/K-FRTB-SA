@@ -7,6 +7,16 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- `FX_CURVATURE_DIVISOR` divides only the FX CVRs of options that do not
+  reference the reporting currency, which a new `RefReportingCcy` column on
+  `In_Curvature` marks (MAR21.98). The new `FX_CURVATURE_DIVISOR_ALL` divides
+  every FX CVR: the alternative that needs supervisory approval, labeled as
+  such. An unrecognized flag rejects the row. The sample's USD/EUR row is
+  flagged; with both switches off, the sample results are unchanged.
+  Compatibility: the column moves `Comment` on `In_Curvature` one column to
+  the right, so a workbook built earlier needs a rebuild or an inserted
+  column; until then its comments are rejected as flags, never applied
+  (#144, from the #29 decisions).
 - The methodology states the curvature input contract the upstream pricing
   must follow: shock sizes (MAR21.98, MAR21.99), the delta deduction, the
   loss-positive sign, entry before the FX divisor, and no position on the

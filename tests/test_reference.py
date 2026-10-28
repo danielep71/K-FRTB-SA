@@ -272,10 +272,24 @@ def test_curvature_across_buckets_floor_at_zero(p):
 
 
 def test_curvature_fx_divisor(p):
+    # MAR21.98 (#29, item 3): the discretion divides options that do not reference
+    # the reporting currency; the approved alternative (_ALL) divides every FX row
+    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, None], ["2", "FX", "USD", "USD", None, 30_000, 0, True]]
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(60_000)
     p.fx_curv_divisor_on = True
-    rows = [["1", "FX", "USD", "USD", None, 30_000, 0]]
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(20_000 + 30_000)
+    p.fx_curv_divisor_all_on = True
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(40_000)
+    p.fx_curv_divisor_on = False
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(40_000)
+
+
+def test_curvature_reporting_ccy_flag_must_be_boolean(p):
+    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, "maybe"], ["2", "FX", "GBP", "GBP", None, 10_000, 0, "no"],
+            ["3", "EQ", 8, "A", None, 5_000, 0, 2]]
     capital, _, _ = run_curv(p, rows)
-    assert capital["FX"]["MEDIUM"] == approx(20_000)
+    assert capital["FX"]["MEDIUM"] == approx(10_000)
+    assert capital["EQ"]["MEDIUM"] == approx(0.0)
 
 
 def test_curvature_other_bucket(p):

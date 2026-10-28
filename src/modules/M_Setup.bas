@@ -451,7 +451,7 @@ Private Sub BuildReadme()
         "Qualifier", "GIRR: curve name. CSR_NS and EQ: issuer or index. COM: commodity. FX: the currency.", _
         "Sub-type", "GIRR: YIELD, INFLATION or XCCY. CSR_NS delta: BOND or CDS. EQ delta: SPOT or REPO. COM delta: delivery location.", _
         "Tenors", "GIRR 0.25-30y, CSR 0.5-10y, COM 0-30y; vega option and GIRR underlying maturities 0.5, 1, 3, 5, 10y.", _
-        "Amounts", "Sensitivities as defined in MAR21.19-26 (for example GIRR: PV change for 1bp / 0.0001). Vega: vega x implied volatility. Curvature: CVR up and CVR down per risk factor.", _
+        "Amounts", "Sensitivities as defined in MAR21.19-26 (for example GIRR: PV change for 1bp / 0.0001). Vega: vega x implied volatility. Curvature: CVR up and CVR down per risk factor; RefReportingCcy TRUE marks FX options that reference the reporting currency (MAR21.98).", _
         "DRC", "Signed notional and market value (negative for shorts), maturity in years (cash equity: 0.25 or at least 1, MAR22.16), bucket CORP, SOV or LGM, credit quality AAA ... DEFAULTED, seniority EQUITY, NON_SENIOR, SENIOR or COVERED."))
 
     r = r + 1
@@ -502,10 +502,11 @@ Private Sub BuildControl()
     PutRow ws, r, Array("REPORTING_CCY", "EUR", "Reporting currency; FX sensitivities are against this currency", "MAR21.14")
     PutRow ws, r + 1, Array("GIRR_SPECIFIED_CCY_DISCRETION", False, "TRUE: GIRR delta risk weights (tenor, inflation and cross-currency basis) divided by sqrt(2) for the specified currencies and the reporting currency", "MAR21.44")
     PutRow ws, r + 2, Array("FX_SPECIFIED_PAIR_DISCRETION", False, "TRUE: FX risk weight divided by sqrt(2) for specified pairs and their first-order crosses", "MAR21.88")
-    PutRow ws, r + 3, Array("FX_CURVATURE_DIVISOR", False, "TRUE: FX curvature CVRs divided by 1.5 (subject to supervisory approval)", "MAR21.98")
-    FormatParamRows ws, r, r + 3, 4, 2, 2, ""
+    PutRow ws, r + 3, Array("FX_CURVATURE_DIVISOR", False, "TRUE: FX curvature CVRs divided by 1.5 for options that do not reference the reporting currency (In_Curvature RefReportingCcy not TRUE)", "MAR21.98")
+    PutRow ws, r + 4, Array("FX_CURVATURE_DIVISOR_ALL", False, "TRUE: all FX curvature CVRs divided by 1.5; needs supervisory approval and curvature sensitivities for all currencies, including the reporting currency", "MAR21.98")
+    FormatParamRows ws, r, r + 4, 4, 2, 2, ""
     On Error Resume Next
-    ws.Range(TableCell(ws, r, 2), TableCell(ws, r + 3, 2)).HorizontalAlignment = -4108
+    ws.Range(TableCell(ws, r, 2), TableCell(ws, r + 4, 2)).HorizontalAlignment = -4108
     On Error GoTo 0
 End Sub
 
@@ -568,8 +569,8 @@ Private Sub BuildInputSheets()
         Array("ID", "RiskClass", "Bucket", "Qualifier", "SubType", "OptionMaturity", "UnderlyingMaturity", "Sensitivity", "Comment"), _
         Array(10, 11, 9, 18, 13, 15, 18, 16, 34), 8
     BuildInputSheet SH_IN_CURV, "Curvature risk CVR up and CVR down per risk factor, net across instruments, positive for a loss and before the FX divisor; shocks per MAR21.98-99 (MAR21.5).", _
-        Array("ID", "RiskClass", "Bucket", "Qualifier", "SubType", "CVR_Up", "CVR_Down", "Comment"), _
-        Array(10, 11, 9, 18, 13, 14, 14, 34), 6
+        Array("ID", "RiskClass", "Bucket", "Qualifier", "SubType", "CVR_Up", "CVR_Down", "RefReportingCcy", "Comment"), _
+        Array(10, 11, 9, 18, 13, 14, 14, 16, 34), 6
     BuildInputSheet SH_IN_DRC, "Positions for the default risk charge: signed notional and market value, maturity in years, optional LGD override (MAR22).", _
         Array("ID", "Obligor", "Bucket", "CreditQuality", "Seniority", "Notional", "MarketValue", "Maturity", "LGD", "Comment"), _
         Array(10, 16, 9, 14, 13, 14, 14, 10, 8, 30), 6
@@ -981,15 +982,15 @@ End Sub
 Private Sub WriteSampleCurvature()
     Dim ws As Object
     Set ws = GetSheet(SH_IN_CURV)
-    PutSample ws, 1, Array("C001", "GIRR", "EUR", "", "", -50000, 30000, "Swaptions")
-    PutSample ws, 2, Array("C002", "GIRR", "USD", "", "", 10000, -20000, "Swaptions")
-    PutSample ws, 3, Array("C003", "CSR_NS", 1, "ITALY", "BOND", -15000, 5000, "Bond options")
-    PutSample ws, 4, Array("C004", "EQ", 8, "BANK_A", "", -80000, 40000, "Single-stock options")
-    PutSample ws, 5, Array("C005", "EQ", 8, "BANK_B", "", 20000, -60000, "Single-stock options")
-    PutSample ws, 6, Array("C006", "EQ", 12, "EUROSTOXX50", "", 30000, -10000, "Index options")
-    PutSample ws, 7, Array("C007", "COM", 2, "BRENT", "ROTTERDAM", -25000, 10000, "Oil options")
-    PutSample ws, 8, Array("C008", "FX", "USD", "USD", "", -40000, -35000, "FX options")
-    PutSample ws, 9, Array("C009", "FX", "GBP", "GBP", "", 15000, 12000, "FX options")
+    PutSample ws, 1, Array("C001", "GIRR", "EUR", "", "", -50000, 30000, "", "Swaptions")
+    PutSample ws, 2, Array("C002", "GIRR", "USD", "", "", 10000, -20000, "", "Swaptions")
+    PutSample ws, 3, Array("C003", "CSR_NS", 1, "ITALY", "BOND", -15000, 5000, "", "Bond options")
+    PutSample ws, 4, Array("C004", "EQ", 8, "BANK_A", "", -80000, 40000, "", "Single-stock options")
+    PutSample ws, 5, Array("C005", "EQ", 8, "BANK_B", "", 20000, -60000, "", "Single-stock options")
+    PutSample ws, 6, Array("C006", "EQ", 12, "EUROSTOXX50", "", 30000, -10000, "", "Index options")
+    PutSample ws, 7, Array("C007", "COM", 2, "BRENT", "ROTTERDAM", -25000, 10000, "", "Oil options")
+    PutSample ws, 8, Array("C008", "FX", "USD", "USD", "", -40000, -35000, True, "USD/EUR options")
+    PutSample ws, 9, Array("C009", "FX", "GBP", "GBP", "", 15000, 12000, "", "GBP/USD options")
 End Sub
 
 

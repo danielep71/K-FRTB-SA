@@ -47,6 +47,7 @@ Private mReportingCcy As String
 Private mGirrSpecifiedOn As Boolean
 Private mFxSpecifiedOn As Boolean
 Private mFxCurvDivisorOn As Boolean
+Private mFxCurvDivisorAllOn As Boolean
 
 ' General
 Private mHighMult As Double
@@ -149,6 +150,7 @@ Private Sub LoadSettings()
     mGirrSpecifiedOn = KVBool(kv, "GIRR_SPECIFIED_CCY_DISCRETION", False)
     mFxSpecifiedOn = KVBool(kv, "FX_SPECIFIED_PAIR_DISCRETION", False)
     mFxCurvDivisorOn = KVBool(kv, "FX_CURVATURE_DIVISOR", False)
+    mFxCurvDivisorAllOn = KVBool(kv, "FX_CURVATURE_DIVISOR_ALL", False)
 End Sub
 
 Private Sub LoadGeneral()
@@ -378,8 +380,14 @@ Public Function ReportingCcy() As String
     ReportingCcy = mReportingCcy
 End Function
 
-Public Function FxCurvatureDivisor() As Double
-    If mFxCurvDivisorOn Then FxCurvatureDivisor = mFxCurvDivisor Else FxCurvatureDivisor = 1#
+' MAR21.98: options not referencing the reporting currency may be divided by
+' 1.5; all FX instruments only with supervisory approval (the _ALL switch).
+Public Function FxCurvatureDivisor(ByVal refReportingCcy As Boolean) As Double
+    If mFxCurvDivisorAllOn Or (mFxCurvDivisorOn And Not refReportingCcy) Then
+        FxCurvatureDivisor = mFxCurvDivisor
+    Else
+        FxCurvatureDivisor = 1#
+    End If
 End Function
 
 ' Correlation scenario transform (MAR21.6): high = min(1.25 rho, 1),
