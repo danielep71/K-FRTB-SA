@@ -15,7 +15,7 @@ Attribute VB_Name = "CORE_Util"
 '   data rows continue to the next tag or used-range end. Blank keys and
 '   internal blank rows raise rather than silently truncating the table.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
-'   Conversions: IsBlank, IsBlankOrNumber, ToDouble, IsNumber, ToBool,
+'   Conversions: IsBlank, IsBlankOrNumber, IsBlankOrBool, ToDouble, IsNumber, ToBool,
 '   ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
 '   InNumberList.
 '   Sorting: BucketLess, SortLabels.
@@ -420,6 +420,19 @@ Public Function IsBlankOrNumber(ByVal v As Variant) As Boolean
 End Function
 
 
+' True for a blank cell or a value ToBool recognizes: an optional flag must
+' not read an unknown value as FALSE.
+Public Function IsBlankOrBool(ByVal v As Variant) As Boolean
+    If IsBlank(v) Then
+        IsBlankOrBool = True
+    ElseIf IsError(v) Then
+        IsBlankOrBool = False
+    Else
+        IsBlankOrBool = (ToBool(v, True) = ToBool(v, False))
+    End If
+End Function
+
+
 Public Function MaxD(ByVal a As Double, ByVal b As Double) As Double
     If a > b Then MaxD = a Else MaxD = b
 End Function
@@ -604,6 +617,7 @@ Public Function HeaderCaption(ByVal value As Variant) As Variant
         Case "GrossNotional": HeaderCaption = "Gross notional"
         Case "CVR_Up": HeaderCaption = "CVR up"
         Case "CVR_Down": HeaderCaption = "CVR down"
+        Case "RefReportingCcy": HeaderCaption = "References reporting ccy"
         Case "NetLong": HeaderCaption = "Net long"
         Case "NetShort": HeaderCaption = "Net short"
         Case "WeightedLong": HeaderCaption = "Weighted long"

@@ -34,6 +34,7 @@ class Params:
     girr_specified_on: bool = False
     fx_specified_on: bool = False
     fx_curv_divisor_on: bool = False
+    fx_curv_divisor_all_on: bool = False
     high_mult: float = 1.25
     low_mult: float = 0.75
     vega_rw_sigma: float = 0.55
@@ -118,6 +119,18 @@ def _bool(v) -> bool:
     return _text(v) in ("TRUE", "YES", "Y", "1", "-1")
 
 
+def _flag(v):
+    """An optional yes/no input: False when blank, None when not recognized."""
+    if v is None or (isinstance(v, str) and not v.strip()):
+        return False
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, (int, float)):
+        return {1: True, -1: True, 0: False}.get(v)
+    s = _text(v)
+    return True if s in ("TRUE", "YES", "Y", "1", "-1") else False if s in ("FALSE", "NO", "N", "0") else None
+
+
 FIRST_COL = 2  # tables start in column C (0-based index 2)
 FIRST_DATA_ROW = 6  # input and output tables: header in row 5, data from row 6
 
@@ -154,6 +167,7 @@ def params_from_workbook(wb) -> Params:
     p.girr_specified_on = _bool(s.get("GIRR_SPECIFIED_CCY_DISCRETION"))
     p.fx_specified_on = _bool(s.get("FX_SPECIFIED_PAIR_DISCRETION"))
     p.fx_curv_divisor_on = _bool(s.get("FX_CURVATURE_DIVISOR"))
+    p.fx_curv_divisor_all_on = _bool(s.get("FX_CURVATURE_DIVISOR_ALL"))
 
     t = _tables(wb["P_General"])
     kv = _kv(t, "CORR_SCENARIOS")
@@ -225,7 +239,7 @@ def inputs_from_workbook(wb) -> dict:
     return {
         "delta": _input_rows(wb["In_Delta"], 7),
         "vega": _input_rows(wb["In_Vega"], 8),
-        "curvature": _input_rows(wb["In_Curvature"], 7),
+        "curvature": _input_rows(wb["In_Curvature"], 8),
         "drc": _input_rows(wb["In_DRC"], 9),
         "rrao": _input_rows(wb["In_RRAO"], 3),
     }
@@ -385,12 +399,19 @@ def vega_risk_factors(p: Params, rows):
 
 def curvature_risk_factors(p: Params, rows):
     rfs = []
-    div = p.fx["CURVATURE_DIVISOR"] if p.fx_curv_divisor_on else 1.0
     for r in rows:
+        r = list(r) + [None] * (8 - len(r))
         rc, b, q, sub = _text(r[1]), _label(r[2]), _text(r[3]), _text(r[4])
         if rc not in RISK_CLASSES or not _bucket_valid(p, rc, b) or not (_is_num(r[5]) and _is_num(r[6])):
             continue
+        ref_ccy = _flag(r[7])
+        if ref_ccy is None:
+            continue
         up, dn = _num(r[5]), _num(r[6])
+        # MAR21.98: options not referencing the reporting currency may be divided
+        # by 1.5; every FX instrument only with supervisory approval (_ALL)
+        divided = p.fx_curv_divisor_all_on or (p.fx_curv_divisor_on and not ref_ccy)
+        div = p.fx["CURVATURE_DIVISOR"] if divided else 1.0
         if rc == "GIRR":
             q, sub = "", ""
         elif rc in ("CSR_NS", "EQ", "COM"):
