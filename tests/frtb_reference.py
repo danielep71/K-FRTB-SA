@@ -634,7 +634,16 @@ def drc(p: Params, rows):
 
     obligors = OrderedDict()
     for obl, bucket, quality, rank, jtd in positions:
-        obligors.setdefault(obl, {"bucket": bucket, "quality": quality, "pos": []})["pos"].append((rank, jtd))
+        o = obligors.setdefault(obl, {"buckets": set(), "quality": quality, "pos": []})
+        o["buckets"].add(bucket)
+        # MAR22.24: the worst quality (highest risk weight); the first one on a tie
+        if p.drc_rw[quality] > p.drc_rw[o["quality"]]:
+            o["quality"] = quality
+        o["pos"].append((rank, jtd))
+    # MAR22.22: an obligor belongs to one bucket; a split obligor is an input error
+    obligors = OrderedDict((k, v) for k, v in obligors.items() if len(v["buckets"]) == 1)
+    for o in obligors.values():
+        o["bucket"] = next(iter(o["buckets"]))
 
     max_rank = max(v[0] for v in p.drc_seniority.values())
     result = OrderedDict()

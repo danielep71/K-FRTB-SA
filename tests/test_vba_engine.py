@@ -193,6 +193,7 @@ INVALID_ROWS = {
         ["K5", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, "abc", None],
         ["K6", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, 1, "x"],
         ["K7", "BANK_D", "CORP", "A", "EQUITY", 1000, 1000, 0.5, None],
+        ["K8", "BANK_B", "SOV", "BBB", "SENIOR", 100, 100, 1, None],
     ],
     "In_RRAO": [["Q1", "FOO", 1000], ["Q2", "OTHER", -5]],
 }
@@ -230,12 +231,16 @@ def test_variant_run_reconciles_with_reference(lo_variant_run):
 def test_variant_run_logs_every_invalid_row(lo_variant_run):
     errors = log_rows(lo_variant_run, "ERROR")
     sources = sorted(r[1] for r in errors)
-    assert len(errors) == 17, errors
+    assert len(errors) == 18, errors
     assert sum(s.startswith("In_Delta") for s in sources) == 7
-    assert sum(s.startswith("In_DRC") for s in sources) == 6
+    assert sum(s.startswith("In_DRC") for s in sources) == 7
     assert any("Cash equity maturity" in r[2] for r in errors)
+    # BANK_B, split across CORP and SOV, is skipped; BANK_A takes its worst quality (#142)
+    assert any("BANK_B has positions in several buckets" in r[2] for r in errors)
     warnings = log_rows(lo_variant_run, "WARN")
-    assert len(warnings) == 1 and "credit qualities" in warnings[0][2]
+    assert len(warnings) == 1 and "the worst, BBB, is used" in warnings[0][2]
+    drc = {r[0]: r for r in sheet_rows(lo_variant_run, "Out_DRC")}
+    assert "BANK_B" not in drc and drc["BANK_A"][2] == "BBB"
 
 
 def test_variant_run_applies_discretions(lo_variant_run, lo_default_run):
