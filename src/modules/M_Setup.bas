@@ -500,7 +500,7 @@ Private Sub BuildControl()
     SetWidths ws, Array(34, 14, 95, 16)
     r = PutTable(ws, LAYOUT_HEADER_ROW, "SETTINGS", "Run settings", Array("Code", "Value", "Description", "Reference"))
     PutRow ws, r, Array("REPORTING_CCY", "EUR", "Reporting currency; FX sensitivities are against this currency", "MAR21.14")
-    PutRow ws, r + 1, Array("GIRR_SPECIFIED_CCY_DISCRETION", False, "TRUE: GIRR yield risk weights divided by sqrt(2) for the specified currencies and the reporting currency", "MAR21.44")
+    PutRow ws, r + 1, Array("GIRR_SPECIFIED_CCY_DISCRETION", False, "TRUE: GIRR delta risk weights (tenor, inflation and cross-currency basis) divided by sqrt(2) for the specified currencies and the reporting currency", "MAR21.44")
     PutRow ws, r + 2, Array("FX_SPECIFIED_PAIR_DISCRETION", False, "TRUE: FX risk weight divided by sqrt(2) for specified pairs and their first-order crosses", "MAR21.88")
     PutRow ws, r + 3, Array("FX_CURVATURE_DIVISOR", False, "TRUE: FX curvature CVRs divided by 1.5 (subject to supervisory approval)", "MAR21.98")
     FormatParamRows ws, r, r + 3, 4, 2, 2, ""

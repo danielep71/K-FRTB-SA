@@ -135,7 +135,7 @@ Table 13): 100% everywhere except 77.78% for equity large cap and indices.
 
 | Setting | Effect |
 | --- | --- |
-| `GIRR_SPECIFIED_CCY_DISCRETION` | GIRR yield-curve risk weights divided by sqrt(2) for EUR, USD, GBP, AUD, JPY, SEK, CAD and the reporting currency (MAR21.44) |
+| `GIRR_SPECIFIED_CCY_DISCRETION` | GIRR delta risk weights, including the inflation and cross-currency basis weights, divided by sqrt(2) for EUR, USD, GBP, AUD, JPY, SEK, CAD and the reporting currency (MAR21.44; #136) |
 | `FX_SPECIFIED_PAIR_DISCRETION` | FX risk weight divided by sqrt(2) for the specified pairs and their first-order crosses (MAR21.88, fn 23) |
 | `FX_CURVATURE_DIVISOR` | All FX CVRs divided by 1.5 (MAR21.98; applying it to all FX instruments needs supervisory approval) |
 
@@ -186,10 +186,10 @@ and led to these corrections in this version:
 
 ## 🔎 Interpretations and simplifications to review
 
-1. **GIRR sqrt(2) discretion scope.** Applied to the yield-curve tenor risk
-   weights only. MAR21.44 says "the above risk weights" right after the
-   inflation and cross-currency basis weights, so the literal text can also
-   include them.
+1. **GIRR sqrt(2) discretion scope.** Decided on October 27, 2026 (#29,
+   item 1) and implemented in #136: MAR21.44 divides "the above risk
+   weights", which follow the inflation and cross-currency basis weights of
+   MAR21.43, so the discretion divides those weights too.
 2. **Covered bonds.** The 1.5% risk weight for covered bonds rated AA- or
    better (MAR21.53 fn 17, bank's discretion) is not modeled: bucket 8 uses
    2.5%. Override the risk weight on `P_CSR` to apply it.
