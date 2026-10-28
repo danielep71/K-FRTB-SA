@@ -621,6 +621,9 @@ def drc(p: Params, rows):
             continue
         notional, mv = _num(r[5]), _num(r[6])
         maturity = _num(r[7], p.drc["MAX_MATURITY"])
+        # MAR22.16 and its FAQ: cash equity is three months or at least one year.
+        if sen == "EQUITY" and not (abs(maturity - p.drc["MIN_MATURITY"]) < 1e-6 or maturity >= p.drc["MAX_MATURITY"]):
+            continue
         lgd = _num(r[8]) if _is_num(r[8]) else p.drc_seniority[sen][1]
         jtd = lgd * notional + (mv - notional)
         jtd = max(jtd, 0.0) if notional >= 0 else min(jtd, 0.0)

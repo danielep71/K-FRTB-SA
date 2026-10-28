@@ -112,6 +112,10 @@ Public Sub RunDRC()
         ElseIf Not IsBlankOrNumber(TableCell(ws, r, 9).Value) Then
             LogMessage "ERROR", src, "LGD override is not numeric; row skipped"
             ok = False
+        ElseIf seniority = "EQUITY" And Not IsAllowedEquityMaturity(TableCell(ws, r, 8).Value) Then
+            ' MAR22.16 and its FAQ: cash equity is three months or at least one year
+            LogMessage "ERROR", src, "Cash equity maturity must be three months or at least one year (MAR22.16); row skipped"
+            ok = False
         Else
             DrcRiskWeight quality, found
             If Not found Then
@@ -296,4 +300,16 @@ End Sub
 
 Private Function MaxL(ByVal a As Long, ByVal b As Long) As Long
     If a > b Then MaxL = a Else MaxL = b
+End Function
+
+' MAR22.16: a blank maturity (one year), the three-month floor or at least
+' one year; nothing in between.
+Private Function IsAllowedEquityMaturity(ByVal v As Variant) As Boolean
+    Dim m As Double
+    If IsBlank(v) Then
+        IsAllowedEquityMaturity = True
+        Exit Function
+    End If
+    m = ToDouble(v, DrcMaxMaturity())
+    IsAllowedEquityMaturity = (Abs(m - DrcMinMaturity()) < 0.000001) Or (m >= DrcMaxMaturity())
 End Function

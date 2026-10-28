@@ -412,3 +412,17 @@ def test_drc_nonnumeric_maturity_or_lgd_is_rejected(p):
     assert total == 0 and obl == {}
     _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity=None)])
     assert obl["A"][3] == approx(70)  # blank maturity: one year
+
+
+def test_drc_cash_equity_maturity_is_three_months_or_one_year(p):
+    # MAR22.16 and its FAQ: no cash-equity maturity between three months and one year.
+    # Equity LGD is 100%: JTD = 1.0 x 100 + (95 - 100) = 95.
+    for maturity, scale in [(0.25, 0.25), (1, 1), (3, 1), (None, 1)]:
+        _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "EQUITY", 100, 95, maturity=maturity)])
+        assert obl["A"][3] == approx(95 * scale), maturity
+    for maturity in [0.1, 0.5, 0.99]:
+        total, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "EQUITY", 100, 95, maturity=maturity)])
+        assert total == 0 and obl == {}, maturity
+    # The rule applies to cash equity only: a senior bond at 0.5 years is still scaled.
+    _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity=0.5)])
+    assert obl["A"][3] == approx(70 * 0.5)

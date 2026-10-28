@@ -20,6 +20,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- A cash-equity DRC position (`EQUITY` seniority) with a maturity between
+  three months and one year is rejected and logged instead of being scaled:
+  MAR22.16 and its FAQ allow only three months or at least one year. The
+  `In_DRC` description, the methodology and the reference follow; the
+  sample results are unchanged (#134, from the #29 decisions).
 - The LibreOffice installation step of the prototype checks stops after 8
   minutes, so a hung package mirror fails the job early instead of holding it
   for the whole 20-minute limit (#124).

@@ -145,7 +145,9 @@ Table 13): 100% everywhere except 77.78% for equity large cap and indices.
    floored at zero for longs and capped at zero for shorts (signed amounts;
    MAR22.11-13). LGD defaults by seniority: equity and non-senior 100%,
    senior 75%, covered bonds 25% (MAR22.12); a per-row LGD overrides it.
-2. Maturity scaling: `min(max(M, 0.25), 1)` (MAR22.15-18).
+2. Maturity scaling: `min(max(M, 0.25), 1)` (MAR22.15-18). Cash equity
+   (`EQUITY` seniority) takes a maturity of three months or at least one
+   year (MAR22.16 and its FAQ); any other maturity rejects the row (#134).
 3. Netting per obligor: a short offsets a long only when it ranks the same as
    or junior to the long (MAR22.19). Shorts are applied from the most junior
    rank upward, which maximizes the eligible offset.
@@ -196,7 +198,9 @@ and led to these corrections in this version:
    FX instruments only with supervisory approval.
 4. **DRC obligor attributes.** Bucket and credit quality come from the
    obligor's first position; differing values are logged as warnings. Blank
-   maturity defaults to one year; cash equity must be entered as 0.25 or 1.
+   maturity defaults to one year. Cash equity: decided on October 27, 2026
+   (#29, item 4c) and implemented in #134; a maturity other than 0.25 or at
+   least 1 rejects the row.
 5. **Binding scenario ties** resolve in the order low, medium, high.
 6. **Curvature risk weights** are not used: CVRs are inputs computed by the
    bank, which also owns the question whether the sqrt(2) division applies
