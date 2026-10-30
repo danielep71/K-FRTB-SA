@@ -35,8 +35,9 @@ information and metadata explicitly: issues have milestones; PRs do not.
 ## Make a focused change
 
 1. Fetch the repository and branch from `origin/release/v0.2.0` for current
-   prototype or maintenance work (milestone 2). Future milestones need an
-   explicitly approved integration branch. Confirm the PR base explicitly.
+   prototype or maintenance work (milestone 2), or from
+   `origin/release/v0.3.0` for milestone 3 work (#132). Later milestones need
+   an explicitly approved integration branch. Confirm the PR base explicitly.
 2. Reproduce the problem where applicable and make a focused change.
 3. Follow the root editing, ignore, and attribute policies. Do not include
    credentials, client data, local caches, or generated output.

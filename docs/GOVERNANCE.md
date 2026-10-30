@@ -18,6 +18,15 @@ October 27, 2026, after the milestone renumbering, and it was created from
 `0eb819b92e6f627099ceb1400c15ebb4404e385b`, then the head of both main and
 `release/v0.1.0` (#117).
 
+**`release/v0.3.0`** is the integration branch for milestone 3, v0.3.0 —
+Regulatory baseline and certification scope, starting with the methodology
+decisions of #29. The owner approved it on October 28, 2026, and it was
+created from `69e3df35781fc2e8a13bb523059d596d9da08150`, then the head of
+both main and `release/v0.2.0` (#132). It runs alongside `release/v0.2.0`,
+which keeps the prototype closeout and repository maintenance; bring
+`release/v0.2.0` or main into it with a merge commit when it needs their
+changes.
+
 **`release/v0.1.0`** is superseded: no PR targets it. It was approved for the
 prototype on October 17, 2026 and created from main at
 `d150d3822d5d50f69aabfca153bf6d302e80f2e4` (the integration of #18);
@@ -37,13 +46,15 @@ setup baseline. Do not recreate or target the branch.
 | Branch | Purpose and allowed changes |
 | --- | --- |
 | `release/v0.2.0` | Active integration branch for the SA prototype and repository maintenance, milestone 2 |
+| `release/v0.3.0` | Integration branch for milestone 3 work, approved October 28, 2026 (#132) |
 | `release/v0.1.0` | Superseded on October 27, 2026; receives no PRs; deleted under the lifecycle once milestone 2 is closed |
 | `main` | Stable default branch; receives an integration branch only through a separate explicitly requested PR |
 | Short-lived task branches | Branch from the integration branch of the issue's milestone; use focused names such as `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `docs/<issue>-<slug>` or `chore/<issue>-<slug>` |
 
 Current prototype and maintenance task PRs target **`release/v0.2.0`**,
-including Dependabot version updates. Future milestone work needs its own
-explicitly approved integration branch. Task PRs are squash-merged after applicable
+including Dependabot version updates. Milestone 3 task PRs target
+**`release/v0.3.0`**. Any later milestone needs its own explicitly approved
+integration branch. Task PRs are squash-merged after applicable
 checks pass and review findings are resolved. Do not commit development work
 directly to main or the release branch. Check the base explicitly when opening
 a PR: GitHub's default branch remains main.
