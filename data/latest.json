@@ -1,17 +1,12 @@
 {
   "schema_version": 1,
   "repository": "danielep71/K-FRTB-SA",
-  "collected_at_utc": "2026-10-29T11:03:10.684270+00:00",
+  "collected_at_utc": "2026-10-30T10:59:29.790486+00:00",
   "source_commit_sha": "69e3df35781fc2e8a13bb523059d596d9da08150",
   "views": {
-    "count": 92,
+    "count": 93,
     "uniques": 2,
     "views": [
-      {
-        "timestamp": "2026-10-15T00:00:00Z",
-        "count": 0,
-        "uniques": 0
-      },
       {
         "timestamp": "2026-10-16T00:00:00Z",
         "count": 0,
@@ -76,18 +71,18 @@
         "timestamp": "2026-10-28T00:00:00Z",
         "count": 24,
         "uniques": 1
+      },
+      {
+        "timestamp": "2026-10-29T00:00:00Z",
+        "count": 1,
+        "uniques": 1
       }
     ]
   },
   "clones": {
-    "count": 3263,
-    "uniques": 671,
+    "count": 3353,
+    "uniques": 699,
     "clones": [
-      {
-        "timestamp": "2026-10-15T00:00:00Z",
-        "count": 0,
-        "uniques": 0
-      },
       {
         "timestamp": "2026-10-16T00:00:00Z",
         "count": 0,
@@ -152,6 +147,11 @@
         "timestamp": "2026-10-28T00:00:00Z",
         "count": 233,
         "uniques": 65
+      },
+      {
+        "timestamp": "2026-10-29T00:00:00Z",
+        "count": 90,
+        "uniques": 46
       }
     ]
   },
@@ -170,15 +170,15 @@
       "uniques": 1
     },
     {
-      "path": "/danielep71/K-FRTB-SA/milestones/2/edit",
-      "title": "/milestones/2/edit",
+      "path": "/danielep71/K-FRTB-SA/milestones",
+      "title": "/milestones",
       "count": 8,
       "uniques": 1
     },
     {
-      "path": "/danielep71/K-FRTB-SA/milestones",
-      "title": "/milestones",
-      "count": 7,
+      "path": "/danielep71/K-FRTB-SA/milestones/2/edit",
+      "title": "/milestones/2/edit",
+      "count": 8,
       "uniques": 1
     },
     {
