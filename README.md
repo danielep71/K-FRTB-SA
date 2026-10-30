@@ -128,7 +128,7 @@ need to **check** an FRTB-SA number:
 | Risk classes | GIRR, CSR non-securitization, equity, commodity, FX |
 | SBM measures | Delta, vega and curvature; netting per risk factor; other-sector buckets without diversification |
 | Correlation scenarios | Low, medium and high for every `rho` and `gamma` (squared for curvature); SBM = max of the three totals |
-| Discretions | sqrt(2) for specified GIRR currencies and FX pairs (with first-order crosses), FX curvature divisor 1.5 |
+| Discretions | sqrt(2) for specified GIRR currencies and FX pairs (with first-order crosses), FX curvature divisor 1.5 for options not referencing the reporting currency, or for all FX with supervisory approval |
 | DRC | Non-securitization JTD, maturity scaling, obligor netting by seniority, hedge benefit ratio per bucket |
 | RRAO | Exotic (1.0%) and other (0.1%) residual risks |
 | Input validation | Unknown risk classes, buckets, tenors, sub-types, ratings and seniorities, non-numeric amounts and the reporting currency as an FX bucket are rejected and logged |

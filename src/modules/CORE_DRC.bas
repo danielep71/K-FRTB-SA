@@ -18,8 +18,9 @@ Attribute VB_Name = "CORE_DRC"
 '   rejected rows.
 '
 ' ERROR POLICY
-'   Invalid rows are logged as ERROR and skipped; inconsistent obligor
-'   attributes are logged as WARN.
+'   Invalid rows are logged as ERROR and skipped. An obligor split across
+'   buckets is logged as ERROR and skipped; one with several credit
+'   qualities takes the worst and is logged as WARN.
 '
 ' REFERENCE
 '   Basel Framework MAR22.10-MAR22.26.
@@ -61,6 +62,7 @@ Public Sub RunDRC()
     ' Obligors
     Dim oName() As String, oBucket() As String, oQuality() As String, oRW() As Double
     Dim oLong() As Double, oShort() As Double, oKeys As Collection
+    Dim oSplit() As Boolean, oMixed() As Boolean
     Dim longByRank() As Double, shortByRank() As Double, carry As Double, offset As Double
 
     ' Buckets
@@ -112,6 +114,10 @@ Public Sub RunDRC()
         ElseIf Not IsBlankOrNumber(TableCell(ws, r, 9).Value) Then
             LogMessage "ERROR", src, "LGD override is not numeric; row skipped"
             ok = False
+        ElseIf seniority = "EQUITY" And Not IsAllowedEquityMaturity(TableCell(ws, r, 8).Value) Then
+            ' MAR22.16 and its FAQ: cash equity is three months or at least one year
+            LogMessage "ERROR", src, "Cash equity maturity must be three months or at least one year (MAR22.16); row skipped"
+            ok = False
         Else
             DrcRiskWeight quality, found
             If Not found Then
@@ -142,12 +148,15 @@ Public Sub RunDRC()
     Next r
     n = j
 
-    ' 2. Obligors
+    ' 2. Obligors: one bucket each (MAR22.22), and the worst credit quality,
+    ' the one with the highest risk weight, when positions differ (MAR22.24)
     Set oKeys = New Collection
     nObl = 0
     ReDim oName(1 To MaxL(n, 1))
     ReDim oBucket(1 To MaxL(n, 1))
     ReDim oQuality(1 To MaxL(n, 1))
+    ReDim oSplit(1 To MaxL(n, 1))
+    ReDim oMixed(1 To MaxL(n, 1))
     For i = 1 To n
         o = KeyIndex(oKeys, pObl(i))
         If o = 0 Then
@@ -157,14 +166,30 @@ Public Sub RunDRC()
             oQuality(nObl) = pQuality(i)
             AddKey oKeys, pObl(i), nObl
         Else
-            If oBucket(o) <> pBucket(i) Then
-                LogMessage "WARN", SH_IN_DRC, "Obligor " & pObl(i) & " has positions in several buckets; " & oBucket(o) & " is used"
-            End If
+            If oBucket(o) <> pBucket(i) Then oSplit(o) = True
             If oQuality(o) <> pQuality(i) Then
-                LogMessage "WARN", SH_IN_DRC, "Obligor " & pObl(i) & " has several credit qualities; " & oQuality(o) & " is used"
+                oMixed(o) = True
+                If DrcRiskWeight(pQuality(i), found) > DrcRiskWeight(oQuality(o), found) Then oQuality(o) = pQuality(i)
             End If
         End If
     Next i
+
+    ' Drop split obligors; their positions match no remaining obligor below
+    j = 0
+    For o = 1 To nObl
+        If oSplit(o) Then
+            LogMessage "ERROR", SH_IN_DRC, "Obligor " & oName(o) & " has positions in several buckets (MAR22.22); its positions are skipped"
+        Else
+            If oMixed(o) Then
+                LogMessage "WARN", SH_IN_DRC, "Obligor " & oName(o) & " has several credit qualities; the worst, " & oQuality(o) & ", is used"
+            End If
+            j = j + 1
+            oName(j) = oName(o)
+            oBucket(j) = oBucket(o)
+            oQuality(j) = oQuality(o)
+        End If
+    Next o
+    nObl = j
 
     ' 3. Net long/short per obligor (MAR22.19-22.21): a short offsets a long
     ' only when it ranks the same as, or junior to, the long. Ranks run from
@@ -296,4 +321,16 @@ End Sub
 
 Private Function MaxL(ByVal a As Long, ByVal b As Long) As Long
     If a > b Then MaxL = a Else MaxL = b
+End Function
+
+' MAR22.16: a blank maturity (one year), the three-month floor or at least
+' one year; nothing in between.
+Private Function IsAllowedEquityMaturity(ByVal v As Variant) As Boolean
+    Dim m As Double
+    If IsBlank(v) Then
+        IsAllowedEquityMaturity = True
+        Exit Function
+    End If
+    m = ToDouble(v, DrcMaxMaturity())
+    IsAllowedEquityMaturity = (Abs(m - DrcMinMaturity()) < 0.000001) Or (m >= DrcMaxMaturity())
 End Function
