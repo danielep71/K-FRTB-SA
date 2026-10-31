@@ -289,13 +289,12 @@ def config_findings(root: Path) -> list[str]:
 
 
 def form_list(text: str, key: str) -> list[str]:
-    """The top-level ``key`` list of an issue form, written inline or as a block."""
-    found = flow_list(text, key)
-    if found:
-        return found
-    if not re.search(rf"^{re.escape(key)}:\s*(?:#.*)?$", text, re.M):
+    """The top-level ``key`` list of an issue form, inline or as a block,
+    with trailing comments allowed."""
+    top = re.search(rf"^{re.escape(key)}:", text, re.M)
+    if not top:
         return []
-    lists = block_lists(text, key)
+    lists = block_lists(text[top.start():], key)
     return lists[0] if lists else []
 
 

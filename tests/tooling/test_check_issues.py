@@ -207,6 +207,12 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(check_issues.form_list(block, "labels"), ["bug", "P2"])
         self.assertEqual(check_issues.form_list(block, "assignees"), ["triage-person"])
         self.assertEqual(check_issues.form_list('labels: ["bug", "P2"]\n', "labels"), ["bug", "P2"])
+        self.assertEqual(check_issues.form_list("assignees: [triage-person] # owner\n", "assignees"),
+                         ["triage-person"])
+        self.assertEqual(check_issues.form_list("assignees: # owner\n  - triage-person\n", "assignees"),
+                         ["triage-person"])
+        nested = "body:\n  - labels:\n      - nested\nlabels:\n- bug\n"
+        self.assertEqual(check_issues.form_list(nested, "labels"), ["bug"])
         self.assertEqual(check_issues.form_list(block, "title"), [])
 
     def test_flow_list(self) -> None:
