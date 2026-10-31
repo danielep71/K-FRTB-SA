@@ -184,7 +184,14 @@ INVALID_ROWS = {
         ["X7", "EQ", 8.6, "A", "SPOT", None, 1000],
     ],
     "In_Vega": [["Y1", "EQ", 8, "A", None, 2, None, 1000]],
-    "In_Curvature": [["Z1", "EQ", 8, "A", None, 1000, None], ["Z2", "FX", "USD", "USD", None, 1000, 1000, "maybe"]],
+    "In_Curvature": [
+        ["Z1", "EQ", 8, "A", None, 1000, None],
+        # RefReportingCcy accepts only TRUE, FALSE or blank; aliases are rejected (#144)
+        ["Z2", "FX", "USD", "USD", None, 1000, 1000, "maybe"],
+        ["Z3", "FX", "USD", "USD", None, 1000, 1000, "no"],
+        ["Z4", "FX", "GBP", "GBP", None, 1000, 1000, "YES"],
+        ["Z5", "FX", "GBP", "GBP", None, 1000, 1000, 1],
+    ],
     "In_DRC": [
         ["K1", "A", "CORP", "ZZZ", "SENIOR", 1, 1, 1, None],
         ["K2", "A", "XXX", "A", "SENIOR", 1, 1, 1, None],
@@ -231,11 +238,12 @@ def test_variant_run_reconciles_with_reference(lo_variant_run):
 def test_variant_run_logs_every_invalid_row(lo_variant_run):
     errors = log_rows(lo_variant_run, "ERROR")
     sources = sorted(r[1] for r in errors)
-    assert len(errors) == 19, errors
+    assert len(errors) == 22, errors
     assert sum(s.startswith("In_Delta") for s in sources) == 7
     assert sum(s.startswith("In_DRC") for s in sources) == 7
     assert any("Cash equity maturity" in r[2] for r in errors)
-    assert any("RefReportingCcy must be TRUE, FALSE or blank" in r[2] for r in errors)
+    flag_errors = sorted(r[1] for r in errors if "RefReportingCcy must be TRUE, FALSE or blank" in r[2])
+    assert len(flag_errors) == 4 and all(s.startswith("In_Curvature") for s in flag_errors), flag_errors
     # BANK_B, split across CORP and SOV, is skipped; BANK_A takes its worst quality (#142)
     assert any("BANK_B has positions in several buckets" in r[2] for r in errors)
     warnings = log_rows(lo_variant_run, "WARN")

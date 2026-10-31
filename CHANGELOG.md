@@ -51,6 +51,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- `RefReportingCcy` on `In_Curvature` accepts only TRUE, FALSE or blank, as
+  documented. Aliases such as YES, NO, Y, N, 1 and 0 were read as flags; they
+  now reject the row, in the VBA and the reference. A cell that LibreOffice
+  saves as a number formatted TRUE or FALSE is read as the flag it shows. The
+  LibreOffice variant logs four rejected flags (#144).
 - A DRC obligor whose positions name different buckets is logged as an error
   and skipped with all its positions, instead of taking the first position's
   bucket (MAR22.22). When its positions differ in credit quality, the worst

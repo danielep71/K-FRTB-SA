@@ -284,12 +284,21 @@ def test_curvature_fx_divisor(p):
     assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(40_000)
 
 
-def test_curvature_reporting_ccy_flag_must_be_boolean(p):
-    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, "maybe"], ["2", "FX", "GBP", "GBP", None, 10_000, 0, "no"],
-            ["3", "EQ", 8, "A", None, 5_000, 0, 2]]
+@pytest.mark.parametrize("flag", ["maybe", "YES", "y", "No", "N", "1", "-1", "0", 1, -1, 0, 2, 0.5])
+def test_curvature_reporting_ccy_flag_rejects_other_values(p, flag):
+    # Only TRUE, FALSE or blank are accepted; an alias skips the row (#144)
+    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, flag], ["2", "FX", "GBP", "GBP", None, 10_000, 0, None]]
     capital, _, _ = run_curv(p, rows)
     assert capital["FX"]["MEDIUM"] == approx(10_000)
-    assert capital["EQ"]["MEDIUM"] == approx(0.0)
+
+
+@pytest.mark.parametrize("flag, divided", [(None, True), ("", True), ("  ", True), (False, True), ("false", True),
+                                           (" FALSE ", True), (True, False), ("TRUE", False), ("true", False)])
+def test_curvature_reporting_ccy_flag_accepts_true_false_or_blank(p, flag, divided):
+    p.fx_curv_divisor_on = True
+    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, flag]]
+    capital, _, _ = run_curv(p, rows)
+    assert capital["FX"]["MEDIUM"] == approx(20_000 if divided else 30_000)
 
 
 def test_curvature_other_bucket(p):
@@ -468,3 +477,15 @@ def test_drc_cash_equity_maturity_is_three_months_or_one_year(p):
     # The rule applies to cash equity only: a senior bond at 0.5 years is still scaled.
     _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity=0.5)])
     assert obl["A"][3] == approx(70 * 0.5)
+
+
+def test_input_reader_reads_a_boolean_formatted_number_as_the_flag_it_shows():
+    # LibreOffice saves TRUE as 1 with a TRUE/FALSE format; a plain 1 is no flag (#144)
+    import openpyxl
+
+    ws = openpyxl.Workbook().active
+    cells = [(1, '"TRUE";"TRUE";"FALSE"'), (0, '"TRUE";"TRUE";"FALSE"'), (1, "General"), (0, "#,##0.####"), ("TRUE", "@")]
+    for i, (v, fmt) in enumerate(cells, start=1):
+        ws.cell(1, i).value = v
+        ws.cell(1, i).number_format = fmt
+    assert [ref._cell_value(ws.cell(1, i)) for i in range(1, 6)] == [True, False, 1, 0, "TRUE"]

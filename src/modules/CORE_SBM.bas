@@ -366,7 +366,7 @@ Private Sub LoadCurvature()
             LogMessage "ERROR", src, "CVR up and CVR down must both be numeric; row skipped"
             ok = False
         End If
-        If ok And Not IsBlankOrBool(TableCell(ws, r, 8).Value) Then
+        If ok And Not IsBlankOrBoolCell(TableCell(ws, r, 8)) Then
             LogMessage "ERROR", src, "RefReportingCcy must be TRUE, FALSE or blank; row skipped"
             ok = False
         End If
