@@ -7,6 +7,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- GOVERNANCE, LABELS, CI, SECURITY, the Code of Conduct and the v0.2.0
+  milestone guide state my roles and decisions in the first person, and the
+  label table matches the catalogue descriptions. Dated evidence and closed
+  records are unchanged (#187).
 - The traffic history moves to CSV files: views and clones per day, one
   snapshot per collection day with the repository's stars, forks, watchers
   and open issues, and the top referrers and paths. The workflow adds the

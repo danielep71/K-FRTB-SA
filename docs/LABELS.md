@@ -39,7 +39,7 @@ catalogue description of P1 states the same rule.
 | --- | --- |
 | `bug` | Confirmed defect in behavior or a documented contract |
 | `enhancement` | New capability or meaningful improvement |
-| `documentation` | User or maintainer documentation |
+| `documentation` | Documentation for users or for my repository maintenance |
 | `tests` | Test coverage, fixtures or manual validation |
 | `refactor` | Internal restructuring that preserves behavior |
 | `behavior-change` | Intentional externally observable behavior change |
@@ -48,12 +48,12 @@ catalogue description of P1 states the same rule.
 | `release` | Release preparation, evidence or packaging |
 | `security` | Disclosed security work or supply-chain hardening |
 | `blocked` | Work cannot proceed until a named dependency is resolved |
-| `question` | Information or a maintainer decision is needed |
+| `question` | I need further information or need to make a decision |
 | `help wanted` | External contributions or investigation are welcome |
 | `good first issue` | A bounded task suitable for a first contribution |
 | `duplicate` | Another issue or PR already covers the work |
 | `invalid` | The report is unsupported, incomplete or not actionable |
-| `wontfix` | Maintainer has decided not to proceed |
+| `wontfix` | I have decided not to proceed |
 
 Type and status labels may be combined; priority labels may not. Setup issues
 normally carry `repository` and `P3`, plus applicable type labels. Every
@@ -155,7 +155,7 @@ node .github/scripts/labels-sync.mjs --mode plan --live labels-before.json
 ```
 
 With `GITHUB_TOKEN` set securely in the environment and an explicit reviewed
-checkout, a maintainer can run live verification or reconciliation:
+checkout, I can run live verification or reconciliation:
 
 ```sh
 node .github/scripts/labels-drift.mjs --repository danielep71/K-FRTB-SA
