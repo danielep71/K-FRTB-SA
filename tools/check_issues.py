@@ -1,0 +1,424 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
+"""Check issue metadata and dependency status that issue forms cannot enforce.
+
+Read-only: the check never changes an issue. It reports findings for
+me to resolve by hand (docs/LABELS.md, Metadata rules).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+from collections import Counter
+from collections.abc import Collection, Iterable, Mapping, Sequence
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+PRIORITIES = ("P1", "P2", "P3")
+BLOCKED = "blocked"
+FORM_PRIORITIES = {"01-bug.yml": "P2", "02-feature.yml": "P3", "03-documentation.yml": "P3"}
+ASSIGNEE_FORM = "01-bug.yml"
+DEPENDENCY_STATUS_WORDS = re.compile(r"block|ready|waiting|depend|on[ -]hold|prerequisite", re.I)
+HEADING = re.compile(r"^#{2,3}\s+(.*)$")
+EXTERNAL = re.compile(r"^\s*(?:[-*]\s*)?external condition:\s*\S", re.I)
+LABEL_GUIDE = Path("docs/LABELS.md")
+LABEL_SECTION = "Metadata rules"
+DEPENDABOT = Path(".github/dependabot.yml")
+# The tables of the Metadata rules section of LABELS.md that explain the labels.
+LABEL_TABLES = {"| Priority | Use |", "| Label | Use |"}
+TABLE_LABEL = re.compile(r"^\|\s*`([^`]+)`\s*\|")
+API = "https://api.github.com"
+
+
+@dataclass(frozen=True)
+class Issue:
+    number: int
+    state: str  # "open" or "closed"
+    labels: tuple[str, ...]
+    assignees: tuple[str, ...]
+    milestone: str | None
+    body: str
+
+
+@dataclass(frozen=True)
+class Finding:
+    number: int
+    rule: str
+    message: str
+
+
+def issue_from_api(item: Mapping[str, Any]) -> Issue:
+    milestone = item.get("milestone")
+    return Issue(
+        number=int(item["number"]),
+        state=str(item["state"]).lower(),
+        labels=tuple(str(label["name"]) for label in item.get("labels", [])),
+        assignees=tuple(str(user["login"]) for user in item.get("assignees", [])),
+        milestone=str(milestone["title"]) if milestone else None,
+        body=str(item.get("body") or ""),
+    )
+
+
+def dependency_section(body: str) -> list[str] | None:
+    """Return the lines of the issue's dependency section, or None if it has none."""
+    lines = body.splitlines()
+    for index, line in enumerate(lines):
+        match = HEADING.match(line)
+        if match and "dependencies" in match.group(1).lower():
+            section = []
+            for following in lines[index + 1:]:
+                if HEADING.match(following):
+                    break
+                section.append(following)
+            return section
+    return None
+
+
+def references(lines: Iterable[str], repository: str, own: int) -> set[int]:
+    url = re.compile(rf"github\.com/{re.escape(repository)}/issues/(\d+)", re.I)
+    found: set[int] = set()
+    for line in lines:
+        found.update(int(n) for n in re.findall(r"(?<![\w/&])#(\d+)\b", line))
+        found.update(int(n) for n in url.findall(line))
+    found.discard(own)
+    return found
+
+
+def metadata_findings(issue: Issue, assignee: str) -> list[Finding]:
+    findings = []
+    if assignee not in issue.assignees:
+        findings.append(Finding(issue.number, "assignee", f"is not assigned to {assignee}"))
+    priorities = [label for label in issue.labels if label in PRIORITIES]
+    if len(priorities) != 1:
+        found = ", ".join(priorities) or "none"
+        findings.append(Finding(issue.number, "priority",
+                                f"needs exactly one of P1/P2/P3 (found: {found})"))
+    if "P1" in priorities and "bug" not in issue.labels:
+        findings.append(Finding(issue.number, "p1-reserved",
+                                "has P1 without bug: P1 is reserved for confirmed calculation bugs"))
+    if not issue.milestone:
+        findings.append(Finding(issue.number, "milestone", "has no milestone"))
+    return findings
+
+
+def dependency_findings(issue: Issue, states: Mapping[int, str], repository: str,
+                        pulls: Collection[int] = ()) -> list[Finding]:
+    """A named pull request is a known reference, never a prerequisite."""
+    section = dependency_section(issue.body)
+    if section is None:
+        return [Finding(issue.number, "dependencies", "has no dependency section")]
+    named = references(section, repository, issue.number)
+    missing = sorted(n for n in named if n not in states and n not in pulls)
+    open_prerequisites = sorted(n for n in named if states.get(n) == "open")
+    external = any(EXTERNAL.match(line) for line in section)
+    blocked = BLOCKED in issue.labels
+    findings = [Finding(issue.number, "dependencies", f"names #{n}, which does not exist")
+                for n in missing]
+    if blocked and not open_prerequisites and not external:
+        findings.append(Finding(issue.number, "blocked",
+                                "is blocked but names no open prerequisite or external "
+                                "condition: remove blocked or name the blocker"))
+    if not blocked and open_prerequisites:
+        listed = ", ".join(f"#{n}" for n in open_prerequisites)
+        findings.append(Finding(issue.number, "blocked",
+                                f"names open prerequisite(s) {listed} but is not blocked"))
+    if not blocked and external:
+        findings.append(Finding(issue.number, "blocked",
+                                "names an external condition but is not blocked"))
+    return findings
+
+
+def audit(issues: Sequence[Issue], states: Mapping[int, str], repository: str,
+          catalogue: set[str] | None = None, pulls: Collection[int] = (),
+          *, assignee: str) -> list[Finding]:
+    """Audit every open issue; ``states`` maps every known issue number to its state
+    and ``pulls`` holds the numbers of the repository's pull requests."""
+    findings = []
+    for issue in sorted(issues, key=lambda item: item.number):
+        if issue.state != "open":
+            continue
+        findings += metadata_findings(issue, assignee)
+        findings += dependency_findings(issue, states, repository, pulls)
+        if catalogue is not None:
+            findings += [Finding(issue.number, "catalogue", f"has label {label!r}, "
+                                 "which is not in .github/labels.json")
+                         for label in issue.labels if label not in catalogue]
+    return findings
+
+
+def catalogue_labels(root: Path) -> set[str]:
+    # Use the same schema validator as synchronization; never silently ignore overlays.
+    result = subprocess.run(
+        ["node", str(root / ".github/scripts/labels-sync.mjs"), "--mode", "validate",
+         "--manifest", str(root / ".github/labels.json")],
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode:
+        raise ValueError(result.stderr.strip() or result.stdout.strip())
+    data = json.loads((root / ".github" / "labels.json").read_text(encoding="utf-8"))
+    return {str(label["name"]) for label in data["labels"]}
+
+
+def configured_assignee(root: Path) -> str:
+    """Read the required person from the issue form, not the repository owner."""
+    text = (root / ".github/ISSUE_TEMPLATE" / ASSIGNEE_FORM).read_text(encoding="utf-8")
+    assignees = form_list(text, "assignees")
+    if len(assignees) != 1:
+        raise ValueError(f"{ASSIGNEE_FORM} must configure exactly one assignee")
+    return assignees[0]
+
+
+def documented_labels(text: str) -> list[str]:
+    """Labels in the first column of the label tables of the Metadata rules section.
+
+    The section is the level-2 heading ending "Metadata rules"; a label table starts
+    with a header row in LABEL_TABLES and ends at the first non-table line.
+    A label is listed once per row, so a label named twice appears twice.
+    """
+    found: list[str] = []
+    in_section = in_table = False
+    for line in text.splitlines():
+        if line.startswith("## "):
+            in_section = line.rstrip().endswith(LABEL_SECTION)
+            in_table = False
+            continue
+        if not in_section:
+            continue
+        stripped = line.strip()
+        if stripped in LABEL_TABLES:
+            in_table = True
+        elif not stripped.startswith("|"):
+            in_table = False
+        elif in_table and (match := TABLE_LABEL.match(stripped)):
+            found.append(match.group(1))
+    return found
+
+
+def block_lists(text: str, key: str) -> list[list[str]]:
+    """Every list under ``key:`` in a simple YAML file, read line by line.
+
+    A list is either written inline (``key: [a, b]``) or as the ``- item``
+    lines that follow ``key:``, indented at least as far as the key. Trailing
+    comments, comment lines and blank lines are skipped; quotes around items
+    are removed.
+    """
+    lists = []
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        inline = re.match(rf"^\s*{re.escape(key)}:\s*\[(.*?)\]\s*(?:#.*)?$", line)
+        if inline:
+            lists.append([item.strip().strip("\"'") for item in inline.group(1).split(",") if item.strip()])
+            continue
+        start = re.match(rf"^(\s*){re.escape(key)}:\s*(?:#.*)?$", line)
+        if not start:
+            continue
+        indent, items = len(start.group(1)), []
+        for following in lines[index + 1:]:
+            if not following.strip() or following.lstrip().startswith("#"):
+                continue
+            item = re.match(r"^(\s*)-\s+(.*?)\s*(?:#.*)?$", following)
+            if not item or len(item.group(1)) < indent:
+                break
+            items.append(item.group(2).strip("\"'"))
+        lists.append(items)
+    return lists
+
+
+def config_findings(root: Path) -> list[str]:
+    """Check the label catalogue, the issue forms, the label guide of
+    LABELS.md and the labels and assignees of Dependabot against the
+    issue rules."""
+    problems = []
+    labels = catalogue_labels(root)
+    assignee = configured_assignee(root)
+    status_labels = sorted(n for n in labels if DEPENDENCY_STATUS_WORDS.search(n))
+    if status_labels != [BLOCKED]:
+        problems.append(f"the dependency status labels must be exactly ['blocked'], "
+                        f"found {status_labels}")
+    forms = root / ".github" / "ISSUE_TEMPLATE"
+    for name, priority in sorted(FORM_PRIORITIES.items()):
+        path = forms / name
+        if not path.is_file():
+            problems.append(f"{path.relative_to(root)} is missing")
+            continue
+        text = path.read_text(encoding="utf-8")
+        form_labels = form_list(text, "labels")
+        if [label for label in form_labels if label in PRIORITIES] != [priority]:
+            problems.append(f"{name} must set exactly the priority {priority}")
+        problems += [f"{name} sets unknown label {label!r}"
+                     for label in form_labels if label not in labels]
+        if form_list(text, "assignees") != [assignee]:
+            problems.append(f"{name} must assign {assignee}")
+        if not re.search(r"^\s*id:\s*dependencies\s*$", text, re.M):
+            problems.append(f"{name} has no dependencies field")
+    config = forms / "config.yml"
+    if not config.is_file() or not re.search(r"^blank_issues_enabled:\s*false\s*$",
+                                             config.read_text(encoding="utf-8"), re.M):
+        problems.append("ISSUE_TEMPLATE/config.yml must set blank_issues_enabled: false")
+    guide = root / LABEL_GUIDE
+    if guide.is_file():
+        counts = Counter(documented_labels(guide.read_text(encoding="utf-8")))
+        problems += [f"{LABEL_GUIDE.as_posix()} must explain label {name!r} exactly once in the label tables "
+                     f"of {LABEL_SECTION}, found {counts[name]}" for name in sorted(labels) if counts[name] != 1]
+        problems += [f"{LABEL_GUIDE.as_posix()} explains label {name!r}, which is not in the catalogue"
+                     for name in sorted(set(counts) - labels)]
+    else:
+        problems.append(f"{LABEL_GUIDE.as_posix()} is missing")
+    dependabot = root / DEPENDABOT
+    if dependabot.is_file():
+        text = dependabot.read_text(encoding="utf-8")
+        problems += [f"{DEPENDABOT.as_posix()} sets unknown label {label!r}"
+                     for found in block_lists(text, "labels") for label in found if label not in labels]
+        problems += [f"{DEPENDABOT.as_posix()} assigns {person!r}, not {assignee!r}"
+                     for found in block_lists(text, "assignees") for person in found if person != assignee]
+    else:
+        problems.append(f"{DEPENDABOT.as_posix()} is missing")
+    return problems
+
+
+def form_list(text: str, key: str) -> list[str]:
+    """The top-level ``key`` list of an issue form, written inline or as a block."""
+    found = flow_list(text, key)
+    if found:
+        return found
+    if not re.search(rf"^{re.escape(key)}:\s*(?:#.*)?$", text, re.M):
+        return []
+    lists = block_lists(text, key)
+    return lists[0] if lists else []
+
+
+def flow_list(text: str, key: str) -> list[str]:
+    match = re.search(rf"^{key}:\s*\[(.*)\]\s*$", text, re.M)
+    if not match:
+        return []
+    return [item.strip().strip("\"'") for item in match.group(1).split(",") if item.strip()]
+
+
+def fetch(url: str, token: str) -> Any:
+    request = urllib.request.Request(url, headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {token}",
+        "X-GitHub-Api-Version": "2022-11-28",
+    })
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.load(response)
+
+
+Loaded = tuple[list[Issue], dict[int, str], set[int]]
+
+
+def split(items: Iterable[Mapping[str, Any]]) -> Loaded:
+    """Return the issues, their states and the pull request numbers of REST items."""
+    issues: list[Issue] = []
+    pulls: set[int] = set()
+    for item in items:
+        if "pull_request" in item:
+            pulls.add(int(item["number"]))
+        else:
+            issues.append(issue_from_api(item))
+    return issues, {issue.number: issue.state for issue in issues}, pulls
+
+
+def load_live(repository: str, token: str) -> Loaded:
+    """Fetch every issue and pull request (open and closed) of the repository."""
+    items: list[Mapping[str, Any]] = []
+    for page in range(1, 101):
+        batch = fetch(f"{API}/repos/{repository}/issues?state=all&per_page=100&page={page}",
+                      token)
+        items += batch
+        if len(batch) < 100:
+            break
+    else:
+        raise RuntimeError("10000 or more issues; refusing to audit a possibly partial list")
+    return split(items)
+
+
+def load_file(path: Path) -> Loaded:
+    return split(json.loads(path.read_text(encoding="utf-8")))
+
+
+def render(findings: Sequence[Finding], audited: int) -> str:
+    status = "PASS" if not findings else "FAIL"
+    lines = ["# Issue triage", "", f"Status: **{status}**; open issues audited: {audited}", ""]
+    if findings:
+        lines += ["| Issue | Rule | Finding |", "| --- | --- | --- |"]
+        lines += [f"| #{f.number} | `{f.rule}` | {f.message} |" for f in findings]
+        lines += ["", "Resolve each finding by hand; this check never changes an issue. "
+                  "See docs/LABELS.md, Metadata rules."]
+    else:
+        lines.append("Every open issue meets the triage rules.")
+    return "\n".join(lines) + "\n"
+
+
+def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--repository", help="owner/name; reads GITHUB_TOKEN")
+    source.add_argument("--input", type=Path, help="issues exported as GitHub REST JSON")
+    source.add_argument("--check-config", action="store_true",
+                        help="check the issue forms and label catalogue only (offline)")
+    parser.add_argument("--repo-name",
+                        help="repository used to resolve issue URLs with --input")
+    parser.add_argument("--output", type=Path, help="write the findings as JSON")
+    parser.add_argument("--summary", type=Path, help="append the Markdown report to this file")
+    args = parser.parse_args(argv)
+    if args.input and not args.repo_name:
+        parser.error("--input requires --repo-name owner/name")
+    repository = args.repository or args.repo_name
+    if repository and not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
+        parser.error("repository must have the form owner/name")
+    return args
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = parse_args(argv)
+    root = args.root.resolve()
+    try:
+        if args.check_config:
+            problems = config_findings(root)
+            for problem in problems:
+                print(f"FAIL: {problem}")
+            print(f"issue-config: {'PASS' if not problems else 'FAIL'}")
+            return 1 if problems else 0
+        if args.repository:
+            token = os.environ.get("GITHUB_TOKEN", "")
+            if not token:
+                raise RuntimeError("--repository requires GITHUB_TOKEN")
+            issues, states, pulls = load_live(args.repository, token)
+            repository = args.repository
+        else:
+            issues, states, pulls = load_file(args.input)
+            repository = args.repo_name
+        findings = audit(issues, states, repository, catalogue_labels(root), pulls,
+                         assignee=configured_assignee(root))
+    except (OSError, RuntimeError, ValueError, KeyError, urllib.error.URLError) as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 2
+    report = render(findings, sum(1 for issue in issues if issue.state == "open"))
+    print(report, end="")
+    if args.summary:
+        with args.summary.open("a", encoding="utf-8") as handle:
+            handle.write(report)
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(
+            {"status": "pass" if not findings else "fail",
+             "findings": [vars(f) for f in findings]}, indent=2) + "\n", encoding="utf-8")
+    return 1 if findings else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

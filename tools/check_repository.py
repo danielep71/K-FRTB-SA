@@ -213,6 +213,7 @@ def main():
         ["node", ".github/scripts/labels-sync.mjs", "--self-test"],
         ["node", ".github/scripts/labels-sync.mjs", "--mode", "validate"],
         ["node", ".github/scripts/labels-drift.mjs", "--self-test"],
+        [sys.executable, "tools/check_issues.py", "--check-config"],
         [sys.executable, "-m", "unittest", "discover", "-s", "tests/tooling", "-p", "test_*.py", "-v"],
     ]
     for command in commands:
