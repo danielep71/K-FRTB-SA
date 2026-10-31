@@ -24,6 +24,12 @@ Unreleased describe integrated work, not a published version.
   override of the covered-bond risk weight applies to the whole bucket. The
   `In_Curvature` and `P_CSR` bucket 8 descriptions follow; no calculation
   changed (#140, from the #29 decisions).
+- Import the shared repository-settings target and separate local/historical
+  evidence, recording verified live alignment and PR-based synchronization (#149).
+- The PR template, the release procedure, the v0.2.0 milestone guide and the
+  governance controls table describe release-branch synchronization through a
+  reviewed merge-commit PR from main, without a direct fast-forward or a
+  ruleset bypass (#151).
 - `release/v0.3.0`, created on October 28, 2026 from `69e3df3`, is the
   integration branch for milestone 3, starting with the methodology
   decisions of #29. `release/v0.2.0` keeps the prototype closeout,
