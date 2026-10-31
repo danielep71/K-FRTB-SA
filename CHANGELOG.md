@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Migrate traffic collection to an isolated GitHub App token and curl-only
+  API step; retain validated atomic publication with the workflow token (#181).
+
 - The issue forms ask for the affected area, the validation evidence and the
   dependency status in the form Issue triage checks; the bug form also asks
   for the full commit SHA, a sourced expected value and the Excel or
