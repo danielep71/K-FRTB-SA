@@ -115,7 +115,7 @@ def validate_files(root, paths, binary=frozenset()):
                 if not isinstance(document, dict):
                     raise ValueError("configuration must be a mapping")
                 if name.startswith(".github/workflows/"):
-                    validate_workflow(document)
+                    validate_workflow(document, Path(name).name)
             elif path.suffix == ".md":
                 for target in markdown_targets(text):
                     parsed = urlsplit(target)
@@ -133,16 +133,54 @@ def validate_files(root, paths, binary=frozenset()):
     return errors
 
 
-def validate_workflow(document):
+# Jobs that may hold a write permission, and the scopes they may write.
+WRITE_ALLOWED = {
+    ("labels-sync.yml", "reconcile"): {"issues"},
+    ("traffic-export.yml", "export"): {"contents"},
+    ("pr-milestones.yml", "reconcile"): {"pull-requests"},
+}
+DEFAULT_BRANCH_ONLY = "github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"
+LABEL_RECONCILE_CONDITION = "github.event_name != 'pull_request' && " + DEFAULT_BRANCH_ONLY
+
+
+def written_scopes(permissions):
+    """The scopes a permissions value grants write access to."""
+    if permissions in ("write-all", "write"):
+        return {"*"}
+    if isinstance(permissions, dict):
+        return {scope for scope, level in permissions.items() if level == "write"}
+    if permissions in (None, "read-all", "read"):
+        return set()
+    raise ValueError(f"unrecognized permissions value: {permissions!r}")
+
+
+def validate_workflow(document, name=None):
+    """Check pinning, credentials, permissions and timeouts of one workflow.
+
+    ``name`` is the file name under .github/workflows; write permissions are
+    allowed only for the jobs listed in WRITE_ALLOWED.
+    """
     if not document.get("name") or not document.get("on") or not isinstance(document.get("jobs"), dict):
         raise ValueError("workflow requires name, on, and jobs")
-    for job in document["jobs"].values():
+    if "permissions" not in document:
+        raise ValueError("workflow must declare top-level permissions")
+    for job_id, job in document["jobs"].items():
         if not isinstance(job, dict):
             raise ValueError("workflow job must be a mapping")
+        if "timeout-minutes" not in job:
+            raise ValueError(f"job {job_id} must set timeout-minutes")
+        effective = job["permissions"] if "permissions" in job else document["permissions"]
+        extra = written_scopes(effective) - WRITE_ALLOWED.get((name, job_id), set())
+        if extra:
+            raise ValueError(f"job {job_id} must not get write permission: {', '.join(sorted(extra))}")
         for step in job.get("steps", []):
             action = step.get("uses", "")
             if action and not action.startswith("./") and not re.fullmatch(r"[^\s@]+@[0-9a-f]{40}", action):
                 raise ValueError(f"action must use a full commit SHA: {action}")
+            if action.startswith("actions/checkout@") and (step.get("with") or {}).get("persist-credentials") is not False:
+                raise ValueError(f"job {job_id}: actions/checkout must set persist-credentials: false")
+    if name == "labels-sync.yml" and document["jobs"].get("reconcile", {}).get("if") != LABEL_RECONCILE_CONDITION:
+        raise ValueError("labels-sync reconcile must run only outside pull requests on the default branch")
 
 
 def validate_controls(root):
@@ -178,8 +216,7 @@ def validate_controls(root):
 
 MILESTONE_RECONCILE_CONDITION = (
     "github.event_name == 'pull_request_target' || "
-    "github.event_name == 'schedule' || "
-    "github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"
+    "github.event_name == 'schedule' || " + DEFAULT_BRANCH_ONLY
 )
 
 
@@ -213,6 +250,7 @@ def main():
         ["node", ".github/scripts/labels-sync.mjs", "--self-test"],
         ["node", ".github/scripts/labels-sync.mjs", "--mode", "validate"],
         ["node", ".github/scripts/labels-drift.mjs", "--self-test"],
+        [sys.executable, "tools/check_issues.py", "--check-config"],
         [sys.executable, "-m", "unittest", "discover", "-s", "tests/tooling", "-p", "test_*.py", "-v"],
     ]
     for command in commands:
