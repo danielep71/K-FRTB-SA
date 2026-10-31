@@ -112,6 +112,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- `Results`, `Control`, `Test_Expected` and the `P_*` sheets freeze only
+  their header rows, so no frozen line runs through their narrow tables; the
+  `In_*`, `Out_*` and `Log` sheets keep their key columns in view. The
+  Control Description column is wide enough for every description. Found in
+  the first Excel run; no value changes (#203).
 - The first recorded Excel run found three faults in the tools. The
   recorder now calls the VBA editor through IDispatch, which Windows
   PowerShell needs for its objects, and records the references before the

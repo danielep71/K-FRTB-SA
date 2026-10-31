@@ -394,7 +394,9 @@ End Sub
 
 
 ' Hides gridlines and freezes the panes below the table header on every
-' sheet; needs each sheet to be active once.
+' sheet; needs each sheet to be active once. The wide input, output and Log
+' sheets also keep their key columns in view; the narrow tables of Results,
+' Control, Test_Expected and the parameter sheets freeze rows only.
 Private Sub ApplyWindowSettings()
     Dim names As Variant, i As Long, ws As Object
     names = ManagedSheets()
@@ -408,10 +410,10 @@ Private Sub ApplyWindowSettings()
             ws.Cells(LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_COL + 1).Select
             Application.ActiveWindow.FreezePanes = True
         ElseIf ws.Name = SH_RESULTS Then
-            ws.Cells(LAYOUT_FIRST_DATA_ROW, LAYOUT_FIRST_COL + 1).Select
+            ws.Cells(LAYOUT_FIRST_DATA_ROW, 1).Select
             Application.ActiveWindow.FreezePanes = True
         ElseIf ws.Name = SH_CONTROL Or ws.Name = SH_TEST Or Left$(ws.Name, 2) = "P_" Then
-            ws.Cells(LAYOUT_HEADER_ROW + 2, LAYOUT_FIRST_COL + 1).Select
+            ws.Cells(LAYOUT_HEADER_ROW + 2, 1).Select
             Application.ActiveWindow.FreezePanes = True
         Else
             ws.Cells(4, 1).Select
@@ -497,7 +499,7 @@ Private Sub BuildControl()
     Dim ws As Object, r As Long
     Set ws = GetSheet(SH_CONTROL)
     ApplyFrame ws, "Control", "Run settings and actions.", 6
-    SetWidths ws, Array(34, 14, 95, 16)
+    SetWidths ws, Array(34, 14, 125, 16)
     r = PutTable(ws, LAYOUT_HEADER_ROW, "SETTINGS", "Run settings", Array("Code", "Value", "Description", "Reference"))
     PutRow ws, r, Array("REPORTING_CCY", "EUR", "Reporting currency; FX sensitivities are against this currency", "MAR21.14")
     PutRow ws, r + 1, Array("GIRR_SPECIFIED_CCY_DISCRETION", False, "TRUE: GIRR delta risk weights (tenor, inflation and cross-currency basis) divided by sqrt(2) for the specified currencies and the reporting currency", "MAR21.44")
