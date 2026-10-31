@@ -140,6 +140,16 @@ by GitHub Actions policies or outages. If a run fails, inspect it and rerun the
 trusted workflow; do not claim synchronous assignment prevention. The query
 `repo:danielep71/K-FRTB-SA is:pr has:milestone` should return zero.
 
+## Issue triage
+
+[Issue triage](../.github/workflows/issue-triage.yml) runs
+[`tools/check_issues.py`](../tools/check_issues.py) on issue events and on
+manual dispatch. Issue events run the workflow from the default branch only,
+so it is active after the change reaches main. Its token has `contents`,
+`issues` and `pull-requests` read access only: it never changes an issue, and a
+failed run reports the findings in the job summary and a 30-day artifact. The
+rules are in [labels and triage](LABELS.md).
+
 ## Evidence boundaries
 
 This gate checks repository maintenance. It does not execute Excel, run the

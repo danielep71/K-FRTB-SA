@@ -19,7 +19,8 @@ issues, must have:
 PRs retain the assignee and exactly one priority, and link to their owning
 issue. **PRs must have no milestone**, including closed, merged and bot PRs.
 Milestone ownership is recorded on the issue only (#104). The metadata
-workflow removes PR assignments automatically; issue triage remains manual.
+workflow removes PR assignments automatically; issue triage remains manual,
+with the read-only audit described below.
 
 **P1 is reserved for a confirmed calculation bug: wrong results for valid
 inputs.** It is used only together with `bug`. An input that should have been
@@ -27,6 +28,12 @@ rejected but was accepted, such as a blank parameter, is a P2 defect, not P1.
 P2 covers material defects in correctness, robustness or maintainability. P3
 covers setup, documentation, testing and other non-blocking quality work. The
 catalogue description of P1 states the same rule.
+
+| Priority | Use |
+| --- | --- |
+| `P1` | Confirmed calculation bug: wrong results for valid inputs; only with `bug` |
+| `P2` | Material correctness, robustness or maintainability defect |
+| `P3` | Setup, documentation, testing and other non-blocking quality work |
 
 | Label | Use |
 | --- | --- |
@@ -49,12 +56,25 @@ catalogue description of P1 states the same rule.
 | `wontfix` | Maintainer has decided not to proceed |
 
 Type and status labels may be combined; priority labels may not. Setup issues
-normally carry `repository` and `P3`, plus applicable type labels. A blocked
-issue must name its dependency in the body. Before closing, link the merged PR,
+normally carry `repository` and `P3`, plus applicable type labels. Every
+open issue has a section whose heading contains "Dependencies", normally
+**Dependencies and blocking status**. It names each prerequisite issue
+(`#123` or its URL), or an `External condition:` line for a blocker outside the
+tracker. `blocked` is set exactly while that section names an open
+prerequisite or an external condition; a named pull request is a reference,
+never a prerequisite. Before closing, link the merged PR,
 applicable green checks and any required runtime evidence; only mark acceptance
 checkboxes complete when that evidence exists.
 
-These are **manual triage rules**, not automatic issue-metadata enforcement.
+**Issue triage** ([workflow](../.github/workflows/issue-triage.yml),
+[check](../tools/check_issues.py)) audits every open issue on issue events
+and on manual dispatch: assignee `danielep71`, exactly one priority, P1 only
+with `bug`, a milestone, labels from the catalogue, and the dependency rule
+above. It is read-only: a failed run is the triage signal, and I resolve each
+finding by hand. `python tools/check_issues.py --check-config`, run by
+`tools/check_repository.py`, checks offline that the forms, this guide and
+Dependabot agree with the catalogue. For an offline audit of exported issues:
+`python tools/check_issues.py --input issues.json --repo-name danielep71/K-FRTB-SA`.
 The label workflows manage the catalogue only: they do not assign issues,
 choose priorities or milestones, or close issues. The bug form defaults to
 P2, and feature/documentation forms to P3; all assign danielep71. Milestones

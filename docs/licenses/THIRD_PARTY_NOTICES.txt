@@ -22,6 +22,18 @@ Files under MPL-2.0
 .github/scripts/labels-drift.mjs
     Copied from K-SFTs .github/scripts/labels-drift.mjs.
 
+tools/check_issues.py
+    Adapted from K-SFTs tools/check_issues.py: reads the numbered issue
+    forms 01-bug.yml, 02-feature.yml and 03-documentation.yml, inline or
+    block lists, and the label tables of docs/LABELS.md.
+
+tests/tooling/test_check_issues.py
+    Adapted from K-SFTs tools/test_check_issues.py for the same changes.
+
+.github/workflows/issue-triage.yml
+    Copied from K-SFTs .github/workflows/issue-triage.yml, with the
+    documentation references adapted.
+
 
 Text of the Mozilla Public License, version 2.0
 -----------------------------------------------
