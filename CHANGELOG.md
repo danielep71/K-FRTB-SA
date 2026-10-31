@@ -7,6 +7,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- GOVERNANCE, LABELS, CI, SECURITY, the Code of Conduct and the v0.2.0
+  milestone guide state my roles and decisions in the first person, and the
+  label table matches the catalogue descriptions. Dated evidence and closed
+  records are unchanged (#187).
 - `.gitattributes`, `.gitignore` and `.editorconfig` are the complete file
   baseline: Git attributes for PDFs, all Office packages, fonts, media and
   archives; ignore rules for Office and Access locks, coverage, packaging and

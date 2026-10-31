@@ -107,8 +107,8 @@ targets, lost ecosystem/directory coverage and any `milestone` setting.
 There is no npm package manifest: the label scripts use Node built-ins. No npm updater or
 other absent ecosystem is configured. Each entry runs weekly, limits open
 PRs to five, assigns `danielep71`, and sets exactly P3 plus type labels.
-Maintainers must still verify all metadata during triage and put any owning
-issue in the appropriate milestone.
+I still verify all metadata during triage and put any owning issue in the
+appropriate milestone.
 
 Non-default `target-branch` settings govern version updates, not security
 update PRs. The existing Dependabot alerts stay enabled; automatic security
@@ -138,7 +138,7 @@ refuses to modify an object without a `pull_request` marker. An unset milestone
 is a no-op. Offline fixtures exercise pagination, actual issue refusal,
 idempotence and error propagation against the workflow's inline implementation.
 
-Default-branch activation is required. The maintainer's October 27 instruction
+Default-branch activation is required. My October 27 instruction
 to apply this rule to past and future PRs is recorded in #104; focused policy
 PRs activated it on main and synchronized release/v0.1.0. This activation does
 not integrate unrelated release work. The activation push performs the historical
