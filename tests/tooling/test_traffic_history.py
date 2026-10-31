@@ -439,12 +439,26 @@ class FailureTests(unittest.TestCase):
                                  (traffic_history.render(DAILY, [])
                                   + "2026-10-01,1,1,t,1,1,2026-10-01T06:00:00Z\n", "invalid views_collected_at"),
                                  (traffic_history.render(DAILY, [])
-                                  + "2026-10-01,1,,,1,1,2026-10-01T06:00:00Z\n", "non-numeric unique_views")]:
+                                  + "2026-10-01,1,,,1,1,2026-10-01T06:00:00Z\n", "non-numeric unique_views"),
+                                 (traffic_history.render(DAILY, [])
+                                  + "2026-10-01,1,1,2026-10-01T06:00:00Z,1,1,2026-10-01T06:00:00Z\n"
+                                  + "2026-10-01,2,1,2026-10-02T06:00:00Z,1,1,2026-10-02T06:00:00Z\n",
+                                  "duplicate date 2026-10-01")]:
             with self.subTest(message=message), workspace() as ws:
                 ws.data.mkdir()
                 (ws.data / DAILY).write_text(content, encoding="utf-8")
                 ws.collect(window("2026-10-15", [(1, 1)] * 14))
                 self.assert_refused(ws, message)
+
+    def test_duplicate_ranks_in_rankings_are_refused(self) -> None:
+        with workspace() as ws:
+            ws.collect(window("2026-10-14", [(1, 1)] * 14))
+            ws.merge("2026-10-14T06:00:00")
+            path = ws.data / REFERRERS
+            path.write_text(path.read_text(encoding="utf-8")
+                            + path.read_text(encoding="utf-8").splitlines()[1] + "\n", encoding="utf-8")
+            ws.collect(window("2026-10-15", [(1, 1)] * 14))
+            self.assert_refused(ws, "duplicate snapshot_date, rank 2026-10-14 1")
 
 
 def legacy_snapshot(collected_at: str, views: Sequence[Day],
