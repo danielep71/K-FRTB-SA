@@ -1,6 +1,4 @@
-# ⚙️ Repository settings · Shared target configuration
-
-> **Alignment pending (2026-10-31).** This imported baseline is the maintainer-approved target, not the current live configuration. See [local evidence and outstanding differences](REPOSITORY_SETTINGS_EVIDENCE.md). Do not use the no-bypass synchronization procedure until the settings have been applied and verified.
+# ⚙️ Repository settings · Non-default configuration
 
 [![Scope](https://img.shields.io/badge/Scope-Non--default_settings-00338D?style=flat-square)](#scope)
 [![Format](https://img.shields.io/badge/Format-Portable-005EB8?style=flat-square)](#reuse)
