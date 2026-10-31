@@ -147,6 +147,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- `AGENTS.md` holds the editorial and assistant rules only: my decisions in
+  the first person, documentation limited to this repository with license
+  attributions in the license files, descriptive branch prefixes and never
+  `codex/` or `claude/`, and the domain conventions as intended defaults. It
+  links to governance and contributing for the procedures (#168).
 - `Results` shows a note when two or three correlation scenarios give the
   same SBM total, naming the tied scenarios and the one reported. Ties still
   resolve in the order low, medium, high, now recorded as a reporting
