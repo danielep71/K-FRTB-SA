@@ -7,6 +7,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The issue forms ask for the affected area, the validation evidence and the
+  dependency status in the form Issue triage checks; the bug form also asks
+  for the full commit SHA, a sourced expected value and the Excel or
+  LibreOffice environment, and the feature form for the compatibility impact.
+  The outdated branch history is removed from their opening note. The labels
+  and the assignee are unchanged; the adapted forms are under MPL-2.0 and
+  listed in `docs/licenses/THIRD_PARTY_NOTICES.txt` (#177).
 - The settings evidence, the Excel evidence guide and the market-risk diagram
   notes describe only this repository, and the #168 entry below links to
   `AGENTS.md` instead of restating its rules (#174).

@@ -1,66 +1,104 @@
-name: 📚 Documentation change
-description: Correct or improve an authoritative project document.
-labels:
-- documentation
-- P3
-assignees:
-- danielep71
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
+name: "📚 Documentation change"
+description: "Report missing, wrong, stale or unclear documentation."
+title: "[Docs]: "
+labels: ["documentation", "P3"]
+assignees: ["danielep71"]
 body:
-- type: markdown
-  attributes:
-    value: '## 🧭 Before you submit
+  - type: markdown
+    attributes:
+      value: |
+        ## 📚 Documentation change
 
-      Prototype and repository-maintenance work integrates on release/v0.2.0 (milestone 2, v0.2.0 — SA prototype); release/v0.1.0 is superseded. The setup branch release/v0.0.1 was deleted after the setup closeout (milestone 1, v0.1.0 — Repo setup); its history is on main. The Excel/VBA prototype is also on main; Excel host evidence remains pending in #28.
+        **Accurate · Current · Traceable to its source**
 
-      Use synthetic examples only. Report potential vulnerabilities privately via [SECURITY.md](https://github.com/danielep71/K-FRTB-SA/blob/main/SECURITY.md).
+        Documentation must match the code, the recorded decisions and the cited Basel texts. I set the milestone and confirm the priority (`P3` by default).
 
-      Forms set the assignee and default labels; maintainers must confirm one priority and assign
-      a milestone. P1 is reserved for confirmed calculation bugs: wrong results for valid inputs.
-
-      Read the [Code of Conduct](https://github.com/danielep71/K-FRTB-SA/blob/main/CODE_OF_CONDUCT.md) before submitting.'
-- type: textarea
-  id: documents
-  attributes:
-    label: Affected authoritative documents
-    description: Link the exact files/headings and commit or version. Identify which document
-      owns the rule.
-  validations:
-    required: true
-- type: textarea
-  id: objective
-  attributes:
-    label: Objective and proposed correction
-    description: Explain what is unclear or wrong and what the documentation should say.
-  validations:
-    required: true
-- type: textarea
-  id: acceptance
-  attributes:
-    label: Acceptance criteria
-    description: List observable completion criteria, including affected navigation and links.
-  validations:
-    required: true
-- type: textarea
-  id: evidence
-  attributes:
-    label: Validation and source evidence
-    description: Provide supporting references or commands and describe how links, examples,
-      and claims will be checked.
-  validations:
-    required: true
-- type: textarea
-  id: dependencies
-  attributes:
-    label: Dependencies and blockers
-    description: Link related issues or decisions, or write None.
-  validations:
-    required: true
-- type: checkboxes
-  id: submission-checks
-  attributes:
-    label: Submission checks
-    options:
-    - label: I have read and will follow the Code of Conduct.
+  - type: input
+    id: location
+    attributes:
+      label: "📍 Document and section"
+      description: File and heading, or a link to the exact line on the active release branch.
+      placeholder: docs/methodology.md → Curvature input contract
+    validations:
       required: true
-    - label: I have excluded credentials, confidential data, and undisclosed vulnerability details.
+
+  - type: dropdown
+    id: problem_type
+    attributes:
+      label: "🏷️ Problem type"
+      options:
+        - Incorrect behavior or contract
+        - Stale version, count, command or evidence
+        - Missing explanation or example
+        - Unclear or ambiguous
+        - Methodology or regulatory reference
+        - Broken link or anchor
+    validations:
       required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "🎯 Current problem and impact"
+      description: What is wrong and whom it misleads.
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: "✏️ Proposed correction"
+      description: The requested change and its scope.
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: "📚 Authoritative source"
+      description: The code, contract, MAR paragraph or decision the corrected text must match.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "🏁 Acceptance criteria"
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: "🧪 Validation evidence required"
+      description: How the correction will be checked, for example `python tools/check_repository.py`, a rendered review or a link check.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "🔗 Dependencies and blocking status"
+      description: Name each prerequisite as an issue link (#12) or on a line starting "External condition:". Write "None" if nothing blocks this work. `blocked` applies only while a named prerequisite is unresolved.
+      placeholder: None
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "☑️ Submission checks"
+      options:
+        - label: I checked the current documentation on the active release branch.
+          required: true
+        - label: I have read and will follow the Code of Conduct.
+          required: true
+        - label: This request contains no secrets, private links or real portfolio data.
+          required: true

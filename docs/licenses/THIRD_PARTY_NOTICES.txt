@@ -34,6 +34,18 @@ tests/tooling/test_check_issues.py
     Copied from K-SFTs .github/workflows/issue-triage.yml, with the
     documentation references adapted.
 
+.github/ISSUE_TEMPLATE/01-bug.yml
+    Adapted from K-SFTs .github/ISSUE_TEMPLATE/bug.yml: this repository's
+    areas, inputs, environment and links, and a Code of Conduct check.
+
+.github/ISSUE_TEMPLATE/02-feature.yml
+    Adapted from K-SFTs .github/ISSUE_TEMPLATE/enhancement.yml for the same
+    changes.
+
+.github/ISSUE_TEMPLATE/03-documentation.yml
+    Adapted from K-SFTs .github/ISSUE_TEMPLATE/documentation.yml for the
+    same changes.
+
 
 Text of the Mozilla Public License, version 2.0
 -----------------------------------------------
