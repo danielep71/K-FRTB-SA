@@ -46,6 +46,18 @@ tests/tooling/test_check_issues.py
     Adapted from K-SFTs .github/ISSUE_TEMPLATE/documentation.yml for the
     same changes.
 
+.gitattributes
+    Adapted from K-SFTs .gitattributes: this repository's scripts, template
+    and traffic data, and no regulatory-source path rule.
+
+.gitignore
+    Adapted from K-SFTs .gitignore: this repository's template exception,
+    build and test output, and local tool folders.
+
+.editorconfig
+    Adapted from K-SFTs .editorconfig: this repository's file layout, and no
+    regulatory-source section.
+
 
 Text of the Mozilla Public License, version 2.0
 -----------------------------------------------

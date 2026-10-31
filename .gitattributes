@@ -1,32 +1,45 @@
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
 #==============================================================================
-# .gitattributes
+# K-FRTB-SA .gitattributes
 #------------------------------------------------------------------------------
 # PURPOSE
-#   Git behavior for K-FRTB-SA: line endings, binary handling, diff and merge
-#   behavior, GitHub language reporting and source archives.
+#   Define Git behavior for K-FRTB-SA: line endings, binary handling, diff
+#   and merge behavior, GitHub language reporting and source archives.
 #
 # POLICY
-#   - Exported VBA source (.bas modules, and .cls and .frm if the project
-#     adds class or form modules) is normalized in Git and checked out as
-#     CRLF, as the VBE imports and exports it. A form's .frx companion is
-#     binary.
-#   - The PowerShell scripts and cmd launchers for Windows are checked out as
-#     CRLF; every other text file as LF.
-#   - The workbook template, built workbooks, images and archives are binary:
-#     no text normalization and no line-based merges.
-#   - GitHub Linguist reports the modules as VBA.
+#   - Exported VBA source is normalized in Git and checked out as CRLF.
+#   - Repository text and cross-platform tooling are checked out as LF.
+#   - Office packages, UserForm binaries, archives, and media remain binary.
+#   - Binary payloads never receive text normalization or line-based merges.
+#   - GitHub Linguist reports exported modules as VBA.
+#   - Text and binary handling depends on file type only; the only path
+#     rules are the archive exclusions under ARCHIVE HYGIENE. Add a path rule
+#     only with a layout change that needs it.
+#   - Regulatory texts are cited by MAR paragraph, not stored. A copy, if
+#     ever added, needs its own directory, a -text path rule and a registered
+#     SHA-256 in the same change, so its bytes are never normalized.
+#   - tools/vba_lint.py keeps the VBA source ASCII, so no working-tree
+#     encoding is configured.
 #
 # PLACEMENT
 #   Keep this file at the repository root. Custom [attr] macros are honored only
 #   in a top-level attributes file.
 #
-# POLICY CHANGES
+# ADOPTION / POLICY CHANGES
 #   Attribute changes do not rewrite existing blobs automatically. Inspect any
 #   normalization separately:
 #
-#       git add --renormalize --dry-run .
 #       git add --renormalize .
+#       git status --short
+#       git diff --cached --stat
 #       git diff --cached --check
+#
+#   (`--renormalize --dry-run` lists every tracked file, not only changed
+#   ones; `git restore --staged .` unstages an unwanted result.)
 #
 #   Commit a required normalization as its own mechanical change.
 #
@@ -39,10 +52,6 @@
 #
 #   The outer capture group is intentional: it returns the complete declaration
 #   rather than only a visibility keyword.
-#
-# ENCODING
-#   The VBE exports with the Windows code page. tools/vba_lint.py keeps the
-#   modules ASCII, so no working-tree-encoding is needed.
 #==============================================================================
 
 
@@ -59,15 +68,13 @@
 # DETERMINISTIC DEFAULT
 #------------------------------------------------------------------------------
 # Normalize detected text to LF in the index and use LF in the working tree.
-# The VBA and Windows script rules below override the working-tree EOL.
+# Explicit VBA and Windows-native rules below override the working-tree EOL.
 * text=auto eol=lf
 
 
 #------------------------------------------------------------------------------
 # EXPORTED VBA SOURCE
 #------------------------------------------------------------------------------
-# docs/REPOSITORY_STRUCTURE.md: commit exported .bas, .cls and .frm files and
-# keep each .frx beside its .frm.
 *.bas   vba-source
 *.cls   vba-source
 *.frm   vba-source
@@ -75,19 +82,39 @@
 
 
 #------------------------------------------------------------------------------
-# WINDOWS SCRIPTS
+# WINDOWS-NATIVE SCRIPTS
 #------------------------------------------------------------------------------
 # tools/Build-Workbook.ps1, Sync-FRTB-VBA.ps1, Export-FRTB-VBA.ps1 and the
 # .cmd launchers run in Windows PowerShell and cmd.exe.
+*.bat   text eol=crlf
 *.cmd   text eol=crlf
 *.ps1   text eol=crlf
+*.psm1  text eol=crlf
+*.psd1  text eol=crlf
+*.vbs   text eol=crlf
+*.reg   text eol=crlf
+*.ini   text eol=crlf
 
 
 #------------------------------------------------------------------------------
-# PYTHON AND NODE TOOLING
+# POSIX SHELL TOOLING
+#------------------------------------------------------------------------------
+*.sh    text eol=lf
+
+
+#------------------------------------------------------------------------------
+# PYTHON TOOLING
 #------------------------------------------------------------------------------
 *.py    text eol=lf
+*.pyw   text eol=lf
+
+
+#------------------------------------------------------------------------------
+# NODE / JAVASCRIPT TOOLING
+#------------------------------------------------------------------------------
+*.js    text eol=lf
 *.mjs   text eol=lf
+*.cjs   text eol=lf
 
 
 #------------------------------------------------------------------------------
@@ -96,9 +123,16 @@
 *.md            text eol=lf
 *.txt           text eol=lf
 *.yml           text eol=lf
+*.yaml          text eol=lf
 *.json          text eol=lf
+*.jsonc         text eol=lf
+*.xml           text eol=lf
 # Traffic history data on the traffic-history branch (docs/TRAFFIC_HISTORY.md).
 *.csv           text eol=lf
+*.tsv           text eol=lf
+*.toml          text eol=lf
+*.cfg           text eol=lf
+*.svg           text eol=lf
 
 .editorconfig   text eol=lf
 .gitattributes  text eol=lf
@@ -107,28 +141,107 @@ LICENSE         text eol=lf
 
 
 #------------------------------------------------------------------------------
-# WORKBOOKS
+# MICROSOFT OFFICE PACKAGES
 #------------------------------------------------------------------------------
-# The template (src/workbook/FRTB_Template.xlsx) and any built workbook are
-# ZIP containers: keep them opaque to text conversion and line-based merges.
+# Office Open XML files are ZIP containers; legacy formats are binary. Keep all
+# of them opaque to text conversion and line-based merge machinery. The
+# template is src/workbook/FRTB_Template.xlsx; built workbooks are .xlsm.
+*.xls   office-doc
 *.xlsx  office-doc
 *.xlsm  office-doc
+*.xlsb  office-doc
+*.xlt   office-doc
+*.xltx  office-doc
+*.xltm  office-doc
+*.xlam  office-doc
+*.xla   office-doc
+*.xlw   office-doc
+*.xll   opaque
+*.thmx  office-doc
 
-# Excel lock files: normally ignored, classified defensively if one reaches
-# the index.
-~$*     opaque
+*.doc   office-doc
+*.docx  office-doc
+*.docm  office-doc
+*.dot   office-doc
+*.dotx  office-doc
+*.dotm  office-doc
+
+*.ppt   office-doc
+*.pptx  office-doc
+*.pptm  office-doc
+*.pot   office-doc
+*.potx  office-doc
+*.potm  office-doc
+*.pps   office-doc
+*.ppsx  office-doc
+*.ppsm  office-doc
+*.ppam  office-doc
+
+*.accdb office-doc
+*.accde office-doc
+*.accdr office-doc
+*.mdb   office-doc
+*.mde   office-doc
+*.ade   office-doc
 
 
 #------------------------------------------------------------------------------
-# IMAGES AND ARCHIVES
+# OFFICE LOCK FILES
 #------------------------------------------------------------------------------
-# The social preview, diagrams and screenshots in docs/assets; zipped evidence
-# bundles. SVG diagram masters are reviewable text.
-*.svg   text eol=lf
+# Normally ignored, but still classified defensively if one reaches the index.
+~$*        opaque
+*.laccdb   opaque
+*.ldb      opaque
+
+
+#------------------------------------------------------------------------------
+# ARCHIVES, EXECUTABLES, AND NATIVE BINARIES
+#------------------------------------------------------------------------------
+*.zip   opaque
+*.7z    opaque
+*.rar   opaque
+*.gz    opaque
+*.tgz   opaque
+*.bz2   opaque
+*.xz    opaque
+*.zst   opaque
+*.cab   opaque
+*.msi   opaque
+*.exe   opaque
+*.dll   opaque
+*.so    opaque
+*.dylib opaque
+*.ocx   opaque
+*.tlb   opaque
+
+
+#------------------------------------------------------------------------------
+# IMAGES, MEDIA, DOCUMENTS, AND FONTS
+#------------------------------------------------------------------------------
+# SVG remains reviewable text and is classified in the text section above.
 *.png   opaque
 *.jpg   opaque
 *.jpeg  opaque
-*.zip   opaque
+*.gif   opaque
+*.webp  opaque
+*.bmp   opaque
+*.ico   opaque
+*.tif   opaque
+*.tiff  opaque
+*.avif  opaque
+*.heic  opaque
+*.pdf   opaque
+*.mp4   opaque
+*.mov   opaque
+*.webm  opaque
+*.mp3   opaque
+*.wav   opaque
+*.gifv  opaque
+*.ttf   opaque
+*.otf   opaque
+*.woff  opaque
+*.woff2 opaque
+*.eot   opaque
 
 
 #------------------------------------------------------------------------------
@@ -141,3 +254,16 @@ LICENSE         text eol=lf
 .editorconfig   export-ignore
 .github         export-ignore
 .github/**      export-ignore
+
+
+#==============================================================================
+# ENCODING POLICY
+#------------------------------------------------------------------------------
+# VBE exports use the Windows system code page, which differs between hosts.
+# VBA source is ASCII only, identical in every code page; tools/vba_lint.py
+# enforces it. These rules therefore stay disabled. Enabling one would need a new decision and a round-trip test:
+#
+#   *.bas  working-tree-encoding=windows-1252
+#   *.cls  working-tree-encoding=windows-1252
+#   *.frm  working-tree-encoding=windows-1252
+#==============================================================================
