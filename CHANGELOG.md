@@ -147,6 +147,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- `tools/check_repository.py` fails when a workflow lacks top-level
+  permissions, a job lacks a timeout, a checkout keeps its credentials, a job
+  outside an explicit list gets a write permission, or the label
+  reconciliation is not restricted to the default branch. The current
+  workflows already comply; no exception is needed (#165).
 - **Issue triage** audits every open issue on issue events: assignee, one
   priority with P1 only on `bug`, a milestone, catalogue labels and a
   dependency section consistent with `blocked`. It is read-only.
