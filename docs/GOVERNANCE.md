@@ -235,7 +235,7 @@ re-reviewed only on request (`@codex review`).
 
 | Requirement | Enforcement or working procedure |
 | --- | --- |
-| PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets, with the bypass modes recorded in the settings baseline |
+| PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets without bypass actors, recorded in the [settings](REPOSITORY_SETTINGS.md) and their [evidence](REPOSITORY_SETTINGS_EVIDENCE.md) |
 | Release-branch deletion protection | Separate active ruleset with no bypass actors; an obsolete branch is deleted only through the lifecycle procedure above (#66) |
 | Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
