@@ -2,7 +2,7 @@
 
 ## Readback — 2026-10-31
 
-Imported target: K-SFTs `docs/REPOSITORY_SETTINGS.md`, blob `a938d562878b4b785815699c4794dea387b243ca`; MyTemplate SETTINGS.md uses the same portable baseline. Tracking: #149.
+Target: the portable settings baseline recorded in [REPOSITORY_SETTINGS.md](REPOSITORY_SETTINGS.md). Tracking: #149.
 
 The four general settings already match: automatic head deletion and update suggestions on; Projects and legacy downloads off. All five rulesets are active with no exclusions. Deletion, tag and traffic protection match.
 
