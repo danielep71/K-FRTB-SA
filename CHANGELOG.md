@@ -7,6 +7,28 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The settings document names the default-branch ruleset "Protect main", as it
+  is live, states that the traffic-history rule blocks deletion and force
+  pushes while direct pushes stay allowed for the traffic workflow, and
+  records the security features: Dependabot alerts, private vulnerability
+  reporting, secret scanning and push protection on, Dependabot security
+  updates off (#167).
+- Six label descriptions are reworded in the first person, and P1 now reads
+  "Confirmed calculation bug: wrong results for valid inputs", used only with
+  `bug`, consistently in the catalogue, the PR template, the issue forms,
+  LABELS and GOVERNANCE. Closed issues #45 and #48 and their PRs #46 and #49,
+  about invalid inputs, move from P1 to P2 (#162).
+- The PR milestone reconciliation runs only for PR events, the schedule, or a
+  push or dispatch on the default branch, so a dispatch on another branch no
+  longer runs that branch's workflow with `pull-requests: write`;
+  `tools/check_repository.py` requires the condition (#160).
+- The label catalogue uses schema 2, a single `labels` list without overlays,
+  and the unused label policy file is removed. The label scripts are replaced
+  by schema-2 versions under MPL-2.0 (listed in
+  `docs/licenses/THIRD_PARTY_NOTICES.txt`) that keep the guard against pruning
+  a used label and write one summary when the final check fails. Live
+  reconciliation runs only from the default branch, and the validation job
+  has a 5-minute timeout (#158).
 - `FX_CURVATURE_DIVISOR` divides only the FX CVRs of options that do not
   reference the reporting currency, which a new `RefReportingCcy` column on
   `In_Curvature` marks (MAR21.98). The new `FX_CURVATURE_DIVISOR_ALL` divides
@@ -136,6 +158,22 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- `AGENTS.md` holds the editorial and assistant rules only: my decisions in
+  the first person, documentation limited to this repository with license
+  attributions in the license files, descriptive branch prefixes and never
+  `codex/` or `claude/`, and the domain conventions as intended defaults. It
+  links to governance and contributing for the procedures (#168).
+- `tools/check_repository.py` fails when a workflow lacks top-level
+  permissions, a job lacks a timeout, a checkout keeps its credentials, a job
+  outside an explicit list gets a write permission, or the label
+  reconciliation is not restricted to the default branch. The current
+  workflows already comply; no exception is needed (#165).
+- **Issue triage** audits every open issue on issue events: assignee, one
+  priority with P1 only on `bug`, a milestone, catalogue labels and a
+  dependency section consistent with `blocked`. It is read-only.
+  `tools/check_issues.py --check-config`, run by `tools/check_repository.py`,
+  checks the issue forms, the label guide and Dependabot against the
+  catalogue. The check, its tests and the workflow are MPL-2.0 (#163).
 - `Results` shows a note when two or three correlation scenarios give the
   same SBM total, naming the tied scenarios and the one reported. Ties still
   resolve in the order low, medium, high, now recorded as a reporting

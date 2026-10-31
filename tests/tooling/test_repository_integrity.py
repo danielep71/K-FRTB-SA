@@ -57,13 +57,70 @@ class RepositoryIntegrityTests(unittest.TestCase):
                 self.assertTrue(self.check_fixture({"guide.md": text}))
         self.assertEqual(self.check_fixture({"guide.md": "```md\n[Example](absent.md)\n```\n"}), [])
 
+    @staticmethod
+    def workflow_fixture():
+        return {
+            "name": "Fixture",
+            "on": {"push": None},
+            "permissions": {"contents": "read"},
+            "jobs": {"test": {
+                "timeout-minutes": 5,
+                "steps": [{"uses": "actions/checkout@" + "a" * 40, "with": {"persist-credentials": False}}],
+            }},
+        }
+
     def test_unpinned_actions_are_rejected(self):
-        workflow = {"name": "Fixture", "on": {"push": None}, "jobs": {"test": {"steps": [{"uses": "actions/checkout@main"}]}}}
+        good = self.workflow_fixture()
+        checker.validate_workflow(good)
+        workflow = copy.deepcopy(good)
+        workflow["jobs"]["test"]["steps"][0]["uses"] = "actions/checkout@main"
         with self.assertRaisesRegex(ValueError, "full commit SHA"):
             checker.validate_workflow(workflow)
-        good = copy.deepcopy(workflow)
-        good["jobs"]["test"]["steps"][0]["uses"] = "actions/checkout@" + "a" * 40
-        checker.validate_workflow(good)
+
+    def test_workflow_controls_are_enforced(self):
+        def mutated(change):
+            document = self.workflow_fixture()
+            change(document, document["jobs"]["test"])
+            return document
+
+        cases = {
+            "persist-credentials": lambda d, j: j["steps"][0].pop("with"),
+            "persist-credentials: false": lambda d, j: j["steps"][0]["with"].update({"persist-credentials": True}),
+            "top-level permissions": lambda d, j: d.pop("permissions"),
+            "timeout-minutes": lambda d, j: j.pop("timeout-minutes"),
+            "write permission: contents": lambda d, j: j.update({"permissions": {"contents": "write"}}),
+            "write permission: \\*": lambda d, j: d.update({"permissions": "write-all"}),
+            "write permission: issues": lambda d, j: d.update({"permissions": {"issues": "write"}}),
+        }
+        for message, change in cases.items():
+            with self.subTest(rule=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    checker.validate_workflow(mutated(change))
+
+    def test_write_permissions_are_limited_to_the_listed_jobs(self):
+        document = self.workflow_fixture()
+        document["jobs"] = {"export": document["jobs"]["test"]}
+        document["jobs"]["export"]["permissions"] = {"contents": "write"}
+        checker.validate_workflow(document, "traffic-export.yml")
+        with self.assertRaisesRegex(ValueError, "write permission: contents"):
+            checker.validate_workflow(document, "integrity.yml")
+        document["jobs"]["export"]["permissions"] = {"contents": "write", "issues": "write"}
+        with self.assertRaisesRegex(ValueError, "write permission: issues"):
+            checker.validate_workflow(document, "traffic-export.yml")
+
+    def test_label_reconcile_must_be_limited_to_the_default_branch(self):
+        root = Path(__file__).resolve().parents[2]
+        document = checker.load_yaml((root / ".github/workflows/labels-sync.yml").read_text())
+        checker.validate_workflow(document, "labels-sync.yml")
+        for condition in ["github.event_name != 'pull_request'", None]:
+            with self.subTest(condition=condition):
+                broken = copy.deepcopy(document)
+                if condition is None:
+                    del broken["jobs"]["reconcile"]["if"]
+                else:
+                    broken["jobs"]["reconcile"]["if"] = condition
+                with self.assertRaisesRegex(ValueError, "default branch"):
+                    checker.validate_workflow(broken, "labels-sync.yml")
 
     def test_path_filters_and_wrong_dependabot_target_fail(self):
         source = Path(__file__).resolve().parents[2]

@@ -1,8 +1,8 @@
 # Issue labels and triage
 
 The versioned catalogue in [labels.json](../.github/labels.json) is the source
-of truth for the names, descriptions and colors of the 20 core labels. [label-policy.json](../.github/label-policy.json) selects the
-application profile with no domain overlays.
+of truth for the names, descriptions and colors of the 20 labels. It uses
+schema 2: a single `labels` list, with no profile or domain overlays.
 
 ## Metadata rules
 
@@ -19,13 +19,21 @@ issues, must have:
 PRs retain the assignee and exactly one priority, and link to their owning
 issue. **PRs must have no milestone**, including closed, merged and bot PRs.
 Milestone ownership is recorded on the issue only (#104). The metadata
-workflow removes PR assignments automatically; issue triage remains manual.
+workflow removes PR assignments automatically; issue triage remains manual,
+with the read-only audit described below.
 
-The triage convention reserves **P1 for confirmed calculation bugs**.
+**P1 is reserved for a confirmed calculation bug: wrong results for valid
+inputs.** It is used only together with `bug`. An input that should have been
+rejected but was accepted, such as a blank parameter, is a P2 defect, not P1.
 P2 covers material defects in correctness, robustness or maintainability. P3
-covers setup, documentation, testing and other non-blocking quality work.
-The shared P1 catalogue description is retained verbatim for cross-repository
-alignment; it does not override this narrower assignment rule.
+covers setup, documentation, testing and other non-blocking quality work. The
+catalogue description of P1 states the same rule.
+
+| Priority | Use |
+| --- | --- |
+| `P1` | Confirmed calculation bug: wrong results for valid inputs; only with `bug` |
+| `P2` | Material correctness, robustness or maintainability defect |
+| `P3` | Setup, documentation, testing and other non-blocking quality work |
 
 | Label | Use |
 | --- | --- |
@@ -48,12 +56,25 @@ alignment; it does not override this narrower assignment rule.
 | `wontfix` | Maintainer has decided not to proceed |
 
 Type and status labels may be combined; priority labels may not. Setup issues
-normally carry `repository` and `P3`, plus applicable type labels. A blocked
-issue must name its dependency in the body. Before closing, link the merged PR,
+normally carry `repository` and `P3`, plus applicable type labels. Every
+open issue has a section whose heading contains "Dependencies", normally
+**Dependencies and blocking status**. It names each prerequisite issue
+(`#123` or its URL), or an `External condition:` line for a blocker outside the
+tracker. `blocked` is set exactly while that section names an open
+prerequisite or an external condition; a named pull request is a reference,
+never a prerequisite. Before closing, link the merged PR,
 applicable green checks and any required runtime evidence; only mark acceptance
 checkboxes complete when that evidence exists.
 
-These are **manual triage rules**, not automatic issue-metadata enforcement.
+**Issue triage** ([workflow](../.github/workflows/issue-triage.yml),
+[check](../tools/check_issues.py)) audits every open issue on issue events
+and on manual dispatch: assignee `danielep71`, exactly one priority, P1 only
+with `bug`, a milestone, labels from the catalogue, and the dependency rule
+above. It is read-only: a failed run is the triage signal, and I resolve each
+finding by hand. `python tools/check_issues.py --check-config`, run by
+`tools/check_repository.py`, checks offline that the forms, this guide and
+Dependabot agree with the catalogue. For an offline audit of exported issues:
+`python tools/check_issues.py --input issues.json --repo-name danielep71/K-FRTB-SA`.
 The label workflows manage the catalogue only: they do not assign issues,
 choose priorities or milestones, or close issues. The bug form defaults to
 P2, and feature/documentation forms to P3; all assign danielep71. Milestones
@@ -93,8 +114,10 @@ node .github/scripts/labels-drift.mjs --self-test
 ```
 
 **Sync issue labels** validates PRs into `main` and `release/**` without write
-permissions. A relevant push to `main`, or a manual dispatch, runs trusted
-reconciliation with `issues: write`. It records the live catalogue before
+permissions. A relevant push to `main`, or a manual dispatch on the default
+branch, runs trusted reconciliation with `issues: write`; a dispatch on any
+other branch skips it, so no branch other than the default can apply its
+catalogue. It records the live catalogue before
 changes, a plan, the resulting catalogue and an independent drift report.
 Reconciliation verifies the exact final match; it is not best effort.
 
@@ -110,12 +133,13 @@ the catalogue or manual reconciliation, review the plan and inspect affected
 issue/PR associations; migrate those associations before removing a used label.
 The reconciler refuses all mutations if any planned deletion still has an
 open or closed issue/PR association, or if that lookup fails. This guard uses
-the same validated, policy-resolved plan as the mutations: selected profile
-and domain overlays are retained, and `prune: false` performs no deletion
-association checks. The workflow retains its read-only preview; the script
-rechecks current live labels and associations before applying its actual plan.
-The offline self-test covers retained used overlays, disabled pruning, used
-and unused deletion candidates, and failed or malformed association lookups.
+the same validated plan as the mutations; updates and creations never trigger
+it, and `prune: false` performs no deletion association checks. The workflow
+retains its read-only preview; the script rechecks current live labels and
+associations before applying its actual plan. When the final check fails, the
+script writes one summary of the failed run. The offline self-test covers
+updates, disabled pruning, used and unused deletion candidates, and failed or
+malformed association lookups.
 For comma-containing label names, the script scans actual issue/PR labels
 instead of GitHub's comma-separated filter. The scan includes closed items,
 matches complete names case-insensitively, and fails closed on malformed data
