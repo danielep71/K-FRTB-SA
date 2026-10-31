@@ -167,11 +167,13 @@ function Invoke-Logged {
 
 # The VBA editor's objects (VBE, its windows and command bars) give Windows
 # PowerShell no type information: a property read through the normal adapter
-# returns nothing. These helpers call them through IDispatch by name.
+# returns nothing. These helpers call them through IDispatch by name. The
+# leading comma returns a collection (CommandBars, References) as the object
+# itself: PowerShell would otherwise unroll it into an array of its items.
 function Get-ComProperty {
     param($Object, [string]$Name, [object[]]$Arguments = @())
-    return [System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::GetProperty,
-                                             $null, $Object, $Arguments)
+    return ,([System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::GetProperty,
+                                               $null, $Object, $Arguments))
 }
 
 function Set-ComProperty {
@@ -182,8 +184,8 @@ function Set-ComProperty {
 
 function Invoke-ComMethod {
     param($Object, [string]$Name, [object[]]$Arguments = @())
-    return [System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::InvokeMethod,
-                                             $null, $Object, $Arguments)
+    return ,([System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::InvokeMethod,
+                                               $null, $Object, $Arguments))
 }
 
 function Find-CompileControl {
