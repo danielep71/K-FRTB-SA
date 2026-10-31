@@ -139,8 +139,12 @@ def compare_stage(bundle: Path, name: str, build: dict[str, Any]) -> dict[str, A
     lines = text.splitlines()
     results = [match for match in map(validator.COMPARE_RESULT.match, lines) if match]
     passed = len(results) == 1 and results[0].group(1) == "PASS" and results[0].group(2) == "VERIFIED"
+    if len(results) == 1:
+        outcome = results[0].group(0)
+    else:
+        outcome = f"{len(results)} RESULT lines; see {LOGS[name]}"
     stage: dict[str, Any] = {"status": "PASS" if passed else "FAIL",
-                             "detail": "Export-FRTB-VBA.ps1 and compare_vba_export.py",
+                             "detail": f"Export-FRTB-VBA.ps1 and compare_vba_export.py: {outcome}",
                              "log": reference(bundle, LOGS[name])}
     if passed:
         workbook = [match.group(1) for match in map(validator.COMPARE_WORKBOOK.match, lines) if match]

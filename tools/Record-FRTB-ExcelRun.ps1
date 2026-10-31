@@ -165,30 +165,60 @@ function Invoke-Logged {
     return $code
 }
 
+# The VBA editor's objects (VBE, its windows and command bars) give Windows
+# PowerShell no type information: a property read through the normal adapter
+# returns nothing. These helpers call them through IDispatch by name.
+function Get-ComProperty {
+    param($Object, [string]$Name, [object[]]$Arguments = @())
+    return [System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::GetProperty,
+                                             $null, $Object, $Arguments)
+}
+
+function Set-ComProperty {
+    param($Object, [string]$Name, $Value)
+    [void][System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::SetProperty,
+                                            $null, $Object, @($Value))
+}
+
+function Invoke-ComMethod {
+    param($Object, [string]$Name, [object[]]$Arguments = @())
+    return [System.__ComObject].InvokeMember($Name, [System.Reflection.BindingFlags]::InvokeMethod,
+                                             $null, $Object, $Arguments)
+}
+
 function Find-CompileControl {
     param($Vbe)
-    # 578 is the ID of Debug > Compile VBAProject
-    try {
-        $control = $Vbe.CommandBars.FindControl(1, 578)
-        if ($null -ne $control) { return $control }
-    } catch { }
-    foreach ($bar in $Vbe.CommandBars) {
-        foreach ($control in $bar.Controls) {
-            if ($control.Id -eq 578) { return $control }
-            try {
-                foreach ($child in $control.Controls) {
-                    if ($child.Id -eq 578) { return $child }
-                }
-            } catch { }
-        }
+    # 578 is the ID of Debug > Compile VBAProject; 1 = msoControlButton
+    $bars = Get-ComProperty $Vbe 'CommandBars'
+    $control = Invoke-ComMethod $bars 'FindControl' @(1, 578)
+    if ($null -eq $control) {
+        $control = Invoke-ComMethod $bars 'FindControl' @([System.Reflection.Missing]::Value, 578)
     }
-    return $null
+    return $control
+}
+
+function Write-References {
+    # The references of the workbook's VBA project, recorded apart from the
+    # compile so that a failed compile check still records them
+    param([string]$Key, $Workbook)
+    try {
+        $project = $Workbook.VBProject
+        $references = Get-ComProperty $project 'References'
+        $count = [int](Get-ComProperty $references 'Count')
+        $names = @(for ($index = 1; $index -le $count; $index++) {
+            [string](Get-ComProperty (Invoke-ComMethod $references 'Item' @($index)) 'Description')
+        })
+        Write-Session "REFERENCES_$($Key.Replace('COMPILE_', ''))=$($names -join '|')"
+        if ($Key -eq 'COMPILE_DEVELOPMENT') { Write-Session "REFERENCES=$($names -join '|')" }
+    } catch {
+        Write-Session "REFERENCES_$($Key.Replace('COMPILE_', ''))_ERROR=$($_.Exception.Message)"
+    }
 }
 
 function Test-Compile {
     # Compiles the workbook's VBA project with the VBA editor's own command and
     # records PASS when the command is then disabled, as Excel does after a
-    # compile that found no error; records the project's references too.
+    # compile that found no error; records the project's references first.
     param([string]$Key, [string]$WorkbookPath)
     $excel = $null
     $workbook = $null
@@ -199,30 +229,29 @@ function Test-Compile {
         $excel.AutomationSecurity = 3
         $workbook = $excel.Workbooks.Open($WorkbookPath, 0, $true)
         $excel.Visible = $true
-        $vbe = $excel.VBE
-        $vbe.MainWindow.Visible = $true
+        Write-References $Key $workbook
+        $vbe = Get-ComProperty $excel 'VBE'
+        if ($null -eq $vbe) { throw 'Excel returned no VBA editor object' }
+        try { Set-ComProperty (Get-ComProperty $vbe 'MainWindow') 'Visible' $true } catch { }
         $control = Find-CompileControl $vbe
         if ($null -eq $control) {
             Write-Session "${Key}=FAIL"
             Write-Session "${Key}_DETAIL=Debug > Compile VBAProject not found in the VBA editor"
             return
         }
-        $wasEnabled = [bool]$control.Enabled
-        if ($wasEnabled) { $control.Execute() }
+        $wasEnabled = [bool](Get-ComProperty $control 'Enabled')
+        if ($wasEnabled) { [void](Invoke-ComMethod $control 'Execute') }
         if (-not $wasEnabled) {
             # Excel disables the command for a project saved fully compiled
             Write-Session "${Key}=PASS"
             Write-Session "${Key}_DETAIL=Debug > Compile VBAProject: the project opened fully compiled"
-        } elseif ($control.Enabled) {
+        } elseif ([bool](Get-ComProperty $control 'Enabled')) {
             Write-Session "${Key}=FAIL"
             Write-Session "${Key}_DETAIL=Debug > Compile VBAProject reported a compile error"
         } else {
             Write-Session "${Key}=PASS"
             Write-Session "${Key}_DETAIL=Debug > Compile VBAProject: no error"
         }
-        $names = @(foreach ($item in $workbook.VBProject.References) { [string]$item.Description })
-        Write-Session "REFERENCES_$($Key.Replace('COMPILE_', ''))=$($names -join '|')"
-        if ($Key -eq 'COMPILE_DEVELOPMENT') { Write-Session "REFERENCES=$($names -join '|')" }
     } catch {
         Write-Session "${Key}=FAIL"
         Write-Session "${Key}_DETAIL=Compile check stopped: $($_.Exception.Message)"
