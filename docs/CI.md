@@ -112,10 +112,10 @@ I still verify all metadata during triage and put any owning issue in the
 appropriate milestone.
 
 Non-default `target-branch` settings govern version updates, not security
-update PRs. The existing Dependabot alerts stay enabled; automatic security
-update PRs remain off under the recorded settings baseline. Enabling or
-retargeting them is a new explicit settings decision (#2 is closed), not an
-assertion made by this file. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
+update PRs. Dependabot alerts and automatic security updates are on
+([settings](REPOSITORY_SETTINGS.md#security)). A security update PR
+opens against main; I retarget it to the active release branch before
+review. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
 
 ## Issue-only milestones
 

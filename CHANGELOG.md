@@ -7,6 +7,9 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Dependabot security updates are on. The settings document, its evidence and
+  CI record the change and how a security update PR, which opens against
+  main, is retargeted to the active release branch (#191).
 - GOVERNANCE, LABELS, CI, SECURITY, the Code of Conduct and the v0.2.0
   milestone guide state my roles and decisions in the first person, and the
   label table matches the catalogue descriptions. Dated evidence and closed
