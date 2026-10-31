@@ -241,6 +241,7 @@ re-reviewed only on request (`@codex review`).
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
 | Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
 | Issue/PR assignee, priority, acceptance evidence; issue milestone | Manual triage and completion procedure |
+| Label catalogue | Versioned `labels.json` (schema 2), validated on PRs; live reconciliation only from the default branch, never pruning a label still in use ([labels](LABELS.md)) |
 | No milestone on any PR | Trusted metadata workflow on PR events, daily reconciliation and manual dispatch; Dependabot configuration is checked offline (#104) |
 | Explicitly requested main integration and reviewed release-branch synchronization | Reviewed merge-commit PR with strict required checks and recorded source heads |
 

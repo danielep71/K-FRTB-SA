@@ -7,6 +7,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The label catalogue uses schema 2, a single `labels` list without overlays,
+  and the unused label policy file is removed. The label scripts are replaced
+  by schema-2 versions under MPL-2.0 (listed in
+  `docs/licenses/THIRD_PARTY_NOTICES.txt`) that keep the guard against pruning
+  a used label and write one summary when the final check fails. Live
+  reconciliation runs only from the default branch, and the validation job
+  has a 5-minute timeout (#158).
 - `FX_CURVATURE_DIVISOR` divides only the FX CVRs of options that do not
   reference the reporting currency, which a new `RefReportingCcy` column on
   `In_Curvature` marks (MAR21.98). The new `FX_CURVATURE_DIVISOR_ALL` divides

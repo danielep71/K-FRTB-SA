@@ -1,8 +1,8 @@
 # Issue labels and triage
 
 The versioned catalogue in [labels.json](../.github/labels.json) is the source
-of truth for the names, descriptions and colors of the 20 core labels. [label-policy.json](../.github/label-policy.json) selects the
-application profile with no domain overlays.
+of truth for the names, descriptions and colors of the 20 labels. It uses
+schema 2: a single `labels` list, with no profile or domain overlays.
 
 ## Metadata rules
 
@@ -93,8 +93,10 @@ node .github/scripts/labels-drift.mjs --self-test
 ```
 
 **Sync issue labels** validates PRs into `main` and `release/**` without write
-permissions. A relevant push to `main`, or a manual dispatch, runs trusted
-reconciliation with `issues: write`. It records the live catalogue before
+permissions. A relevant push to `main`, or a manual dispatch on the default
+branch, runs trusted reconciliation with `issues: write`; a dispatch on any
+other branch skips it, so no branch other than the default can apply its
+catalogue. It records the live catalogue before
 changes, a plan, the resulting catalogue and an independent drift report.
 Reconciliation verifies the exact final match; it is not best effort.
 
@@ -110,12 +112,13 @@ the catalogue or manual reconciliation, review the plan and inspect affected
 issue/PR associations; migrate those associations before removing a used label.
 The reconciler refuses all mutations if any planned deletion still has an
 open or closed issue/PR association, or if that lookup fails. This guard uses
-the same validated, policy-resolved plan as the mutations: selected profile
-and domain overlays are retained, and `prune: false` performs no deletion
-association checks. The workflow retains its read-only preview; the script
-rechecks current live labels and associations before applying its actual plan.
-The offline self-test covers retained used overlays, disabled pruning, used
-and unused deletion candidates, and failed or malformed association lookups.
+the same validated plan as the mutations; updates and creations never trigger
+it, and `prune: false` performs no deletion association checks. The workflow
+retains its read-only preview; the script rechecks current live labels and
+associations before applying its actual plan. When the final check fails, the
+script writes one summary of the failed run. The offline self-test covers
+updates, disabled pruning, used and unused deletion candidates, and failed or
+malformed association lookups.
 For comma-containing label names, the script scans actual issue/PR labels
 instead of GitHub's comma-separated filter. The scan includes closed items,
 matches complete names case-insensitively, and fails closed on malformed data
