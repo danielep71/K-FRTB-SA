@@ -1,25 +1,35 @@
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
 #==============================================================================
 # .editorconfig
 #------------------------------------------------------------------------------
 # PURPOSE
 #   Editing baseline for K-FRTB-SA: the exported VBA modules of src/modules
 #   and tests/modules, the Python tools and tests, the PowerShell and cmd
-#   launchers for Windows, the GitHub configuration and the documentation.
+#   launchers for Windows, the GitHub configuration, the web page and the
+#   documentation.
 #
 # POLICY
-#   - Exported VBA source (.bas modules, and .cls and .frm if the project
-#     adds class or form modules), PowerShell scripts and cmd launchers use
-#     CRLF; every other text file uses LF.
-#   - VBA and Python use 4-space indentation; YAML, JSON and JavaScript use 2.
+#   - Exported VBA source uses CRLF and 4-space indentation.
+#   - Documentation, GitHub configuration, and cross-platform tooling use LF.
+#   - YAML, JSON, XML, HTML, CSS and JavaScript use 2-space indentation.
+#   - Python and shell scripts use 4-space indentation.
 #   - Trailing whitespace is removed except in Markdown, where two trailing
-#     spaces can mark an explicit line break.
-#   - The VBA encoding is not forced: the VBE exports with the Windows code
-#     page, and tools/vba_lint.py keeps the modules ASCII.
+#     spaces can represent an explicit line break.
+#   - No regulatory text is stored. A byte-for-byte copy, if ever added,
+#     gets its own section here, with no line-ending, final-newline or
+#     white-space changes, in the same change as its .gitattributes rule.
+#   - VBA source encoding is intentionally not forced. The VBE exports text
+#     using the Windows system code page, so tools/vba_lint.py keeps the
+#     modules ASCII; no Git working-tree encoding is configured.
 #
 # RELATIONSHIP WITH .gitattributes
 #   .editorconfig controls how supporting editors create and save working-tree
 #   files. .gitattributes remains authoritative for Git normalization, binary
-#   classification, diff behavior, Linguist and release archives.
+#   classification, merge and diff behavior, Linguist, and release archives.
 #==============================================================================
 
 root = true
@@ -43,52 +53,132 @@ tab_width = 4
 # Do not set charset here: preserve the VBE/system-code-page export contract.
 [*.{bas,cls,frm}]
 end_of_line = crlf
+indent_style = space
+indent_size = 4
+tab_width = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 
 #------------------------------------------------------------------------------
-# PYTHON TOOLS AND TESTS
+# PYTHON TOOLING
 #------------------------------------------------------------------------------
-[*.py]
+[*.{py,pyw}]
 charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+tab_width = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 
 #------------------------------------------------------------------------------
-# LABEL SCRIPTS (NODE)
+# NODE / JAVASCRIPT TOOLING
 #------------------------------------------------------------------------------
-[*.mjs]
+[*.{js,mjs,cjs}]
 charset = utf-8
+end_of_line = lf
+indent_style = space
 indent_size = 2
 tab_width = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 
 #------------------------------------------------------------------------------
-# GITHUB AND STRUCTURED CONFIGURATION
+# GITHUB / STRUCTURED CONFIGURATION
 #------------------------------------------------------------------------------
-[*.{yml,json}]
+[*.{yml,yaml,json,jsonc}]
 charset = utf-8
+end_of_line = lf
+indent_style = space
 indent_size = 2
 tab_width = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 
 #------------------------------------------------------------------------------
-# DOCUMENTATION AND ASSETS
+# XML
+#------------------------------------------------------------------------------
+[*.xml]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+tab_width = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+
+#------------------------------------------------------------------------------
+# WEB PAGE (index.html, assets/site.css, docs/assets/FRTB_social_preview.html)
+#------------------------------------------------------------------------------
+[*.{html,css}]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+tab_width = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+
+#------------------------------------------------------------------------------
+# OTHER CROSS-PLATFORM TEXT
+#------------------------------------------------------------------------------
+[*.{toml,cfg,csv,tsv,svg}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+
+#------------------------------------------------------------------------------
+# DOCUMENTATION
 #------------------------------------------------------------------------------
 [*.md]
 charset = utf-8
+end_of_line = lf
+insert_final_newline = true
 # Preserve intentional Markdown hard line breaks.
 trim_trailing_whitespace = false
 
-[{*.txt,*.html,LICENSE}]
+[*.txt]
 charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[LICENSE]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 
 #------------------------------------------------------------------------------
-# WINDOWS SCRIPTS
+# WINDOWS-NATIVE SCRIPTS / HOST-SENSITIVE TEXT
 #------------------------------------------------------------------------------
-# Do not force an encoding: Windows PowerShell 5.1 and cmd.exe read these
-# files with the system code page; they are kept ASCII.
-[*.{cmd,ps1}]
+# Do not force an encoding: some Windows-native formats remain host-specific.
+[*.{bat,cmd,ps1,psm1,psd1,vbs,reg,ini}]
 end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+
+#------------------------------------------------------------------------------
+# POSIX SHELL SCRIPTS
+#------------------------------------------------------------------------------
+[*.sh]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+tab_width = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 
 #------------------------------------------------------------------------------
@@ -96,3 +186,6 @@ end_of_line = crlf
 #------------------------------------------------------------------------------
 [{.editorconfig,.gitattributes,.gitignore}]
 charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true

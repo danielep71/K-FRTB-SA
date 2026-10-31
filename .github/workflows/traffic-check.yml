@@ -5,13 +5,17 @@ on:
     branches: [main, "release/**"]
     paths:
       - tools/traffic_history.py
+      - tools/traffic_publish.py
       - tests/tooling/test_traffic_history.py
+      - tests/tooling/test_traffic_publish.py
       - .github/workflows/traffic-*.yml
   push:
     branches: [main, "release/**"]
     paths:
       - tools/traffic_history.py
+      - tools/traffic_publish.py
       - tests/tooling/test_traffic_history.py
+      - tests/tooling/test_traffic_publish.py
       - .github/workflows/traffic-*.yml
   workflow_dispatch:
 
@@ -33,4 +37,4 @@ jobs:
         with:
           persist-credentials: false
       - name: Exercise traffic merging, validation, publication, and trust boundaries
-        run: python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v
+        run: python3 -m unittest discover -s tests/tooling -p "test_traffic_*.py" -v

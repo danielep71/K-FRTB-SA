@@ -21,6 +21,8 @@ Security readback on 2026-10-31 through the public API:
 
 Dependabot alerts need an authenticated readback; they remain recorded as enabled in the historical baseline below.
 
+Later readback on 2026-10-31, after I turned on Dependabot security updates: the public API reports `dependabot_security_updates` enabled; secret scanning and push protection stay enabled.
+
 ## Maintenance
 
 Owner: @danielep71. Recheck the four general values and all five complete rulesets after approved settings changes; record targets, exclusions, bypass actors, merge methods, status-check source/strictness and creation exception. Keep portable defaults separate from repository evidence. Security and Actions settings below are historical until independently reverified. The current API confirms Pages enabled; the historical statement below that Pages was disabled is superseded.

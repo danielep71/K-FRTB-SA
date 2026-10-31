@@ -93,12 +93,15 @@ differences from a documented default.
 | Feature | State | Effect |
 | --- | --- | --- |
 | Dependabot alerts | **On** | Report known vulnerabilities in the dependency graph |
-| Dependabot security updates | **Off** | No automatic security-fix PRs; version updates are configured separately in `dependabot.yml` |
+| Dependabot security updates | **On** | Automatic PRs that fix a vulnerable dependency, opened against the default branch; version updates are configured separately in `dependabot.yml` |
 | Private vulnerability reporting | **On** | Reporters can submit an advisory privately |
 | Secret scanning | **On** | Detects supported secret patterns in the repository |
 | Push protection | **On** | Blocks pushes that contain a detected secret |
 
-Turning on Dependabot security updates is a settings decision of its own.
+I turned on Dependabot security updates on 2026-10-31. A security update PR
+opens against main, the default branch, whatever `target-branch` says. I
+retarget it to the active release branch, so it follows the normal task-PR
+review and reaches main with the next integration I request.
 
 <a id="reuse"></a>
 

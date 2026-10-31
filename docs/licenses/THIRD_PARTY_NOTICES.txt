@@ -46,6 +46,32 @@ tests/tooling/test_check_issues.py
     Adapted from K-SFTs .github/ISSUE_TEMPLATE/documentation.yml for the
     same changes.
 
+.gitattributes
+    Adapted from K-SFTs .gitattributes: this repository's scripts, template
+    and traffic data, and no regulatory-source path rule.
+
+.gitignore
+    Adapted from K-SFTs .gitignore: this repository's template exception,
+    build and test output, and local tool folders.
+
+.editorconfig
+    Adapted from K-SFTs .editorconfig: this repository's file layout, and no
+    regulatory-source section.
+
+tools/traffic_history.py
+    Adapted from K-SFTs tools/traffic_history.py: the import-legacy command,
+    which replays the JSON snapshots of the former layout with blank
+    repository counts, and this repository's documentation references.
+
+tests/tooling/test_traffic_history.py
+    Adapted from K-SFTs tools/test_traffic_history.py, with tests for the
+    legacy replay.
+
+.github/workflows/traffic-export.yml
+    Adapted from K-SFTs .github/workflows/traffic-history.yml: the alert job
+    and the history checkout, combined with this repository's GitHub App
+    token step and its atomic publication through tools/traffic_publish.py.
+
 
 Text of the Mozilla Public License, version 2.0
 -----------------------------------------------
