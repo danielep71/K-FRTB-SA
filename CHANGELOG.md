@@ -7,6 +7,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- `.gitattributes`, `.gitignore` and `.editorconfig` are the complete file
+  baseline under MPL-2.0: Git attributes for PDFs, all Office packages, fonts,
+  media and archives; ignore rules for Office and Access locks, coverage,
+  packaging and Node caches; editor indentation for every text type. Every
+  tracked file keeps the same Git attributes, nothing is renormalized, and the
+  template stays the only tracked Office package. No regulatory text is
+  stored; the files state the rule for a byte-for-byte copy (#179).
 - The issue forms ask for the affected area, the validation evidence and the
   dependency status in the form Issue triage checks; the bug form also asks
   for the full commit SHA, a sourced expected value and the Excel or
