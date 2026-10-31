@@ -259,9 +259,13 @@ def merge_daily(rows: list[Row], collection: Collection) -> list[Row]:
     """Newest collection wins per date and metric; unreported dates keep their values.
 
     Views and clones each carry the time of the collection that last changed
-    them. A metric stored by a later collection than this one is never
-    replaced, so replaying an older collection cannot undo newer counts, yet it
-    can still fill a metric that no newer collection reported.
+    them, so a rerun with the same data changes nothing. A metric stored by a
+    later collection than this one is never replaced, and an older collection
+    can still fill a metric that no newer collection reported. Because the
+    time is that of the last change, not of the last observation, an older
+    collection replayed after a newer but unchanged one can replace its
+    values: replay saved collections in collection order, as import-legacy
+    does. The workflow merges each collection once, in order.
     """
     by_date = {row["date"]: row for row in rows}
     for prefix, series in (("views", collection.views), ("clones", collection.clones)):
@@ -308,7 +312,8 @@ def merge_day(current: Mapping[str, list[Row]], collection: Collection) -> dict[
 
     The snapshot's ``collected_at`` is the time of the collection that last
     changed any of the three. A later collection replaces the unit only if
-    something in it differs; an earlier one replayed afterwards never does.
+    something in it differs; an earlier one replayed afterwards does not,
+    unless the later one changed nothing (see merge_daily on replay order).
     """
     day = collection.snapshot_date
     unit = {name: current[name] for name in (SNAPSHOTS, REFERRERS, PATHS)}

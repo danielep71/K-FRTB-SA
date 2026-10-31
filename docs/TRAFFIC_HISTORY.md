@@ -68,8 +68,13 @@ its value does, so a rerun with the same data changes nothing.
   unit. A second collection on the same UTC day replaces the unit only if any
   of the three changed.
 - **Order:** "newest" means the latest collection time. Merging an older
-  collection after a newer one never replaces what the newer one stored; it
-  can only fill a date or metric that nothing newer reported.
+  collection after a newer one that changed the values never replaces them;
+  it can only fill a date or metric that nothing newer reported. A stored time
+  is that of the collection that last *changed* the values, so that a rerun
+  with the same data changes nothing. An older collection replayed after a
+  newer but unchanged one can therefore replace its values: replay saved
+  collections in collection order, as `import-legacy` does. The workflow
+  merges each collection once, in order.
 
 ### Zero or unavailable
 
@@ -223,5 +228,12 @@ only (one branch, zero tags) and holds the `TRAFFIC_TOKEN` environment
 secret. The first real export succeeded in
 [run 39105087826](https://github.com/danielep71/K-FRTB-SA/actions/runs/39105087826)
 and published data commit `af6a68a` on `traffic-history`; issue #23 is closed.
-This dated record describes the former personal-token setup. The App migration
-requires a separate successful run before its operation is confirmed.
+This dated record describes the former personal-token setup.
+
+Updated on October 31, 2026 (Europe/Rome): the GitHub App migration (#181)
+is in operation. The main run
+[#17](https://github.com/danielep71/K-FRTB-SA/actions/runs/41216703015)
+passed with the App token and published data commit `3cc986c`. After that
+run I deleted the `TRAFFIC_TOKEN` secret from `analytics` and revoked the
+personal token; the workflow has no fallback to it. This record is my
+confirmation; environment secrets cannot be read back through the public API.
