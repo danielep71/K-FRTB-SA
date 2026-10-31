@@ -35,6 +35,9 @@ Unreleased describe integrated work, not a published version.
   decisions of #29. `release/v0.2.0` keeps the prototype closeout,
   repository maintenance and Dependabot. Governance, contributing and the
   roadmap name both lines (#132).
+- The prototype milestone guide names its assignee directly and limits the
+  input-validation statement to the required-parameter cases covered by the
+  recorded regression evidence (#32).
 - The social preview image shows "PROTOTYPE 0.2.0", rendered again from its
   HTML source with the figures unchanged, and the root README navigation links
   the wiki after the website (#126).
