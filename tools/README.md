@@ -9,7 +9,7 @@ prototype, milestone v0.2.0 (issue #20). None of them holds calculation logic.
 | `Build-Workbook.cmd` | Double-click launcher for `Build-Workbook.ps1`: asks for a production or development build and whether to overwrite |
 | `Sync-FRTB-VBA.ps1` | Replaces the standard modules of an existing `.xlsm` through Excel COM, from the checkout (`-Mode Production` or `Development`) or from a folder (`-SourceDir`), with a safety copy; never writes cells or sheets |
 | `Sync-FRTB-VBA.cmd`, `Sync-FRTB-VBA-Downloads.cmd` | Drag-and-drop launchers for `Sync-FRTB-VBA.ps1`: from the checkout, or from a folder that defaults to `%USERPROFILE%\Downloads` |
-| `Export-FRTB-VBA.ps1` | Exports every VBA component of a workbook, read-only and with macros disabled, to an empty folder with `export-manifest.json` (workbook and file SHA-256) |
+| `Export-FRTB-VBA.ps1` | Exports every VBA component of a workbook, read-only and with macros disabled, to an empty folder with `export-manifest.json` (workbook and file SHA-256, component types) |
 | `compare_vba_export.py` | Compares an export with the source of a commit, read from Git, and checks its binding to the workbook; never runs Excel |
 | `build_template.py` | Rebuilds (or `--check`s) the macro-free template `src/workbook/FRTB_Template.xlsx` headless in LibreOffice |
 | `lo_runner.py` | Runs the VBA modules headless in LibreOffice Calc and saves the result as `.xlsx` |

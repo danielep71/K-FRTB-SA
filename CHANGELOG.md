@@ -112,6 +112,13 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- The first recorded Excel run found three faults in the tools. The
+  recorder now calls the VBA editor through IDispatch, which Windows
+  PowerShell needs for its objects, and records the references before the
+  compile. `Export-FRTB-VBA.ps1` records each component's type in
+  `export-manifest.json`, and `compare_vba_export.py` takes the document
+  modules from it, because the VBE's export of `ThisWorkbook` and the sheets
+  has no `VB_Base` line (#201).
 - `RefReportingCcy` on `In_Curvature` accepts only TRUE, FALSE or blank, as
   documented. Aliases such as YES, NO, Y, N, 1 and 0 were read as flags; they
   now reject the row, in the VBA and the reference. A cell that LibreOffice
