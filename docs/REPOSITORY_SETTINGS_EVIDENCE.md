@@ -14,6 +14,13 @@ Initial browser edits were blocked by GitHub's Confirm access challenge. After t
 
 Governance now replaces bypass-based fast-forward with reviewed merge-commit synchronization PRs. Obsolete branch deletion needs separately authorized temporary exclusions from both release rulesets, restored immediately and verified. Do not follow a removed bypass procedure.
 
+Security readback on 2026-10-31 through the public API:
+- secret scanning and push protection are enabled;
+- private vulnerability reporting is enabled;
+- Dependabot security updates are disabled.
+
+Dependabot alerts need an authenticated readback; they remain recorded as enabled in the historical baseline below.
+
 ## Maintenance
 
 Owner: @danielep71. Recheck the four general values and all five complete rulesets after approved settings changes; record targets, exclusions, bypass actors, merge methods, status-check source/strictness and creation exception. Keep portable defaults separate from repository evidence. Security and Actions settings below are historical until independently reverified. The current API confirms Pages enabled; the historical statement below that Pages was disabled is superseded.

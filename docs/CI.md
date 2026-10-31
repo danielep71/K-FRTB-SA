@@ -27,6 +27,14 @@ after installation and all maintenance fixtures are offline.
   GitHub's YAML `on` key remains text. Workflow files have basic structural
   checks and external step actions use full commit SHAs. This is not complete
   GitHub Actions or issue-form schema validation.
+- Every workflow declares top-level `permissions`, every job sets
+  `timeout-minutes`, and every `actions/checkout` step sets
+  `persist-credentials: false`. A job may hold a write permission only if it is
+  listed in `WRITE_ALLOWED` of `tools/check_repository.py`, for that scope:
+  `labels-sync.yml` `reconcile` (`issues`), `traffic-export.yml` `export`
+  (`contents`) and `pr-milestones.yml` `reconcile` (`pull-requests`).
+  Workflow-level permissions and `write-all` count too. The label and PR
+  milestone reconciliations must keep their default-branch conditions.
 - Tracked text has a final newline and no accidental trailing whitespace or
   extra EOF blank lines. Intentional Markdown hard breaks are allowed. VBA
   exports may use CRLF and Windows-1252. Binary assets are excluded according
@@ -114,7 +122,10 @@ assertion made by this file. See the [official options reference](https://docs.g
 milestone assignments from PRs only (#104). It handles `opened`, `reopened`,
 `edited` and `milestoned` PR activity, plus a daily full reconciliation at
 03:17 UTC, manual dispatch and reviewed workflow changes pushed to main.
-The full scan includes open, closed and merged
+PR events and the schedule always run the reconciliation; a push or manual
+dispatch runs it only from the default branch, so no other branch's copy of
+the workflow gets the write token. `tools/check_repository.py` requires this
+condition. The full scan includes open, closed and merged
 PRs. It uses unfiltered creation-order pagination so removing assignments does
 not shift the collection. A 100-page bound, malformed response, API error or
 failed removal fails the run rather than claiming success.
@@ -136,6 +147,16 @@ another workflow. Event delivery and scheduled runs can be delayed or blocked
 by GitHub Actions policies or outages. If a run fails, inspect it and rerun the
 trusted workflow; do not claim synchronous assignment prevention. The query
 `repo:danielep71/K-FRTB-SA is:pr has:milestone` should return zero.
+
+## Issue triage
+
+[Issue triage](../.github/workflows/issue-triage.yml) runs
+[`tools/check_issues.py`](../tools/check_issues.py) on issue events and on
+manual dispatch. Issue events run the workflow from the default branch only,
+so it is active after the change reaches main. Its token has `contents`,
+`issues` and `pull-requests` read access only: it never changes an issue, and a
+failed run reports the findings in the job summary and a 30-day artifact. The
+rules are in [labels and triage](LABELS.md).
 
 ## Evidence boundaries
 

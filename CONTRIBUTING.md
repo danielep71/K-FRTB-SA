@@ -4,7 +4,8 @@
 [![Stage: prototype](https://img.shields.io/badge/stage-prototype-1D76DB)](docs/ROADMAP.md)
 
 Participation follows the [Code of Conduct](CODE_OF_CONDUCT.md).
-Potential vulnerabilities follow [SECURITY.md](SECURITY.md).
+Potential vulnerabilities follow [SECURITY.md](SECURITY.md). The editorial
+rules and the rules for automated assistants are in [AGENTS.md](AGENTS.md).
 
 Repository setup (milestone 1, v0.1.0 — Repo setup) is closed, and its branch
 `release/v0.0.1` was deleted (#62); its history is on main. The Excel/VBA SA
