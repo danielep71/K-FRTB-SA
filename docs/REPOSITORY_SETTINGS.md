@@ -25,7 +25,7 @@ Reference documentation checked: **2026-10-29**. Repository-specific evidence,
 observation dates and rule IDs belong in the local evidence record, not in this
 portable file. Copying this file does not apply settings or verify another repository.
 
-[General differences](#general) · [Custom protection](#rulesets) · [Reuse](#reuse) · [Sources](#sources)
+[General differences](#general) · [Custom protection](#rulesets) · [Security features](#security) · [Reuse](#reuse) · [Sources](#sources)
 
 <a id="general"></a>
 
@@ -53,15 +53,15 @@ as separate deviations from GitHub defaults.
 
 | Custom ruleset | Target | Added restrictions |
 | --- | --- | --- |
-| Protect default branch | `~DEFAULT_BRANCH` | Require PR, resolved conversations and strict up-to-date `Repository integrity` from GitHub Actions; allow merge commits only; block deletion and force pushes. |
+| Protect main | `~DEFAULT_BRANCH` (the default branch) | Require PR, resolved conversations and strict up-to-date `Repository integrity` from GitHub Actions; allow merge commits only; block deletion and force pushes. |
 | Protect release branches | `refs/heads/release/**` | Require PR, resolved conversations and the same strict required check; allow squash or merge commits; block deletion and force pushes. |
 | Prevent release branch deletion | `refs/heads/release/**` | Independent deletion restriction. |
 | Protect release tags | `refs/tags/v*` | Block updates, deletion and force pushes. |
-| Protect traffic history | `refs/heads/traffic-history` | Block deletion and force pushes; allow the intended data-writing automation. |
+| Protect traffic history | `refs/heads/traffic-history` | Block deletion and force pushes. Direct pushes are not restricted, so the traffic workflow can write the data branch. |
 
 ### 🔬 Supporting parameters for the two PR rulesets
 
-| Parameter | Default-branch rule | Release-branch rule |
+| Parameter | Protect main | Protect release branches |
 | --- | --- | --- |
 | Required status context | `Repository integrity` | `Repository integrity` |
 | Expected check integration | GitHub Actions (`15368`) | GitHub Actions (`15368`) |
@@ -81,6 +81,24 @@ or authorize publishing a release.
 The check name and branch patterns are reusable conventions, not built-in
 GitHub jobs or automatically existing branches. Confirm that the required job
 reports on every relevant PR before adopting these rules.
+
+<a id="security"></a>
+
+## 🔐 Security features
+
+Their initial state depends on the account, the visibility and any applied
+security configuration, so they are recorded as configured states, not as
+differences from a documented default.
+
+| Feature | State | Effect |
+| --- | --- | --- |
+| Dependabot alerts | **On** | Report known vulnerabilities in the dependency graph |
+| Dependabot security updates | **Off** | No automatic security-fix PRs; version updates are configured separately in `dependabot.yml` |
+| Private vulnerability reporting | **On** | Reporters can submit an advisory privately |
+| Secret scanning | **On** | Detects supported secret patterns in the repository |
+| Push protection | **On** | Blocks pushes that contain a detected secret |
+
+Turning on Dependabot security updates is a settings decision of its own.
 
 <a id="reuse"></a>
 

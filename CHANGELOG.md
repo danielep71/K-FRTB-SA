@@ -7,6 +7,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The settings document names the default-branch ruleset "Protect main", as it
+  is live, states that the traffic-history rule blocks deletion and force
+  pushes while direct pushes stay allowed for the traffic workflow, and
+  records the security features: Dependabot alerts, private vulnerability
+  reporting, secret scanning and push protection on, Dependabot security
+  updates off (#167).
 - Six label descriptions are reworded in the first person, and P1 now reads
   "Confirmed calculation bug: wrong results for valid inputs", used only with
   `bug`, consistently in the catalogue, the PR template, the issue forms,
