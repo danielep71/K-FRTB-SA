@@ -11,6 +11,14 @@ Unreleased describe integrated work, not a published version.
   milestone guide state my roles and decisions in the first person, and the
   label table matches the catalogue descriptions. Dated evidence and closed
   records are unchanged (#187).
+- The traffic history moves to CSV files: views and clones per day, one
+  snapshot per collection day with the repository's stars, forks, watchers
+  and open issues, and the top referrers and paths. The workflow adds the
+  repository request to the App-token curl step, merges with
+  `tools/traffic_history.py`, publishes atomically with
+  `tools/traffic_publish.py`, writes three README badges, and opens a
+  traffic alert issue when traffic spikes, stars or forks grow, or a new
+  referrer appears. `import-legacy` replays the former JSON snapshots (#185).
 - `.gitattributes`, `.gitignore` and `.editorconfig` are the complete file
   baseline: Git attributes for PDFs, all Office packages, fonts, media and
   archives; ignore rules for Office and Access locks, coverage, packaging and

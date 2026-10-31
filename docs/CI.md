@@ -32,7 +32,8 @@ after installation and all maintenance fixtures are offline.
   `persist-credentials: false`. A job may hold a write permission only if it is
   listed in `WRITE_ALLOWED` of `tools/check_repository.py`, for that scope:
   `labels-sync.yml` `reconcile` (`issues`), `traffic-export.yml` `export`
-  (`contents`) and `pr-milestones.yml` `reconcile` (`pull-requests`).
+  (`contents`) and `alert` (`issues`), and `pr-milestones.yml` `reconcile`
+  (`pull-requests`).
   Workflow-level permissions and `write-all` count too. The label and PR
   milestone reconciliations must keep their default-branch conditions.
 - Tracked text has a final newline and no accidental trailing whitespace or
