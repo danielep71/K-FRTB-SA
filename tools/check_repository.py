@@ -176,11 +176,20 @@ def validate_controls(root):
             raise ValueError("Dependabot requires owner and exactly P3")
 
 
+MILESTONE_RECONCILE_CONDITION = (
+    "github.event_name == 'pull_request_target' || "
+    "github.event_name == 'schedule' || "
+    "github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"
+)
+
+
 def validate_milestone_workflow(document):
     events = document["on"]
     if set(events) != {"push", "pull_request_target", "schedule", "workflow_dispatch"} or events["push"] != {"branches": ["main"], "paths": [".github/workflows/pr-milestones.yml"]} or events["pull_request_target"] != {"types": ["opened", "reopened", "edited", "milestoned"]} or events["schedule"] != [{"cron": "17 3 * * *"}]:
         raise ValueError("PR milestone workflow requires event and full-scan coverage")
     job = document["jobs"]["reconcile"]
+    if job.get("if") != MILESTONE_RECONCILE_CONDITION:
+        raise ValueError("PR milestone reconcile must run only on pull_request_target, schedule or the default branch")
     if document["permissions"] != {} or job["permissions"] != {"pull-requests": "write"}:
         raise ValueError("PR milestone workflow permissions must be limited to metadata")
     steps = job["steps"]

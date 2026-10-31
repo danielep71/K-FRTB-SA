@@ -72,7 +72,7 @@ class PrMilestoneTests(unittest.TestCase):
 
     def test_control_cannot_gain_checkout_interpolation_or_extra_permissions(self):
         checker.validate_milestone_workflow(self.workflow)
-        for mutation in ["checkout", "interpolation", "permissions", "issue_write", "coverage"]:
+        for mutation in ["checkout", "interpolation", "permissions", "issue_write", "coverage", "condition", "any_ref"]:
             with self.subTest(mutation=mutation):
                 document = copy.deepcopy(self.workflow)
                 job = document["jobs"]["reconcile"]
@@ -84,6 +84,10 @@ class PrMilestoneTests(unittest.TestCase):
                     job["permissions"]["contents"] = "write"
                 elif mutation == "issue_write":
                     job["permissions"] = {"issues": "write", "pull-requests": "read"}
+                elif mutation == "condition":
+                    del job["if"]
+                elif mutation == "any_ref":
+                    job["if"] = "github.event_name != 'pull_request'"
                 else:
                     document["on"]["pull_request_target"]["branches"] = ["main"]
                 with self.assertRaises(ValueError):
