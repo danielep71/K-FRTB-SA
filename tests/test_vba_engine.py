@@ -99,6 +99,15 @@ def test_default_run_reconciles_with_reference(lo_default_run):
     assert reconcile(lo_default_run) == []
 
 
+def tie_notes(wb):
+    return [v for row in wb["Results"].iter_rows(min_row=FIRST_DATA_ROW, values_only=True)
+            for v in row if isinstance(v, str) and v.startswith("Scenario tie")]
+
+
+def test_default_run_has_no_tie_note(lo_default_run):
+    assert tie_notes(lo_default_run) == []
+
+
 def test_default_run_has_clean_log(lo_default_run):
     assert log_rows(lo_default_run, "ERROR") == []
     assert log_rows(lo_default_run, "WARN") == []
@@ -175,7 +184,7 @@ INVALID_ROWS = {
         ["X7", "EQ", 8.6, "A", "SPOT", None, 1000],
     ],
     "In_Vega": [["Y1", "EQ", 8, "A", None, 2, None, 1000]],
-    "In_Curvature": [["Z1", "EQ", 8, "A", None, 1000, None]],
+    "In_Curvature": [["Z1", "EQ", 8, "A", None, 1000, None], ["Z2", "FX", "USD", "USD", None, 1000, 1000, "maybe"]],
     "In_DRC": [
         ["K1", "A", "CORP", "ZZZ", "SENIOR", 1, 1, 1, None],
         ["K2", "A", "XXX", "A", "SENIOR", 1, 1, 1, None],
@@ -183,6 +192,8 @@ INVALID_ROWS = {
         ["K4", "BANK_A", "CORP", "BBB", "SENIOR", 100, 100, 1, None],
         ["K5", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, "abc", None],
         ["K6", "BANK_C", "CORP", "A", "SENIOR", 1000, 1000, 1, "x"],
+        ["K7", "BANK_D", "CORP", "A", "EQUITY", 1000, 1000, 0.5, None],
+        ["K8", "BANK_B", "SOV", "BBB", "SENIOR", 100, 100, 1, None],
     ],
     "In_RRAO": [["Q1", "FOO", 1000], ["Q2", "OTHER", -5]],
 }
@@ -220,21 +231,53 @@ def test_variant_run_reconciles_with_reference(lo_variant_run):
 def test_variant_run_logs_every_invalid_row(lo_variant_run):
     errors = log_rows(lo_variant_run, "ERROR")
     sources = sorted(r[1] for r in errors)
-    assert len(errors) == 16, errors
+    assert len(errors) == 19, errors
     assert sum(s.startswith("In_Delta") for s in sources) == 7
-    assert sum(s.startswith("In_DRC") for s in sources) == 5
+    assert sum(s.startswith("In_DRC") for s in sources) == 7
+    assert any("Cash equity maturity" in r[2] for r in errors)
+    assert any("RefReportingCcy must be TRUE, FALSE or blank" in r[2] for r in errors)
+    # BANK_B, split across CORP and SOV, is skipped; BANK_A takes its worst quality (#142)
+    assert any("BANK_B has positions in several buckets" in r[2] for r in errors)
     warnings = log_rows(lo_variant_run, "WARN")
-    assert len(warnings) == 1 and "credit qualities" in warnings[0][2]
+    assert len(warnings) == 1 and "the worst, BBB, is used" in warnings[0][2]
+    drc = {r[0]: r for r in sheet_rows(lo_variant_run, "Out_DRC")}
+    assert "BANK_B" not in drc and drc["BANK_A"][2] == "BBB"
 
 
 def test_variant_run_applies_discretions(lo_variant_run, lo_default_run):
     def cap(wb, rc, comp):
         return {(r[0], r[1], r[2]): r[3] for r in sheet_rows(wb, "Out_RiskClass")}[(rc, comp, "MEDIUM")]
 
-    # Specified currency and pair discretions lower the GIRR and FX delta charges
-    # (all sample FX currencies are specified against EUR, directly or as crosses)
-    assert cap(lo_variant_run, "GIRR", "DELTA") < cap(lo_default_run, "GIRR", "DELTA")
+    # Specified currency and pair discretions divide the GIRR and FX delta charges by
+    # sqrt(2): the sample GIRR is EUR and USD only, inflation and cross-currency basis
+    # included (#136), and all sample FX currencies are specified against EUR,
+    # directly or as crosses
+    assert cap(lo_variant_run, "GIRR", "DELTA") == pytest.approx(cap(lo_default_run, "GIRR", "DELTA") / math.sqrt(2))
     assert cap(lo_variant_run, "FX", "DELTA") == pytest.approx(cap(lo_default_run, "FX", "DELTA") / math.sqrt(2))
+    # The FX curvature divisor skips the USD row, flagged as referencing EUR (#144)
+    fx = fx_curvature_buckets(lo_variant_run)
+    assert fx["GBP"][0] == pytest.approx(15_000 / 1.5) and fx["USD"][1] == pytest.approx(-35_000)
+
+
+def fx_curvature_buckets(wb):
+    """{bucket: (Kb, Sb)} for FX curvature in the medium scenario."""
+    return {r[3]: r[4:6] for r in sheet_rows(wb, "Out_Buckets") if r[:3] == ("FX", "CURVATURE", "MEDIUM")}
+
+
+def test_fx_curvature_divisor_all(lo_default_path, tmp_path):
+    # The approved alternative of MAR21.98 divides every FX row, flagged or not (#144)
+    wb = openpyxl.load_workbook(lo_default_path)
+    for row in wb["Control"].iter_rows(min_row=1, min_col=FIRST_COL):
+        if row[0].value == "FX_CURVATURE_DIVISOR_ALL":
+            row[1].value = True
+    source = tmp_path / "fx-all-in.xlsx"
+    wb.save(source)
+    out = tmp_path / "fx-all-out.xlsx"
+    assert lo_runner.run(out, ["M_Main.RunFRTB_Silent"], input_book=source) == []
+    result = openpyxl.load_workbook(out, data_only=True)
+    assert reconcile(result) == []
+    fx = fx_curvature_buckets(result)
+    assert fx["GBP"][0] == pytest.approx(15_000 / 1.5) and fx["USD"][1] == pytest.approx(-35_000 / 1.5)
 
 
 # --------------------------------------------------------------------------
@@ -254,3 +297,6 @@ def test_empty_inputs_give_zero_capital(lo_default_path, tmp_path):
     assert summary["TOTAL"] == 0 and summary["ERRORS"] == 0
     assert all(r[3] == 0 for r in sheet_rows(result, "Out_RiskClass"))
     assert sheet_rows(result, "Out_Buckets") == []
+    # All three scenarios are zero: Results notes the tie and reports LOW (#138)
+    assert tie_notes(result) == ["Scenario tie (LOW, MEDIUM, HIGH): same SBM total, LOW reported; "
+                                 "ties resolve in the order low, medium, high"]

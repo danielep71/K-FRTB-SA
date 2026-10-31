@@ -62,6 +62,35 @@ together; no inflation or cross-currency basis curvature) and FX, one per
 issuer for CSR (bond and CDS curves together), one per issuer for equity and
 one per commodity (all delivery locations together) (MAR21.8-MAR21.14).
 
+### Curvature input contract (MAR21.5, MAR21.98, MAR21.99)
+
+The workbook does not price instruments and applies no curvature risk
+weight, so the system that computes the CVRs must apply the prescribed
+shocks (#29, item 6):
+
+| Risk class | Shock to the curvature risk factor | Delta deducted for each instrument |
+| --- | --- | --- |
+| FX, EQ | Relative shift equal to the delta risk weight of the risk factor (MAR21.98) | Its delta sensitivity to the risk factor |
+| GIRR, CSR_NS, COM | Parallel shift of all tenors of every curve of the risk factor by the highest delta risk weight of the bucket; for GIRR, the 0.25-year weight (MAR21.99) | The sum of its delta sensitivities to all tenors of the relevant curves |
+
+- **Sign.** CVRs are positive for a loss (MAR21.5(1)):
+  `CVR_k+ = -sum_i [V_i(x_k^(RW+)) - V_i(x_k) - RW_k * s_ik]` and
+  `CVR_k- = -sum_i [V_i(x_k^(RW-)) - V_i(x_k) + RW_k * s_ik]`.
+- **Granularity.** One row per curvature risk factor, as defined above, net
+  across instruments. For FX, use up to two rows per risk factor: one for the
+  options that reference the reporting currency, with `RefReportingCcy` TRUE,
+  and one for the others; the rows are netted after the divisor.
+- **FX divisor.** Enter FX CVRs before any division by 1.5: the workbook
+  applies `FX_CURVATURE_DIVISOR` or `FX_CURVATURE_DIVISOR_ALL` itself.
+  `RefReportingCcy` accepts TRUE, FALSE or blank (FALSE); any other value
+  rejects the row.
+- **sqrt(2) discretions.** MAR21.98 and MAR21.99 do not say whether the
+  sqrt(2) divisions of MAR21.44 (GIRR) and MAR21.88 (FX) also reduce the
+  curvature shock. The workbook takes no position: the upstream pricing must
+  follow the reading of the bank's supervisor and record it.
+- **Scenarios.** The shocks do not depend on the correlation scenario; only
+  the aggregation does (MAR21.6, MAR21.100, MAR21.101).
+
 ## 🧮 Sensitivities-based method
 
 ### Aggregation (MAR21.4)
@@ -135,9 +164,10 @@ Table 13): 100% everywhere except 77.78% for equity large cap and indices.
 
 | Setting | Effect |
 | --- | --- |
-| `GIRR_SPECIFIED_CCY_DISCRETION` | GIRR yield-curve risk weights divided by sqrt(2) for EUR, USD, GBP, AUD, JPY, SEK, CAD and the reporting currency (MAR21.44) |
+| `GIRR_SPECIFIED_CCY_DISCRETION` | GIRR delta risk weights, including the inflation and cross-currency basis weights, divided by sqrt(2) for EUR, USD, GBP, AUD, JPY, SEK, CAD and the reporting currency (MAR21.44; #136) |
 | `FX_SPECIFIED_PAIR_DISCRETION` | FX risk weight divided by sqrt(2) for the specified pairs and their first-order crosses (MAR21.88, fn 23) |
-| `FX_CURVATURE_DIVISOR` | All FX CVRs divided by 1.5 (MAR21.98; applying it to all FX instruments needs supervisory approval) |
+| `FX_CURVATURE_DIVISOR` | FX CVRs of options that do not reference the reporting currency (`RefReportingCcy` not TRUE on `In_Curvature`) divided by 1.5 (MAR21.98) |
+| `FX_CURVATURE_DIVISOR_ALL` | All FX CVRs divided by 1.5: the MAR21.98 alternative that needs supervisory approval and curvature sensitivities for all currencies, including shocks to the reporting currency; it overrides `FX_CURVATURE_DIVISOR` |
 
 ## 💳 Default risk capital, non-securitizations (MAR22)
 
@@ -145,9 +175,14 @@ Table 13): 100% everywhere except 77.78% for equity large cap and indices.
    floored at zero for longs and capped at zero for shorts (signed amounts;
    MAR22.11-13). LGD defaults by seniority: equity and non-senior 100%,
    senior 75%, covered bonds 25% (MAR22.12); a per-row LGD overrides it.
-2. Maturity scaling: `min(max(M, 0.25), 1)` (MAR22.15-18).
+2. Maturity scaling: `min(max(M, 0.25), 1)` (MAR22.15-18). Cash equity
+   (`EQUITY` seniority) takes a maturity of three months or at least one
+   year (MAR22.16 and its FAQ); any other maturity rejects the row (#134).
 3. Netting per obligor: a short offsets a long only when it ranks the same as
-   or junior to the long (MAR22.19). Shorts are applied from the most junior
+   or junior to the long (MAR22.19). An obligor belongs to one bucket: one
+   whose positions name different buckets is rejected with all its positions
+   (MAR22.22). When its positions differ in credit quality, the worst one, with
+   the highest risk weight, applies with a warning (MAR22.24; #142). Shorts are applied from the most junior
    rank upward, which maximizes the eligible offset.
 4. Per bucket (corporates, sovereigns, local governments and municipalities):
    `HBR = sum net long / (sum net long + sum |net short|)` and
@@ -184,20 +219,39 @@ and led to these corrections in this version:
 
 ## 🔎 Interpretations and simplifications to review
 
-1. **GIRR sqrt(2) discretion scope.** Applied to the yield-curve tenor risk
-   weights only. MAR21.44 says "the above risk weights" right after the
-   inflation and cross-currency basis weights, so the literal text can also
-   include them.
+1. **GIRR sqrt(2) discretion scope.** Decided on October 27, 2026 (#29,
+   item 1) and implemented in #136: MAR21.44 divides "the above risk
+   weights", which follow the inflation and cross-currency basis weights of
+   MAR21.43, so the discretion divides those weights too.
 2. **Covered bonds.** The 1.5% risk weight for covered bonds rated AA- or
    better (MAR21.53 fn 17, bank's discretion) is not modeled: bucket 8 uses
-   2.5%. Override the risk weight on `P_CSR` to apply it.
-3. **FX curvature divisor.** The setting divides all FX CVRs. MAR21.98
-   applies it to options not referencing the reporting currency, and to all
-   FX instruments only with supervisory approval.
-4. **DRC obligor attributes.** Bucket and credit quality come from the
-   obligor's first position; differing values are logged as warnings. Blank
-   maturity defaults to one year; cash equity must be entered as 0.25 or 1.
-5. **Binding scenario ties** resolve in the order low, medium, high.
+   2.5%. Decided on October 27, 2026 (#29, item 2) and documented in #140:
+   an override of the bucket 8 risk weight on `P_CSR` changes every covered
+   bond in the bucket, whatever its rating, so use it only when all of them
+   are rated AA- or better. Modeling the discretion per position is a v0.3.0
+   scope item only if covered bonds are in the certified product scope.
+3. **FX curvature divisor.** Decided on October 27, 2026 (#29, item 3) and
+   implemented in #144: `FX_CURVATURE_DIVISOR` divides only the rows not
+   flagged as referencing the reporting currency, and
+   `FX_CURVATURE_DIVISOR_ALL`, labeled as needing supervisory approval,
+   divides every FX row. The workbook does not check that the curvature
+   sensitivities cover all currencies, a condition of that approval.
+4. **DRC obligor attributes.** Decided on October 27, 2026 (#29, items 4a
+   and 4b) and implemented in #142: an obligor split across buckets is an
+   input error, and its positions are skipped; differing credit qualities
+   resolve to the worst, with a warning. The full MAR22.24 FAQ procedure for
+   several external ratings is not modeled, since the input carries one
+   credit quality per position. Blank maturity defaults to one year. Cash
+   equity: decided on October 27, 2026 (#29, item 4c) and implemented in
+   #134; a maturity other than 0.25 or at least 1 rejects the row.
+5. **Binding scenario ties** resolve in the order low, medium, high. Decided
+   on October 27, 2026 (#29, item 5) as a reporting convention, not a reading
+   of MAR21.7: the capital is the same, only the reported scenario and its
+   breakdown depend on the order. Since #138, `Results` notes a tie and names
+   the tied scenarios.
 6. **Curvature risk weights** are not used: CVRs are inputs computed by the
-   bank, which also owns the question whether the sqrt(2) division applies
-   to the GIRR curvature shock (not specified in MAR21.99).
+   bank. Decided on October 27, 2026 (#29, item 6) and documented in #140:
+   the bank's pricing follows the
+   [curvature input contract](#curvature-input-contract-mar215-mar2198-mar2199),
+   and the workbook takes no position on whether the sqrt(2) divisions
+   reduce the curvature shock.

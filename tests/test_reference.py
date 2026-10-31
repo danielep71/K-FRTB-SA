@@ -99,6 +99,12 @@ def test_girr_specified_currency_discretion(p):
     rfs = ref.delta_risk_factors(p, rows)
     assert rfs[0].rw == approx(0.011 / math.sqrt(2))
     assert rfs[1].rw == approx(0.011)
+    # MAR21.44 divides "the above risk weights": inflation and cross-currency basis too (#29)
+    rows = [["1", "GIRR", "EUR", "HICP", "INFLATION", None, 1], ["2", "GIRR", "USD", "EUR", "XCCY", None, 1],
+            ["3", "GIRR", "PLN", "CPI", "INFLATION", None, 1]]
+    rw = [f.rw for f in ref.delta_risk_factors(p, rows)]
+    assert rw == [approx(0.016 / math.sqrt(2)), approx(0.016 / math.sqrt(2)), approx(0.016)]
+    p.girr_specified_on = False
     infl = ref.delta_risk_factors(p, [["1", "GIRR", "EUR", "HICP", "INFLATION", None, 1]])
     assert infl[0].rw == approx(0.016)
 
@@ -266,10 +272,24 @@ def test_curvature_across_buckets_floor_at_zero(p):
 
 
 def test_curvature_fx_divisor(p):
+    # MAR21.98 (#29, item 3): the discretion divides options that do not reference
+    # the reporting currency; the approved alternative (_ALL) divides every FX row
+    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, None], ["2", "FX", "USD", "USD", None, 30_000, 0, True]]
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(60_000)
     p.fx_curv_divisor_on = True
-    rows = [["1", "FX", "USD", "USD", None, 30_000, 0]]
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(20_000 + 30_000)
+    p.fx_curv_divisor_all_on = True
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(40_000)
+    p.fx_curv_divisor_on = False
+    assert run_curv(p, rows)[0]["FX"]["MEDIUM"] == approx(40_000)
+
+
+def test_curvature_reporting_ccy_flag_must_be_boolean(p):
+    rows = [["1", "FX", "USD", "USD", None, 30_000, 0, "maybe"], ["2", "FX", "GBP", "GBP", None, 10_000, 0, "no"],
+            ["3", "EQ", 8, "A", None, 5_000, 0, 2]]
     capital, _, _ = run_curv(p, rows)
-    assert capital["FX"]["MEDIUM"] == approx(20_000)
+    assert capital["FX"]["MEDIUM"] == approx(10_000)
+    assert capital["EQ"]["MEDIUM"] == approx(0.0)
 
 
 def test_curvature_other_bucket(p):
@@ -318,6 +338,28 @@ def test_drc_buckets_do_not_offset(p):
     rows = [drc_row("A", "CORP", "BBB", "EQUITY", 100, 100), drc_row("B", "SOV", "BBB", "SENIOR", -100, -100)]
     total, _, _ = ref.drc(p, rows)
     assert total == approx(6.0)
+
+
+def test_drc_obligor_split_across_buckets_is_rejected(p):
+    # MAR22.22 (#29, item 4a): every position of a split obligor is excluded
+    rows = [drc_row("A", "CORP", "BBB", "SENIOR", 100, 100), drc_row("A", "SOV", "BBB", "SENIOR", -50, -50),
+            drc_row("B", "CORP", "BBB", "SENIOR", 100, 100)]
+    total, obl, buckets = ref.drc(p, rows)
+    assert list(obl) == ["B"]
+    assert total == approx(0.06 * 75)
+    assert buckets["SOV"][:2] == (0, 0)
+
+
+def test_drc_obligor_takes_the_worst_credit_quality(p):
+    # MAR22.24 (#29, item 4b): the highest risk weight, in either order
+    for first, second in (("A", "BBB"), ("BBB", "A")):
+        rows = [drc_row("A", "CORP", first, "SENIOR", 100, 100), drc_row("A", "CORP", second, "SENIOR", 100, 100)]
+        total, obl, _ = ref.drc(p, rows)
+        assert obl["A"][1:3] == ("BBB", approx(0.06))
+        assert total == approx(0.06 * 150)
+    # Equal risk weights keep the first quality
+    rows = [drc_row("A", "CORP", "UNRATED", "SENIOR", 100, 100), drc_row("A", "CORP", "BB", "SENIOR", 100, 100)]
+    assert ref.drc(p, rows)[1]["A"][1] == "UNRATED"
 
 
 # --------------------------------------------------------------------------
@@ -412,3 +454,17 @@ def test_drc_nonnumeric_maturity_or_lgd_is_rejected(p):
     assert total == 0 and obl == {}
     _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity=None)])
     assert obl["A"][3] == approx(70)  # blank maturity: one year
+
+
+def test_drc_cash_equity_maturity_is_three_months_or_one_year(p):
+    # MAR22.16 and its FAQ: no cash-equity maturity between three months and one year.
+    # Equity LGD is 100%: JTD = 1.0 x 100 + (95 - 100) = 95.
+    for maturity, scale in [(0.25, 0.25), (1, 1), (3, 1), (None, 1)]:
+        _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "EQUITY", 100, 95, maturity=maturity)])
+        assert obl["A"][3] == approx(95 * scale), maturity
+    for maturity in [0.1, 0.5, 0.99]:
+        total, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "EQUITY", 100, 95, maturity=maturity)])
+        assert total == 0 and obl == {}, maturity
+    # The rule applies to cash equity only: a senior bond at 0.5 years is still scaled.
+    _, obl, _ = ref.drc(p, [drc_row("A", "CORP", "BBB", "SENIOR", 100, 95, maturity=0.5)])
+    assert obl["A"][3] == approx(70 * 0.5)
