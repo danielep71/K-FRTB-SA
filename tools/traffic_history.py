@@ -9,6 +9,7 @@ import datetime as dt
 import io
 import json
 import os
+from pathlib import Path
 import re
 import sys
 import time
@@ -142,12 +143,16 @@ def merge_daily(previous, payload):
     return output.getvalue()
 
 
-def collect(reader, repository):
-    base = "/repos/" + repository + "/traffic/"
-    payload = {"views": reader.request("GET", base + "views?per=day"),
-               "clones": reader.request("GET", base + "clones?per=day"),
-               "referrers": reader.request("GET", base + "popular/referrers"),
-               "paths": reader.request("GET", base + "popular/paths")}
+def load_responses(directory):
+    """Read curl responses; validate all endpoints before any publication."""
+    payload = {}
+    for name in ("views", "clones", "referrers", "paths"):
+        path = Path(directory) / (name + ".json")
+        with path.open("rb") as source:
+            raw = source.read(8 * 1024 * 1024 + 1)
+        if len(raw) > 8 * 1024 * 1024:
+            raise ValueError("API response exceeds the size limit")
+        payload[name] = json.loads(raw)
     validate_traffic(payload)
     return payload
 
@@ -188,10 +193,10 @@ def main():
     source = os.environ.get("GITHUB_SHA", "")
     if not re.fullmatch(r"[a-f0-9]{40}", source):
         raise ValueError("A full workflow source SHA is required")
-    token = os.environ.get("TRAFFIC_TOKEN", "")
-    if not token:
-        raise ValueError("Configure analytics environment secret TRAFFIC_TOKEN with Administration: read")
-    payload = collect(GitHub(token), repository)
+    raw = os.environ.get("TRAFFIC_RAW", "")
+    if not raw:
+        raise ValueError("TRAFFIC_RAW response directory is required")
+    payload = load_responses(raw)
     snapshot = {"schema_version": 1, "repository": repository,
                 "collected_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "source_commit_sha": source, **payload}
@@ -208,6 +213,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (ValueError, RuntimeError, KeyError, TypeError, urllib.error.URLError) as error:
+    except (ValueError, RuntimeError, KeyError, TypeError, OSError) as error:
         print("Traffic collection failed: " + str(error), file=sys.stderr)
         sys.exit(1)
