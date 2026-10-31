@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "repository": "danielep71/K-FRTB-SA",
-  "collected_at_utc": "2026-10-31T10:33:22.894921+00:00",
-  "source_commit_sha": "170dbd16aee93c8ee473a6b3f2deb98273c8ae9c",
+  "collected_at_utc": "2026-10-31T15:49:58.587736+00:00",
+  "source_commit_sha": "e9672794e3585fe175c7c06ca060d0fe05d9012a",
   "views": {
     "count": 93,
     "uniques": 2,
