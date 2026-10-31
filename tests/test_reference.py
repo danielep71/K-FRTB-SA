@@ -484,8 +484,9 @@ def test_input_reader_reads_a_boolean_formatted_number_as_the_flag_it_shows():
     import openpyxl
 
     ws = openpyxl.Workbook().active
-    cells = [(1, '"TRUE";"TRUE";"FALSE"'), (0, '"TRUE";"TRUE";"FALSE"'), (1, "General"), (0, "#,##0.####"), ("TRUE", "@")]
-    for i, (v, fmt) in enumerate(cells, start=1):
+    fmt = '"TRUE";"TRUE";"FALSE"'
+    cells = [(1, fmt), (0, fmt), (2, fmt), (-1, fmt), (1, "General"), (0, "#,##0.####"), ("TRUE", "@")]
+    for i, (v, f) in enumerate(cells, start=1):
         ws.cell(1, i).value = v
-        ws.cell(1, i).number_format = fmt
-    assert [ref._cell_value(ws.cell(1, i)) for i in range(1, 6)] == [True, False, 1, 0, "TRUE"]
+        ws.cell(1, i).number_format = f
+    assert [ref._cell_value(ws.cell(1, i)) for i in range(1, 8)] == [True, False, True, True, 1, 0, "TRUE"]

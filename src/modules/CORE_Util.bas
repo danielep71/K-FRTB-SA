@@ -16,7 +16,7 @@ Attribute VB_Name = "CORE_Util"
 '   internal blank rows raise rather than silently truncating the table.
 '   Keyed lookups on Collections: KeyExists, KeyIndex, AddKey.
 '   Conversions: IsBlank, IsBlankOrNumber, IsBlankOrBool, IsBlankOrBoolCell,
-'   ToDouble, IsNumber, ToBool, ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
+'   CellBool, ToDouble, IsNumber, ToBool, ToText, BucketLabel, MaxD, MinD, NearlyEqual, TenorKey, ParseNumberList,
 '   InNumberList.
 '   Sorting: BucketLess, SortLabels.
 '   Formatting: WriteTableHeader, FormatDataRows, HeaderCaption, FormatBorders,
@@ -443,9 +443,10 @@ Public Function IsBlankOrBool(ByVal v As Variant) As Boolean
 End Function
 
 
-' The same rule for a cell. Excel returns a Boolean for a TRUE or FALSE cell;
-' LibreOffice returns a number formatted as a Boolean, accepted only when the
-' cell shows TRUE or FALSE. A cell holding 1 or 0 is still rejected (#144).
+' The same rule for a cell. A workbook saved by LibreOffice stores a Boolean
+' cell as a number formatted to show TRUE or FALSE, which Excel reads as that
+' number: such a cell is accepted only when it shows TRUE or FALSE. A cell
+' holding a plain 1 or 0 is still rejected (#144).
 Public Function IsBlankOrBoolCell(ByVal cell As Object) As Boolean
     Dim v As Variant
     v = cell.Value
@@ -462,6 +463,23 @@ Public Function IsBlankOrBoolCell(ByVal cell As Object) As Boolean
         End Select
     Else
         IsBlankOrBoolCell = False
+    End If
+End Function
+
+' The flag a cell shows, under the IsBlankOrBoolCell rule: FALSE when blank.
+' A number is read from what the cell shows, so a Boolean-formatted 2 that
+' shows TRUE is TRUE, as the check accepted it (#144).
+Public Function CellBool(ByVal cell As Object) As Boolean
+    Dim v As Variant
+    v = cell.Value
+    If IsBlank(v) Or IsError(v) Then
+        CellBool = False
+    ElseIf VarType(v) = vbBoolean Then
+        CellBool = CBool(v)
+    ElseIf VarType(v) = vbString Then
+        CellBool = (UCase$(Trim$(v)) = "TRUE")
+    Else
+        CellBool = (UCase$(Trim$(CStr(cell.Text))) = "TRUE")
     End If
 End Function
 

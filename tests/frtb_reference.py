@@ -232,8 +232,8 @@ def _cell_value(cell):
     """A cell's value, with a number formatted as TRUE/FALSE read as a Boolean.
 
     LibreOffice saves a Boolean cell as a number whose format shows TRUE or
-    FALSE; the VBA reads such a cell as the flag it shows (#144). A plain
-    number keeps its value, so 1 or 0 is not a flag.
+    FALSE; the VBA reads such a cell as the flag it shows (CellBool, #144). A
+    plain number keeps its value, so 1 or 0 is not a flag.
     """
     v = cell.value
     if isinstance(v, bool) or not isinstance(v, (int, float)):

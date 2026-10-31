@@ -222,6 +222,14 @@ def lo_variant_run(lo_default_path, tmp_path_factory):
             for c, v in enumerate(values, start=FIRST_COL):
                 ws.cell(r, c).value = v
             r += 1
+        if sheet == "In_Curvature":
+            # A Boolean-formatted 2 shows TRUE: the VBA and the reference read it
+            # as TRUE, so FX_CURVATURE_DIVISOR leaves the row undivided (#144).
+            # LibreOffice's VBA already returns a Boolean for this cell; the
+            # numeric path of CellBool is the one Excel takes (#28).
+            for c, v in enumerate(["Z6", "FX", "JPY", "JPY", None, 9000, 6000, 2], start=FIRST_COL):
+                ws.cell(r, c).value = v
+            ws.cell(r, FIRST_COL + 7).number_format = '"TRUE";"TRUE";"FALSE"'
     folder = tmp_path_factory.mktemp("lo-variant")
     source = folder / "variant-in.xlsx"
     wb.save(source)
@@ -265,6 +273,8 @@ def test_variant_run_applies_discretions(lo_variant_run, lo_default_run):
     # The FX curvature divisor skips the USD row, flagged as referencing EUR (#144)
     fx = fx_curvature_buckets(lo_variant_run)
     assert fx["GBP"][0] == pytest.approx(15_000 / 1.5) and fx["USD"][1] == pytest.approx(-35_000)
+    # The Boolean-formatted 2 on JPY shows TRUE, so that row is not divided either
+    assert fx["JPY"][0] == pytest.approx(9_000)
 
 
 def fx_curvature_buckets(wb):
