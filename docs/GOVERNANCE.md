@@ -149,8 +149,12 @@ main head an ancestor; never use that merge to claim ancestry advancement.
 
 The bug form defaults to `bug` and `P2`; feature and documentation forms
 default to their type label and `P3`. All forms assign `danielep71`.
-Forms cannot assign a milestone, so maintainers must select it and confirm
-exactly one priority before completing triage. P1 remains limited to confirmed
+Every form asks for the affected area, the validation evidence the change
+needs, and the dependency status in the form Issue triage checks: issue links,
+an `External condition:` line, or None. The bug form also asks for the full
+commit SHA, a sourced expected value and the host environment; the feature
+form asks for the compatibility impact. Forms cannot assign a milestone, so I
+select it and confirm exactly one priority before completing triage. P1 remains limited to confirmed
 calculation bugs. API/CLI-created issues and PRs bypass form defaults and need
 explicit metadata: assign milestones to issues only, never to PRs.
 Disabling ordinary blank issues does not enforce metadata
