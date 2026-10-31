@@ -1,4 +1,18 @@
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
 name: Export repository traffic
+
+# Keeps this repository's GitHub traffic beyond the API's 14-day window:
+# collects views, clones, top referrers, popular paths and the repository's
+# stars, forks, watchers and open issues once a day, merges them into the CSV
+# files of the data-only traffic-history branch with tools/traffic_history.py,
+# which also writes the README badge files, and publishes the result with
+# tools/traffic_publish.py. When traffic spikes, stars or forks increase, or a
+# new referrer appears, the alert job opens one issue for that day. Analytics
+# only; operation, credentials and recovery: docs/TRAFFIC_HISTORY.md.
 
 on:
   schedule:
@@ -21,15 +35,134 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out trusted main source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Run offline collector tests before credentialed collection
-        run: python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v
-      - name: Collect and atomically publish aggregate traffic
+        run: python3 -m unittest discover -s tests/tooling -p "test_traffic_*.py" -v
+      - name: Check out the traffic history without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: traffic-history
+          path: history
+          persist-credentials: false
+      # App credentials are analytics environment values. Only the token action
+      # receives the key; only curl receives its short-lived installation token.
+      - name: Check the traffic App configuration
         env:
-          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          CLIENT_ID: ${{ vars.TRAFFIC_APP_CLIENT_ID }}
+          HAS_KEY: ${{ secrets.TRAFFIC_APP_PRIVATE_KEY != '' }}
+        run: |
+          if [ -z "$CLIENT_ID" ] || [ "$HAS_KEY" != "true" ]; then
+            echo "::error::TRAFFIC_APP_CLIENT_ID or TRAFFIC_APP_PRIVATE_KEY is not set in the analytics environment"
+            exit 1
+          fi
+      - name: Prepare traffic response directory
+        id: prepare
+        run: |
+          mkdir -p "$RUNNER_TEMP/traffic-raw"
+          echo "collected_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+      - name: Create the traffic App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.TRAFFIC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TRAFFIC_APP_PRIVATE_KEY }}
+          permission-administration: read
+      - name: Fetch traffic from the GitHub API
+        env:
+          TRAFFIC_API_TOKEN: ${{ steps.app-token.outputs.token }}
+          API: ${{ github.api_url }}/repos/${{ github.repository }}
+        run: |
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/traffic/views?per=day" -o "$RUNNER_TEMP/traffic-raw/views.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/traffic/clones?per=day" -o "$RUNNER_TEMP/traffic-raw/clones.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/traffic/popular/referrers" -o "$RUNNER_TEMP/traffic-raw/referrers.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/traffic/popular/paths" -o "$RUNNER_TEMP/traffic-raw/paths.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API" -o "$RUNNER_TEMP/traffic-raw/repository.json"
+      # The merge reads local files only and receives no token.
+      - name: Merge the collection into the history
+        env:
+          COLLECTED_AT: ${{ steps.prepare.outputs.collected_at }}
+        run: >-
+          python3 tools/traffic_history.py merge
+          --raw "$RUNNER_TEMP/traffic-raw" --data history/data
+          --collected-at "$COLLECTED_AT"
+          --summary "$GITHUB_STEP_SUMMARY"
+      # Publication uses only the built-in contents-write token, never the App token.
+      - name: Atomically publish the merged history
+        env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 tools/traffic_history.py
+          COLLECTED_AT: ${{ steps.prepare.outputs.collected_at }}
+        run: python3 tools/traffic_publish.py --history history --collected-at "$COLLECTED_AT"
+
+  alert:
+    name: Traffic alert
+    needs: export
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    # No environment: this job never receives the App key or token.
+    permissions:
+      contents: read
+      issues: write
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out trusted main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: source
+          persist-credentials: false
+      - name: Check out the published traffic history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: traffic-history
+          path: history
+          persist-credentials: false
+      - name: Open the alert issue, if one is due
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ASSIGNEE: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          # The active milestone: the open one with the earliest due date.
+          milestone="$(gh api "repos/$GH_REPO/milestones?state=open&sort=due_on&direction=asc" \
+            --jq '[.[] | select(.due_on != null)][0] | [.title, .due_on[0:10]] | @tsv')"
+          if [ -z "$milestone" ]; then
+            echo "::error::No open milestone with a due date to file the alert under"
+            exit 1
+          fi
+          IFS=$'\t' read -r title due <<< "$milestone"
+          alert="$RUNNER_TEMP/alert.json"
+          python3 source/tools/traffic_history.py alert \
+            --data history/data --milestone-due "$due" --output "$alert"
+          [ -f "$alert" ] || exit 0
+          issue_title="$(jq -r .title "$alert")"
+          jq -j .body "$alert" > "$RUNNER_TEMP/alert.md"
+          existing="$(gh issue list --state all --search "\"$issue_title\" in:title" \
+            --json title --jq "map(select(.title == \"$issue_title\")) | length")"
+          if [ "$existing" != "0" ]; then
+            echo "An issue titled \"$issue_title\" already exists."
+            exit 0
+          fi
+          gh issue create --title "$issue_title" --body-file "$RUNNER_TEMP/alert.md" \
+            --assignee "$ASSIGNEE" --label P3 --label repository --milestone "$title"

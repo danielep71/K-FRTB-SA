@@ -7,6 +7,40 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Dependabot security updates are on. The settings document, its evidence and
+  CI record the change and how a security update PR, which opens against
+  main, is retargeted to the active release branch (#191).
+- GOVERNANCE, LABELS, CI, SECURITY, the Code of Conduct and the v0.2.0
+  milestone guide state my roles and decisions in the first person, and the
+  label table matches the catalogue descriptions. Dated evidence and closed
+  records are unchanged (#187).
+- The traffic history moves to CSV files: views and clones per day, one
+  snapshot per collection day with the repository's stars, forks, watchers
+  and open issues, and the top referrers and paths. The workflow adds the
+  repository request to the App-token curl step, merges with
+  `tools/traffic_history.py`, publishes atomically with
+  `tools/traffic_publish.py`, writes three README badges, and opens a
+  traffic alert issue when traffic spikes, stars or forks grow, or a new
+  referrer appears. `import-legacy` replays the former JSON snapshots (#185).
+- `.gitattributes`, `.gitignore` and `.editorconfig` are the complete file
+  baseline: Git attributes for PDFs, all Office packages, fonts, media and
+  archives; ignore rules for Office and Access locks, coverage, packaging and
+  Node caches; editor indentation for every text type. Every tracked file
+  keeps the same Git attributes, nothing is renormalized, and the template
+  stays the only tracked Office package. No regulatory text is stored; the
+  files state the rule for a byte-for-byte copy (#179).
+- Migrate traffic collection to an isolated GitHub App token and curl-only
+  API step; retain validated atomic publication with the workflow token (#181).
+
+- The issue forms ask for the affected area, the validation evidence and the
+  dependency status in the form Issue triage checks; the bug form also asks
+  for the full commit SHA, a sourced expected value and the Excel or
+  LibreOffice environment, and the feature form for the compatibility impact.
+  The outdated branch history is removed from their opening note. The labels
+  and the assignee are unchanged (#177).
+- The settings evidence, the Excel evidence guide and the market-risk diagram
+  notes describe only this repository, and the #168 entry below links to
+  `AGENTS.md` instead of restating its rules (#174).
 - The settings document names the default-branch ruleset "Protect main", as it
   is live, states that the traffic-history rule blocks deletion and force
   pushes while direct pushes stay allowed for the traffic workflow, and
@@ -24,11 +58,10 @@ Unreleased describe integrated work, not a published version.
   `tools/check_repository.py` requires the condition (#160).
 - The label catalogue uses schema 2, a single `labels` list without overlays,
   and the unused label policy file is removed. The label scripts are replaced
-  by schema-2 versions under MPL-2.0 (listed in
-  `docs/licenses/THIRD_PARTY_NOTICES.txt`) that keep the guard against pruning
-  a used label and write one summary when the final check fails. Live
-  reconciliation runs only from the default branch, and the validation job
-  has a 5-minute timeout (#158).
+  by schema-2 versions that keep the guard against pruning a used label and
+  write one summary when the final check fails. Live reconciliation runs only
+  from the default branch, and the validation job has a 5-minute timeout
+  (#158).
 - `FX_CURVATURE_DIVISOR` divides only the FX CVRs of options that do not
   reference the reporting currency, which a new `RefReportingCcy` column on
   `In_Curvature` marks (MAR21.98). The new `FX_CURVATURE_DIVISOR_ALL` divides
@@ -158,11 +191,8 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
-- `AGENTS.md` holds the editorial and assistant rules only: my decisions in
-  the first person, documentation limited to this repository with license
-  attributions in the license files, descriptive branch prefixes and never
-  `codex/` or `claude/`, and the domain conventions as intended defaults. It
-  links to governance and contributing for the procedures (#168).
+- [AGENTS.md](AGENTS.md) holds the editorial and assistant rules. Governance
+  and contributing link to it (#168).
 - `tools/check_repository.py` fails when a workflow lacks top-level
   permissions, a job lacks a timeout, a checkout keeps its credentials, a job
   outside an explicit list gets a write permission, or the label
@@ -173,7 +203,7 @@ Unreleased describe integrated work, not a published version.
   dependency section consistent with `blocked`. It is read-only.
   `tools/check_issues.py --check-config`, run by `tools/check_repository.py`,
   checks the issue forms, the label guide and Dependabot against the
-  catalogue. The check, its tests and the workflow are MPL-2.0 (#163).
+  catalogue (#163).
 - `Results` shows a note when two or three correlation scenarios give the
   same SBM total, naming the tied scenarios and the one reported. Ties still
   resolve in the order low, medium, high, now recorded as a reporting

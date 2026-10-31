@@ -1,80 +1,138 @@
-name: 🐛 Bug report
-description: Report a reproducible defect in repository behavior or a documented contract.
-labels:
-- bug
-- P2
-assignees:
-- danielep71
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
+name: "🐛 Bug report"
+description: "Report reproducible incorrect behavior in the workbook, the reference, the tooling or a documented contract."
+title: "[Bug]: "
+labels: ["bug", "P2"]
+assignees: ["danielep71"]
 body:
-- type: markdown
-  attributes:
-    value: '## 🧭 Before you submit
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 Bug report
 
-      Prototype and repository-maintenance work integrates on release/v0.2.0 (milestone 2, v0.2.0 — SA prototype); release/v0.1.0 is superseded. The setup branch release/v0.0.1 was deleted after the setup closeout (milestone 1, v0.1.0 — Repo setup); its history is on main. The Excel/VBA prototype is also on main; Excel host evidence remains pending in #28.
+        **Reproducible · Exact commit · Sourced expected value · Synthetic data only**
 
-      Use synthetic examples only. Report potential vulnerabilities privately via [SECURITY.md](https://github.com/danielep71/K-FRTB-SA/blob/main/SECURITY.md).
+        Name the exact commit, give steps anyone can repeat, and state where the expected value comes from. I set the milestone and confirm the priority: `P2` by default, `P1` only for a confirmed calculation bug, that is, wrong results for valid inputs.
 
-      Forms set the assignee and default labels; maintainers must confirm one priority and assign
-      a milestone. P1 is reserved for confirmed calculation bugs: wrong results for valid inputs.
+        > [!CAUTION]
+        > Synthetic data only: never paste real positions, sensitivities, counterparties, credentials or private workbooks. Report a vulnerability privately as [`SECURITY.md`](https://github.com/danielep71/K-FRTB-SA/blob/main/SECURITY.md) describes, never in an issue.
 
-      Read the [Code of Conduct](https://github.com/danielep71/K-FRTB-SA/blob/main/CODE_OF_CONDUCT.md) before submitting.'
-- type: input
-  id: source
-  attributes:
-    label: Source commit or version
-    description: Provide the exact commit SHA and branch or version.
-  validations:
-    required: true
-- type: textarea
-  id: environment
-  attributes:
-    label: Environment
-    description: State the OS, relevant tool versions, command or workflow, and configuration.
-  validations:
-    required: true
-- type: textarea
-  id: reproduction
-  attributes:
-    label: Steps to reproduce
-    description: Provide a minimal synthetic example and precise steps or commands.
-  validations:
-    required: true
-- type: textarea
-  id: expected
-  attributes:
-    label: Expected behavior
-    description: State the documented contract or independently justified expected result; cite
-      the authoritative source.
-  validations:
-    required: true
-- type: textarea
-  id: actual
-  attributes:
-    label: Observed behavior and evidence
-    description: Describe the actual result. Include sanitized output or relevant run links;
-      distinguish static checks from runtime execution.
-  validations:
-    required: true
-- type: textarea
-  id: acceptance
-  attributes:
-    label: Acceptance criteria
-    description: List the observable conditions and validation that would demonstrate a fix.
-  validations:
-    required: true
-- type: textarea
-  id: dependencies
-  attributes:
-    label: Dependencies and blockers
-    description: Link related issues or decisions, or write None.
-  validations:
-    required: true
-- type: checkboxes
-  id: submission-checks
-  attributes:
-    label: Submission checks
-    options:
-    - label: I have read and will follow the Code of Conduct.
+  - type: dropdown
+    id: area
+    attributes:
+      label: "🎚️ Affected area"
+      options:
+        - Calculation engine (VBA)
+        - Python reference and tests
+        - Workbook template and layout
+        - Excel tooling (build, sync, export)
+        - CI and repository tooling
+        - Documentation
+        - Repository and governance
+    validations:
       required: true
-    - label: I have excluded credentials, confidential data, and undisclosed vulnerability details.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: "🎯 Defect and impact"
+      description: What is wrong, who is affected and what the consequence is. For a calculation defect, name the affected risk class, component and output.
+    validations:
       required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: "🔖 Exact commit"
+      description: Full 40-character commit SHA, or the version on the workbook README sheet, that reproduces the defect.
+      placeholder: 0123456789abcdef0123456789abcdef01234567
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "🔁 Minimal reproduction"
+      description: Deterministic steps and the smallest synthetic input rows that show the defect.
+      placeholder: |
+        1. Build the workbook from the commit above
+        2. Enter these rows on In_Delta: ...
+        3. Run FRTB-SA and read ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "✅ Expected behavior"
+      description: The expected result, error or state, with its source (the MAR paragraph, a published example, or a derivation independent of this repository's code).
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "❌ Observed behavior"
+      description: Exact values, Log messages or tool output, and whether the failure repeats.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "🖥️ Environment"
+      description: Write "N/A" for tooling or documentation defects that do not depend on the host.
+      value: |
+        Excel version/build, or LibreOffice version:
+        Office bitness:
+        Windows version:
+        Locale / decimal separator:
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "🏁 Acceptance criteria"
+      description: Checkable conditions for the fix, including the regression test that must pass.
+      placeholder: |
+        - [ ] ...
+        - [ ] Reference or regression test with a sourced expected value
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: "🧪 Validation evidence required"
+      description: The checks that will prove the fix, for example `REQUIRE_LIBREOFFICE=1 python -m pytest tests`, a reference case, or an Excel run recorded under docs/EXCEL_EVIDENCE.md.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "🔗 Dependencies and blocking status"
+      description: Name each prerequisite as an issue link (#12) or on a line starting "External condition:". Write "None" if nothing blocks this work. `blocked` applies only while a named prerequisite is unresolved.
+      placeholder: None
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "☑️ Submission checks"
+      options:
+        - label: I searched open and closed issues for an equivalent report.
+          required: true
+        - label: I reproduced this on the exact commit stated above.
+          required: true
+        - label: I have read and will follow the Code of Conduct.
+          required: true
+        - label: This report contains only synthetic data and no secrets, private links or vulnerability details.
+          required: true

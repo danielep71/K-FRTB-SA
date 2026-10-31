@@ -1,67 +1,109 @@
-name: ✨ Feature or improvement
-description: Define a bounded improvement with acceptance criteria and validation.
-labels:
-- enhancement
-- P3
-assignees:
-- danielep71
+# SPDX-License-Identifier: MPL-2.0
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+# See docs/licenses/THIRD_PARTY_NOTICES.txt.
+name: "✨ Feature or improvement"
+description: "Propose new behavior, a calculation change or a tooling improvement."
+title: "[Feature]: "
+labels: ["enhancement", "P3"]
+assignees: ["danielep71"]
 body:
-- type: markdown
-  attributes:
-    value: '## 🧭 Before you submit
+  - type: markdown
+    attributes:
+      value: |
+        ## ✨ Feature or improvement
 
-      Prototype and repository-maintenance work integrates on release/v0.2.0 (milestone 2, v0.2.0 — SA prototype); release/v0.1.0 is superseded. The setup branch release/v0.0.1 was deleted after the setup closeout (milestone 1, v0.1.0 — Repo setup); its history is on main. The Excel/VBA prototype is also on main; Excel host evidence remains pending in #28.
+        **Outcome first · Cited rule · Checkable acceptance · Explicit boundaries**
 
-      Use synthetic examples only. Report potential vulnerabilities privately via [SECURITY.md](https://github.com/danielep71/K-FRTB-SA/blob/main/SECURITY.md).
+        Describe the result you need and how it will be proved, before any implementation. A calculation change cites its MAR paragraph and states units and valid input domains. I set the milestone and confirm the priority (`P3` by default).
 
-      Forms set the assignee and default labels; maintainers must confirm one priority and assign
-      a milestone. P1 is reserved for confirmed calculation bugs: wrong results for valid inputs.
+        > [!NOTE]
+        > Synthetic data only: no real positions, counterparties, credentials or private links.
 
-      Read the [Code of Conduct](https://github.com/danielep71/K-FRTB-SA/blob/main/CODE_OF_CONDUCT.md) before submitting.'
-- type: textarea
-  id: objective
-  attributes:
-    label: Objective and user need
-    description: Explain the problem and the concrete outcome.
-  validations:
-    required: true
-- type: textarea
-  id: scope
-  attributes:
-    label: Scope and non-goals
-    description: Define intended behavior, affected interfaces, and compatibility impact. Functional
-      work must identify platform/coverage decisions still needed.
-  validations:
-    required: true
-- type: textarea
-  id: acceptance
-  attributes:
-    label: Acceptance criteria
-    description: List checkable outcomes, preferably as a Markdown checklist.
-  validations:
-    required: true
-- type: textarea
-  id: validation
-  attributes:
-    label: Validation and references
-    description: Describe how the outcome will be verified. For future calculations, cite the
-      regulatory source/profile and independent expected-value provenance; otherwise state Not
-      applicable.
-  validations:
-    required: true
-- type: textarea
-  id: dependencies
-  attributes:
-    label: Dependencies and blockers
-    description: Link related issues or decisions, or write None.
-  validations:
-    required: true
-- type: checkboxes
-  id: submission-checks
-  attributes:
-    label: Submission checks
-    options:
-    - label: I have read and will follow the Code of Conduct.
+  - type: dropdown
+    id: area
+    attributes:
+      label: "🎚️ Area"
+      options:
+        - Calculation engine (VBA)
+        - Python reference and tests
+        - Workbook template and layout
+        - Excel tooling (build, sync, export)
+        - CI and repository tooling
+        - Documentation
+        - Repository and governance
+    validations:
       required: true
-    - label: I have excluded credentials, confidential data, and undisclosed vulnerability details.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "🎯 Problem and user"
+      description: What need is unmet, and for whom.
+    validations:
       required: true
+
+  - type: textarea
+    id: requested
+    attributes:
+      label: "🧩 Requested behavior"
+      description: The observable result. For a calculation change, cite the MAR paragraph and state units and valid input domains.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "📐 Scope and non-goals"
+      description: What is in and out of this change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "🏁 Acceptance criteria"
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: "🧪 Validation evidence required"
+      description: The checks and scenarios, and, for a calculation, the source of the expected values and their tolerance. Write "Not applicable" when none is needed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: "💥 Compatibility impact"
+      description: Effect on computed results, input or output sheet layouts, Control switches and supported hosts. Write "None" if there is none.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "🔗 Dependencies and blocking status"
+      description: Name each prerequisite as an issue link (#12) or on a line starting "External condition:". Write "None" if nothing blocks this work. `blocked` applies only while a named prerequisite is unresolved.
+      placeholder: None
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: "☑️ Submission checks"
+      options:
+        - label: I searched open and closed issues for an equivalent proposal.
+          required: true
+        - label: I separated the required behavior from implementation preferences.
+          required: true
+        - label: I have read and will follow the Code of Conduct.
+          required: true
+        - label: This proposal contains only synthetic data and no secrets or private links.
+          required: true

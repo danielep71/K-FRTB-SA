@@ -1,9 +1,9 @@
 # Repository governance
 
-Owner and maintainer: **@danielep71**.
+I own and maintain this repository (**@danielep71**).
 
 Explicit approvals and requests for integration, publication or settings
-changes in these documents must come from this repository maintainer.
+changes in these documents must come from me.
 
 This document owns branch, issue, review, and milestone procedures.
 [CONTRIBUTING.md](../CONTRIBUTING.md) provides the contributor walkthrough;
@@ -14,14 +14,14 @@ This document owns branch, issue, review, and milestone procedures.
 ## Branches
 
 The active integration branch is **`release/v0.2.0`** for the SA prototype
-and repository maintenance, milestone 2. The owner approved it on
+and repository maintenance, milestone 2. I approved it on
 October 27, 2026, after the milestone renumbering, and it was created from
 `0eb819b92e6f627099ceb1400c15ebb4404e385b`, then the head of both main and
 `release/v0.1.0` (#117).
 
 **`release/v0.3.0`** is the integration branch for milestone 3, v0.3.0 —
 Regulatory baseline and certification scope, starting with the methodology
-decisions of #29. The owner approved it on October 28, 2026, and it was
+decisions of #29. I approved it on October 28, 2026, and it was
 created from `69e3df35781fc2e8a13bb523059d596d9da08150`, then the head of
 both main and `release/v0.2.0` (#132). It runs alongside `release/v0.2.0`,
 which keeps the prototype closeout and repository maintenance; bring
@@ -93,9 +93,9 @@ To delete an obsolete branch:
 
 1. The milestone closeout issue, or a follow-up issue, records the branch
    head, the check of each condition and the search used for the fourth.
-2. With explicit authorization for the deletion, the maintainer temporarily
-   excludes only the obsolete branch from both release rulesets (25319621 and
-   25319604), deletes it, and immediately removes both exclusions.
+2. With my explicit authorization for the deletion, I temporarily exclude
+   only the obsolete branch from both release rulesets (25319621 and
+   25319604), delete it, and immediately remove both exclusions.
 3. The issue records the readback: the branch is absent, its head is on
    main, and both release rulesets again have no exclusions or bypass actors.
 
@@ -149,12 +149,16 @@ main head an ancestor; never use that merge to claim ancestry advancement.
 
 The bug form defaults to `bug` and `P2`; feature and documentation forms
 default to their type label and `P3`. All forms assign `danielep71`.
-Forms cannot assign a milestone, so maintainers must select it and confirm
-exactly one priority before completing triage. P1 remains limited to confirmed
+Every form asks for the affected area, the validation evidence the change
+needs, and the dependency status in the form Issue triage checks: issue links,
+an `External condition:` line, or None. The bug form also asks for the full
+commit SHA, a sourced expected value and the host environment; the feature
+form asks for the compatibility impact. Forms cannot assign a milestone, so I
+select it and confirm exactly one priority before completing triage. P1 remains limited to confirmed
 calculation bugs. API/CLI-created issues and PRs bypass form defaults and need
 explicit metadata: assign milestones to issues only, never to PRs.
 Disabling ordinary blank issues does not enforce metadata
-or prevent maintainers from creating blank issues.
+or prevent me from creating blank issues.
 
 GitHub serves the issue chooser and PR template from the default branch.
 Files merged into a release branch need a separate explicitly requested main
@@ -204,7 +208,7 @@ owns progress; a guide is not a substitute for completed acceptance criteria.
 
 **Milestones contain issues only**, including closed milestones. PRs link to
 their owning issues and carry no milestone, whether open, closed, merged,
-human-created or bot-created. This maintainer decision of October 27, 2026
+human-created or bot-created. My decision of October 27, 2026
 (#104) supersedes earlier requirements to copy the issue milestone onto a PR.
 Dated closeout records retain the policy and names in effect at that time.
 The [metadata workflow](../.github/workflows/pr-milestones.yml) removes PR
@@ -216,7 +220,7 @@ Milestone scope and any next integration branch require explicit approval. Befor
 milestone closes, its closeout issue must reconcile all associated work,
 including closed issues and their linked PR evidence, confirm metadata and evidence, and record
 adopted and deferred maintenance practices. For the setup milestone, issue #8 owns that record.
-A genuine gap stays open or is explicitly respecified by the maintainer; moving it
+A genuine gap stays open or I explicitly respecify it; moving it
 elsewhere does not make the original acceptance criterion pass.
 
 Closing a milestone does not authorize integration into main, a tag, a GitHub
@@ -239,9 +243,9 @@ re-reviewed only on request (`@codex review`).
 | --- | --- |
 | PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets without bypass actors, recorded in the [settings](REPOSITORY_SETTINGS.md) and their [evidence](REPOSITORY_SETTINGS_EVIDENCE.md) |
 | Release-branch deletion protection | Separate active ruleset with no bypass actors; an obsolete branch is deleted only through the lifecycle procedure above (#66) |
-| Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
+| Independent approval | No required approvals configured; my procedure must not claim that an independent review occurred |
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
-| Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
+| Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); my review of later pushes |
 | Issue/PR assignee, priority, acceptance evidence; issue milestone | Manual triage and completion procedure; the read-only **Issue triage** workflow audits open issues ([labels](LABELS.md)) |
 | Label catalogue | Versioned `labels.json` (schema 2), validated on PRs; live reconciliation only from the default branch, never pruning a label still in use ([labels](LABELS.md)) |
 | No milestone on any PR | Trusted metadata workflow on PR events, daily reconciliation and manual dispatch; Dependabot configuration is checked offline (#104) |

@@ -2,9 +2,8 @@
 
 Five diagrams map the regulatory architecture of the FRTB standardized
 approach and of CVA risk. Each has an editable SVG master and a PNG,
-1,600 pixels wide. They are method maps: they do not describe the implemented
-scope of K-FRTB-SA or K-CVA, certify calculations or decide regulatory
-eligibility. The same set is published on the K-Risk-Engines site (#98).
+1,600 pixels wide. They are method maps: they do not describe the scope this
+prototype implements, certify calculations or decide regulatory eligibility.
 
 | Diagram | Shows |
 | --- | --- |

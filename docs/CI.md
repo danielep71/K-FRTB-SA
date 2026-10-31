@@ -32,7 +32,8 @@ after installation and all maintenance fixtures are offline.
   `persist-credentials: false`. A job may hold a write permission only if it is
   listed in `WRITE_ALLOWED` of `tools/check_repository.py`, for that scope:
   `labels-sync.yml` `reconcile` (`issues`), `traffic-export.yml` `export`
-  (`contents`) and `pr-milestones.yml` `reconcile` (`pull-requests`).
+  (`contents`) and `alert` (`issues`), and `pr-milestones.yml` `reconcile`
+  (`pull-requests`).
   Workflow-level permissions and `write-all` count too. The label and PR
   milestone reconciliations must keep their default-branch conditions.
 - Tracked text has a final newline and no accidental trailing whitespace or
@@ -107,14 +108,14 @@ targets, lost ecosystem/directory coverage and any `milestone` setting.
 There is no npm package manifest: the label scripts use Node built-ins. No npm updater or
 other absent ecosystem is configured. Each entry runs weekly, limits open
 PRs to five, assigns `danielep71`, and sets exactly P3 plus type labels.
-Maintainers must still verify all metadata during triage and put any owning
-issue in the appropriate milestone.
+I still verify all metadata during triage and put any owning issue in the
+appropriate milestone.
 
 Non-default `target-branch` settings govern version updates, not security
-update PRs. The existing Dependabot alerts stay enabled; automatic security
-update PRs remain off under the recorded settings baseline. Enabling or
-retargeting them is a new explicit settings decision (#2 is closed), not an
-assertion made by this file. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
+update PRs. Dependabot alerts and automatic security updates are on
+([settings](REPOSITORY_SETTINGS.md#security)). A security update PR
+opens against main; I retarget it to the active release branch before
+review. See the [official options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
 
 ## Issue-only milestones
 
@@ -138,7 +139,7 @@ refuses to modify an object without a `pull_request` marker. An unset milestone
 is a no-op. Offline fixtures exercise pagination, actual issue refusal,
 idempotence and error propagation against the workflow's inline implementation.
 
-Default-branch activation is required. The maintainer's October 27 instruction
+Default-branch activation is required. My October 27 instruction
 to apply this rule to past and future PRs is recorded in #104; focused policy
 PRs activated it on main and synchronized release/v0.1.0. This activation does
 not integrate unrelated release work. The activation push performs the historical
