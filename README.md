@@ -23,6 +23,9 @@
 [![P2 issues](https://img.shields.io/github/issues/danielep71/K-FRTB-SA/P2?style=flat-square&label=P2&color=D93F0B)](https://github.com/danielep71/K-FRTB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP2)
 [![P3 issues](https://img.shields.io/github/issues/danielep71/K-FRTB-SA/P3?style=flat-square&label=P3&color=FBCA04)](https://github.com/danielep71/K-FRTB-SA/issues?q=is%3Aissue%20is%3Aopen%20label%3AP3)
 [![Stars](https://img.shields.io/github/stars/danielep71/K-FRTB-SA?style=flat-square&color=bf8700)](https://github.com/danielep71/K-FRTB-SA/stargazers)
+[![Clones](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdanielep71%2FK-FRTB-SA%2Ftraffic-history%2Fdata%2Fbadges%2Fclones.json&style=flat-square&label=clones)](docs/TRAFFIC_HISTORY.md#badges)
+[![Visitors](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdanielep71%2FK-FRTB-SA%2Ftraffic-history%2Fdata%2Fbadges%2Fvisitors.json&style=flat-square&label=visitors%20(14d))](docs/TRAFFIC_HISTORY.md#badges)
+[![Visits](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdanielep71%2FK-FRTB-SA%2Ftraffic-history%2Fdata%2Fbadges%2Fvisits.json&style=flat-square&label=visits)](docs/TRAFFIC_HISTORY.md#badges)
 
 <br>
 

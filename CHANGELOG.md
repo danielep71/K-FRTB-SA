@@ -7,6 +7,14 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The traffic history moves to CSV files: views and clones per day, one
+  snapshot per collection day with the repository's stars, forks, watchers
+  and open issues, and the top referrers and paths. The workflow adds the
+  repository request to the App-token curl step, merges with
+  `tools/traffic_history.py`, publishes atomically with
+  `tools/traffic_publish.py`, writes three README badges, and opens a
+  traffic alert issue when traffic spikes, stars or forks grow, or a new
+  referrer appears. `import-legacy` replays the former JSON snapshots (#185).
 - Migrate traffic collection to an isolated GitHub App token and curl-only
   API step; retain validated atomic publication with the workflow token (#181).
 

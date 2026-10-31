@@ -107,6 +107,12 @@ class RepositoryIntegrityTests(unittest.TestCase):
         document["jobs"]["export"]["permissions"] = {"contents": "write", "issues": "write"}
         with self.assertRaisesRegex(ValueError, "write permission: issues"):
             checker.validate_workflow(document, "traffic-export.yml")
+        document["jobs"] = {"alert": document["jobs"]["export"]}
+        document["jobs"]["alert"]["permissions"] = {"contents": "read", "issues": "write"}
+        checker.validate_workflow(document, "traffic-export.yml")
+        document["jobs"]["alert"]["permissions"] = {"contents": "write", "issues": "write"}
+        with self.assertRaisesRegex(ValueError, "write permission: contents"):
+            checker.validate_workflow(document, "traffic-export.yml")
 
     def test_label_reconcile_must_be_limited_to_the_default_branch(self):
         root = Path(__file__).resolve().parents[2]
