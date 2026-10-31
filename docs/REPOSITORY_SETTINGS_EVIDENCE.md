@@ -6,13 +6,13 @@ Imported target: K-SFTs `docs/REPOSITORY_SETTINGS.md`, blob `a938d562878b4b78581
 
 The four general settings already match: automatic head deletion and update suggestions on; Projects and legacy downloads off. All five rulesets are active with no exclusions. Deletion, tag and traffic protection match.
 
-Outstanding differences:
-- Main ruleset 25319557: remove Repository admin PR-only bypass.
-- Release ruleset 25319604: remove always bypass; require strict up-to-date Repository integrity; permit merge and squash (currently squash only).
+Differences resolved on 2026-10-31 after GitHub access confirmation:
+- Main ruleset 25319557: bypass list empty; strict Repository integrity (Actions 15368), merge only.
+- Release ruleset 25319604: bypass list empty; strict Repository integrity (Actions 15368), merge and squash; branch creation exception retained.
 
-Browser edits were attempted, but reload and API readback retained the previous settings. No successful live alignment is claimed. No security features, visibility or license were changed.
+Initial browser edits were blocked by GitHub's Confirm access challenge. After the maintainer approved GitHub Mobile, saves succeeded and both complete rulesets were read back through the API. No security features, visibility or license were changed.
 
-After successful application, replace governance's bypass-based fast-forward with reviewed merge-commit synchronization PRs. Obsolete branch deletion needs separately authorized temporary exclusions from both release rulesets, restored immediately and verified. Do not follow a removed bypass procedure.
+Governance now replaces bypass-based fast-forward with reviewed merge-commit synchronization PRs. Obsolete branch deletion needs separately authorized temporary exclusions from both release rulesets, restored immediately and verified. Do not follow a removed bypass procedure.
 
 ## Maintenance
 
