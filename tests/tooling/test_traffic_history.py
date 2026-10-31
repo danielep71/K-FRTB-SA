@@ -450,6 +450,22 @@ class FailureTests(unittest.TestCase):
                 ws.collect(window("2026-10-15", [(1, 1)] * 14))
                 self.assert_refused(ws, message)
 
+    def test_more_uniques_than_the_count_is_refused(self) -> None:
+        cases = {
+            "a daily entry": {"views.json": series("views", [("2026-10-15", 1, 9)])},
+            "a window total": {"views.json": {"count": 1, "uniques": 9, "views": []}},
+            "a referrer": {"referrers.json": [{"referrer": "x", "count": 1, "uniques": 9}]},
+            "a path": {"paths.json": [{"path": "/o/r", "title": "r", "count": 1, "uniques": 9}]},
+        }
+        for case, responses in cases.items():
+            with self.subTest(case=case), workspace() as ws:
+                ws.collect(window("2026-10-14", [(1, 1)] * 14))
+                ws.merge("2026-10-14T06:00:00")
+                ws.collect(window("2026-10-15", [(1, 1)] * 14))
+                for name, body in responses.items():
+                    (ws.raw / name).write_text(json.dumps(body), encoding="utf-8")
+                self.assert_refused(ws, "9 uniques exceed the count 1")
+
     def test_duplicate_ranks_in_rankings_are_refused(self) -> None:
         with workspace() as ws:
             ws.collect(window("2026-10-14", [(1, 1)] * 14))
