@@ -7,7 +7,8 @@ changes in these documents must come from this repository maintainer.
 
 This document owns branch, issue, review, and milestone procedures.
 [CONTRIBUTING.md](../CONTRIBUTING.md) provides the contributor walkthrough;
-[labels and triage](LABELS.md) owns label definitions, and
+[labels and triage](LABELS.md) owns label definitions,
+[AGENTS.md](../AGENTS.md) owns the editorial and assistant rules, and
 [repository settings](REPOSITORY_SETTINGS.md) records effective GitHub controls.
 
 ## Branches
