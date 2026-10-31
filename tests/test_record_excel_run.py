@@ -139,6 +139,15 @@ def test_a_failed_comparison_is_recorded(run):
     assert code == 1
     assert statuses(host)["round_trip_production"] == "FAIL"
     assert "workbook_sha256" not in host["stages"]["round_trip_production"]
+    assert host["stages"]["round_trip_production"]["detail"].endswith("RESULT=FAIL; modules=11; differences=1; binding=VERIFIED")
+
+
+def test_an_export_that_failed_before_the_comparison_names_the_log(run):
+    run["logs"]["round-trip-development.log"] = "ERROR: export-manifest.json not found\n"
+    code, host = run["record"]()
+    assert code == 1
+    assert statuses(host)["round_trip_development"] == "FAIL"
+    assert host["stages"]["round_trip_development"]["detail"].endswith("0 RESULT lines; see round-trip-development.log")
 
 
 def test_a_session_log_for_another_candidate_is_an_error(run, capsys):
