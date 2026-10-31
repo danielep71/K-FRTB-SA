@@ -27,6 +27,14 @@ after installation and all maintenance fixtures are offline.
   GitHub's YAML `on` key remains text. Workflow files have basic structural
   checks and external step actions use full commit SHAs. This is not complete
   GitHub Actions or issue-form schema validation.
+- Every workflow declares top-level `permissions`, every job sets
+  `timeout-minutes`, and every `actions/checkout` step sets
+  `persist-credentials: false`. A job may hold a write permission only if it is
+  listed in `WRITE_ALLOWED` of `tools/check_repository.py`, for that scope:
+  `labels-sync.yml` `reconcile` (`issues`), `traffic-export.yml` `export`
+  (`contents`) and `pr-milestones.yml` `reconcile` (`pull-requests`).
+  Workflow-level permissions and `write-all` count too. The label and PR
+  milestone reconciliations must keep their default-branch conditions.
 - Tracked text has a final newline and no accidental trailing whitespace or
   extra EOF blank lines. Intentional Markdown hard breaks are allowed. VBA
   exports may use CRLF and Windows-1252. Binary assets are excluded according
