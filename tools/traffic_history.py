@@ -123,6 +123,15 @@ def count(value: Any, where: str) -> int:
     return value
 
 
+def pair(item: Mapping[str, Any], where: str) -> tuple[int, int]:
+    """A count and its unique count; more uniques than the total is refused."""
+    total = count(item.get("count"), f"{where}.count")
+    uniques = count(item.get("uniques"), f"{where}.uniques")
+    if uniques > total:
+        raise TrafficError(f"{where}: {uniques} uniques exceed the count {total}")
+    return total, uniques
+
+
 def text(value: Any, where: str) -> str:
     if not isinstance(value, str):
         raise TrafficError(f"{where}: expected a string, got {value!r}")
@@ -145,10 +154,8 @@ def parse_series(data: Any, key: str, collected: date) -> Series:
             raise TrafficError(f"{where}: duplicate date {day}")
         if date.fromisoformat(day) > collected:
             raise TrafficError(f"{where}: date {day} is after the collection date")
-        days[day] = (count(item.get("count"), f"{where}.count"),
-                     count(item.get("uniques"), f"{where}.uniques"))
-    return Series(count(data.get("count"), f"{key}.count"),
-                  count(data.get("uniques"), f"{key}.uniques"), days)
+        days[day] = pair(item, where)
+    return Series(*pair(data, key), days)
 
 
 def parse_ranked(data: Any, name: str, fields: Sequence[str]) -> list[Row]:
@@ -161,8 +168,8 @@ def parse_ranked(data: Any, name: str, fields: Sequence[str]) -> list[Row]:
             raise TrafficError(f"{where}: expected an object")
         row = {"rank": str(rank)}
         row.update({key: text(item.get(key), f"{where}.{key}") for key in fields})
-        row["count"] = str(count(item.get("count"), f"{where}.count"))
-        row["uniques"] = str(count(item.get("uniques"), f"{where}.uniques"))
+        total, uniques = pair(item, where)
+        row["count"], row["uniques"] = str(total), str(uniques)
         rows.append(row)
     return rows
 
