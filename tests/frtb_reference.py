@@ -120,15 +120,18 @@ def _bool(v) -> bool:
 
 
 def _flag(v):
-    """An optional yes/no input: False when blank, None when not recognized."""
+    """An optional TRUE/FALSE input: False when blank, None for anything else.
+
+    Only a Boolean or the text TRUE or FALSE is accepted; aliases such as YES,
+    N or 1 are rejected (#144).
+    """
     if v is None or (isinstance(v, str) and not v.strip()):
         return False
     if isinstance(v, bool):
         return v
-    if isinstance(v, (int, float)):
-        return {1: True, -1: True, 0: False}.get(v)
-    s = _text(v)
-    return True if s in ("TRUE", "YES", "Y", "1", "-1") else False if s in ("FALSE", "NO", "N", "0") else None
+    if isinstance(v, str):
+        return {"TRUE": True, "FALSE": False}.get(_text(v))
+    return None
 
 
 FIRST_COL = 2  # tables start in column C (0-based index 2)
@@ -225,10 +228,28 @@ def params_from_workbook(wb) -> Params:
     return p
 
 
+def _cell_value(cell):
+    """A cell's value, with a number formatted as TRUE/FALSE read as a Boolean.
+
+    LibreOffice saves a Boolean cell as a number whose format shows TRUE or
+    FALSE; the VBA reads such a cell as the flag it shows (CellBool, #144). A
+    plain number keeps its value, so 1 or 0 is not a flag.
+    """
+    v = cell.value
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        return v
+    sections = [s.strip() for s in (cell.number_format or "").split(";")]
+    if len(sections) < 2:
+        return v
+    shown = sections[0] if v > 0 else sections[1] if v < 0 else sections[2] if len(sections) > 2 else sections[0]
+    shown = shown.strip('"').strip().upper()
+    return {"TRUE": True, "FALSE": False}.get(shown, v)
+
+
 def _input_rows(ws, ncols):
     out = []
-    for r in ws.iter_rows(min_row=FIRST_DATA_ROW, min_col=FIRST_COL + 1, values_only=True):
-        r = list(r) + [None] * ncols
+    for cells in ws.iter_rows(min_row=FIRST_DATA_ROW, min_col=FIRST_COL + 1):
+        r = [_cell_value(c) for c in cells] + [None] * ncols
         if r[0] in (None, "") and r[1] in (None, ""):
             break
         out.append(r[:ncols])

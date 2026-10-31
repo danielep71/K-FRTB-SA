@@ -82,8 +82,9 @@ shocks (#29, item 6):
   and one for the others; the rows are netted after the divisor.
 - **FX divisor.** Enter FX CVRs before any division by 1.5: the workbook
   applies `FX_CURVATURE_DIVISOR` or `FX_CURVATURE_DIVISOR_ALL` itself.
-  `RefReportingCcy` accepts TRUE, FALSE or blank (FALSE); any other value
-  rejects the row.
+  `RefReportingCcy` accepts TRUE, FALSE or blank (FALSE), as a Boolean cell
+  or as text in any case; any other value rejects the row, including YES,
+  NO, Y, N, 1 and 0.
 - **sqrt(2) discretions.** MAR21.98 and MAR21.99 do not say whether the
   sqrt(2) divisions of MAR21.44 (GIRR) and MAR21.88 (FX) also reduce the
   curvature shock. The workbook takes no position: the upstream pricing must

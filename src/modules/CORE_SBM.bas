@@ -366,14 +366,14 @@ Private Sub LoadCurvature()
             LogMessage "ERROR", src, "CVR up and CVR down must both be numeric; row skipped"
             ok = False
         End If
-        If ok And Not IsBlankOrBool(TableCell(ws, r, 8).Value) Then
+        If ok And Not IsBlankOrBoolCell(TableCell(ws, r, 8)) Then
             LogMessage "ERROR", src, "RefReportingCcy must be TRUE, FALSE or blank; row skipped"
             ok = False
         End If
         If ok Then
             up = ToDouble(TableCell(ws, r, 6).Value, 0#)
             dn = ToDouble(TableCell(ws, r, 7).Value, 0#)
-            refCcy = ToBool(TableCell(ws, r, 8).Value, False)
+            refCcy = CellBool(TableCell(ws, r, 8))
             Select Case rc
                 Case RC_GIRR
                     ' All curves of a currency are shifted together: one risk factor per bucket

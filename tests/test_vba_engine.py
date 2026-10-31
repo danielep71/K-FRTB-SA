@@ -184,7 +184,14 @@ INVALID_ROWS = {
         ["X7", "EQ", 8.6, "A", "SPOT", None, 1000],
     ],
     "In_Vega": [["Y1", "EQ", 8, "A", None, 2, None, 1000]],
-    "In_Curvature": [["Z1", "EQ", 8, "A", None, 1000, None], ["Z2", "FX", "USD", "USD", None, 1000, 1000, "maybe"]],
+    "In_Curvature": [
+        ["Z1", "EQ", 8, "A", None, 1000, None],
+        # RefReportingCcy accepts only TRUE, FALSE or blank; aliases are rejected (#144)
+        ["Z2", "FX", "USD", "USD", None, 1000, 1000, "maybe"],
+        ["Z3", "FX", "USD", "USD", None, 1000, 1000, "no"],
+        ["Z4", "FX", "GBP", "GBP", None, 1000, 1000, "YES"],
+        ["Z5", "FX", "GBP", "GBP", None, 1000, 1000, 1],
+    ],
     "In_DRC": [
         ["K1", "A", "CORP", "ZZZ", "SENIOR", 1, 1, 1, None],
         ["K2", "A", "XXX", "A", "SENIOR", 1, 1, 1, None],
@@ -215,6 +222,14 @@ def lo_variant_run(lo_default_path, tmp_path_factory):
             for c, v in enumerate(values, start=FIRST_COL):
                 ws.cell(r, c).value = v
             r += 1
+        if sheet == "In_Curvature":
+            # A Boolean-formatted 2 shows TRUE: the VBA and the reference read it
+            # as TRUE, so FX_CURVATURE_DIVISOR leaves the row undivided (#144).
+            # LibreOffice's VBA already returns a Boolean for this cell; the
+            # numeric path of CellBool is the one Excel takes (#28).
+            for c, v in enumerate(["Z6", "FX", "JPY", "JPY", None, 9000, 6000, 2], start=FIRST_COL):
+                ws.cell(r, c).value = v
+            ws.cell(r, FIRST_COL + 7).number_format = '"TRUE";"TRUE";"FALSE"'
     folder = tmp_path_factory.mktemp("lo-variant")
     source = folder / "variant-in.xlsx"
     wb.save(source)
@@ -231,11 +246,12 @@ def test_variant_run_reconciles_with_reference(lo_variant_run):
 def test_variant_run_logs_every_invalid_row(lo_variant_run):
     errors = log_rows(lo_variant_run, "ERROR")
     sources = sorted(r[1] for r in errors)
-    assert len(errors) == 19, errors
+    assert len(errors) == 22, errors
     assert sum(s.startswith("In_Delta") for s in sources) == 7
     assert sum(s.startswith("In_DRC") for s in sources) == 7
     assert any("Cash equity maturity" in r[2] for r in errors)
-    assert any("RefReportingCcy must be TRUE, FALSE or blank" in r[2] for r in errors)
+    flag_errors = sorted(r[1] for r in errors if "RefReportingCcy must be TRUE, FALSE or blank" in r[2])
+    assert len(flag_errors) == 4 and all(s.startswith("In_Curvature") for s in flag_errors), flag_errors
     # BANK_B, split across CORP and SOV, is skipped; BANK_A takes its worst quality (#142)
     assert any("BANK_B has positions in several buckets" in r[2] for r in errors)
     warnings = log_rows(lo_variant_run, "WARN")
@@ -257,6 +273,8 @@ def test_variant_run_applies_discretions(lo_variant_run, lo_default_run):
     # The FX curvature divisor skips the USD row, flagged as referencing EUR (#144)
     fx = fx_curvature_buckets(lo_variant_run)
     assert fx["GBP"][0] == pytest.approx(15_000 / 1.5) and fx["USD"][1] == pytest.approx(-35_000)
+    # The Boolean-formatted 2 on JPY shows TRUE, so that row is not divided either
+    assert fx["JPY"][0] == pytest.approx(9_000)
 
 
 def fx_curvature_buckets(wb):
