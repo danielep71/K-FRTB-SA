@@ -7,6 +7,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Six label descriptions are reworded in the first person, and P1 now reads
+  "Confirmed calculation bug: wrong results for valid inputs", used only with
+  `bug`, consistently in the catalogue, the PR template, the issue forms,
+  LABELS and GOVERNANCE. Closed issues #45 and #48 and their PRs #46 and #49,
+  about invalid inputs, move from P1 to P2 (#162).
 - The PR milestone reconciliation runs only for PR events, the schedule, or a
   push or dispatch on the default branch, so a dispatch on another branch no
   longer runs that branch's workflow with `pull-requests: write`;

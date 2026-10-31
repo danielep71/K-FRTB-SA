@@ -123,7 +123,8 @@ the integration checkpoint.
 ## Issue metadata and completion
 
 Every issue has assignee **danielep71**, exactly one priority label and a
-milestone. P1 is reserved for confirmed calculation bugs; setup improvements
+milestone. P1 is reserved for confirmed calculation bugs, meaning wrong
+results for valid inputs, and is used only with `bug`; setup improvements
 normally use P3. Record the objective, acceptance checklist, dependencies and
 required evidence. The [label guide](LABELS.md) owns the detailed taxonomy and
 triage queries; these metadata requirements are manual triage rules.
