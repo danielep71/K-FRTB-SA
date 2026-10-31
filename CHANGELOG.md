@@ -7,6 +7,12 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- `tools\Record-FRTB-ExcelRun.cmd` records the Excel run in one step. It
+  reads the environment from Excel and the registry into `session.log`,
+  builds, compiles, exports and compares both workbooks, and calls
+  `tools/record_excel_run.py`, which writes `host.json` from the logs only and
+  validates it. The manual procedure stays; only the checks a person must
+  judge are left by hand (#199).
 - Dependabot security updates are on. The settings document, its evidence and
   CI record the change and how a security update PR, which opens against
   main, is retargeted to the active release branch (#191).
