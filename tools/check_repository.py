@@ -137,6 +137,7 @@ def validate_files(root, paths, binary=frozenset()):
 WRITE_ALLOWED = {
     ("labels-sync.yml", "reconcile"): {"issues"},
     ("traffic-export.yml", "export"): {"contents"},
+    ("traffic-export.yml", "alert"): {"issues"},
     ("pr-milestones.yml", "reconcile"): {"pull-requests"},
 }
 DEFAULT_BRANCH_ONLY = "github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"

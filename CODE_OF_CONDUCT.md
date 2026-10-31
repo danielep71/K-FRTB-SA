@@ -21,8 +21,8 @@ This policy covers this repository's issues, PRs, reviews, discussions, and
 other project spaces. It also applies when someone represents this project
 in a related public interaction.
 
-The maintainer, @danielep71, may request a correction, remove or hide content,
-lock a conversation, or restrict participation using GitHub's available
+I (@danielep71) may request a correction, remove or hide content, lock a
+conversation, or restrict participation using GitHub's available
 moderation controls. Responses should reflect the behavior, its impact,
 and any repeated violations. Technical disagreements alone are not misconduct.
 
@@ -31,9 +31,9 @@ and any repeated violations. Technical disagreements alone are not misconduct.
 Use the offending content's menu and select **Report content**. Choose
 **Report abuse to GitHub Support** when available; follow
 [GitHub's reporting instructions](https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam).
-For a concern about the maintainer, use the same GitHub Support route.
+For a concern about me, use the same GitHub Support route.
 Reports to GitHub Support are handled by GitHub, not a private project inbox.
-Do not assume a report to GitHub automatically notifies this maintainer.
+Do not assume a report to GitHub automatically notifies me.
 
 Include a short factual description, links to the relevant content, and
 necessary context in the private report. The issue forms are for technical
