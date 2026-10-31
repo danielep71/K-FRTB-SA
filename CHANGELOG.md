@@ -7,6 +7,14 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The first desktop Excel run is recorded in
+  `docs/evidence/2026-10-31-excel-run-323260b.md`, on `323260b`. Both builds,
+  both compiles, the regression test (52 of 52) and both round trips passed,
+  and the validator reports PASS. The checks by eye, the host and the log
+  digests are in the record, with five screenshots under
+  `docs/assets/screenshots/`. The README badge, the website note and
+  `docs/validation.md` now state this evidence and what it leaves untested
+  (#28).
 - `tools\Record-FRTB-ExcelRun.cmd` records the Excel run in one step. It
   reads the environment from Excel and the registry into `session.log`,
   builds, compiles, exports and compares both workbooks, and calls
