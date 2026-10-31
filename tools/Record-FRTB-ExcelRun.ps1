@@ -154,6 +154,10 @@ function Write-Environment {
 function Invoke-Logged {
     # Runs a command, writes its output to a log in the bundle, returns its exit code
     param([string]$Log, [string[]]$Header, [scriptblock]$Command)
+    # Windows PowerShell 5.1 turns redirected stderr of a child process into
+    # error records, which 'Stop' would make terminating: the stage would end
+    # without its log. Here they are only logged; the exit code decides.
+    $ErrorActionPreference = 'Continue'
     $lines = @($Header)
     $lines += @(& $Command 2>&1 | ForEach-Object { [string]$_ })
     $code = $LASTEXITCODE
@@ -253,9 +257,10 @@ function Invoke-Variant {
     Test-Compile "COMPILE_$($Mode.ToUpperInvariant())" $workbook
     Write-Host "== $Mode export and comparison"
     $export = Join-Path $script:bundle "export-$label"
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Export-FRTB-VBA.ps1 -WorkbookPath $workbook -OutDir $export *>&1 |
-        Out-File -FilePath (Join-Path $script:bundle "export-$label.txt") -Encoding utf8
-    Write-Session "EXPORT_$($Mode.ToUpperInvariant())_EXIT=$LASTEXITCODE"
+    $code = Invoke-Logged "export-$label.txt" @() {
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\Export-FRTB-VBA.ps1 -WorkbookPath $workbook -OutDir $export
+    }
+    Write-Session "EXPORT_$($Mode.ToUpperInvariant())_EXIT=$code"
     [void](Invoke-Logged "round-trip-$label.log" @() {
         & python tools\compare_vba_export.py --export $export --mode $label --candidate-sha $sha --workbook $workbook
     })
