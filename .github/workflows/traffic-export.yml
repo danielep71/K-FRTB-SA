@@ -28,8 +28,50 @@ jobs:
           persist-credentials: false
       - name: Run offline collector tests before credentialed collection
         run: python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v
-      - name: Collect and atomically publish aggregate traffic
+      # App credentials are analytics environment values. Only the token action
+      # receives the key; only curl receives its short-lived installation token.
+      - name: Check the traffic App configuration
         env:
-          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          CLIENT_ID: ${{ vars.TRAFFIC_APP_CLIENT_ID }}
+          HAS_KEY: ${{ secrets.TRAFFIC_APP_PRIVATE_KEY != '' }}
+        run: |
+          if [ -z "$CLIENT_ID" ] || [ "$HAS_KEY" != "true" ]; then
+            echo "::error::TRAFFIC_APP_CLIENT_ID or TRAFFIC_APP_PRIVATE_KEY is not set in the analytics environment"
+            exit 1
+          fi
+      - name: Prepare traffic response directory
+        run: mkdir -p "$RUNNER_TEMP/traffic-raw"
+      - name: Create the traffic App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.TRAFFIC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TRAFFIC_APP_PRIVATE_KEY }}
+          permission-administration: read
+      - name: Fetch traffic from the GitHub API
+        env:
+          TRAFFIC_API_TOKEN: ${{ steps.app-token.outputs.token }}
+          API: ${{ github.api_url }}/repos/${{ github.repository }}/traffic
+        run: |
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/views?per=day" -o "$RUNNER_TEMP/traffic-raw/views.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/clones?per=day" -o "$RUNNER_TEMP/traffic-raw/clones.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/popular/referrers" -o "$RUNNER_TEMP/traffic-raw/referrers.json"
+          curl --fail --silent --show-error --retry 3 --max-time 60 --max-filesize 8388608 \
+            -H "Authorization: Bearer $TRAFFIC_API_TOKEN" -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API/popular/paths" -o "$RUNNER_TEMP/traffic-raw/paths.json"
+      # Publication uses only the built-in contents-write token, never the App token.
+      - name: Merge and atomically publish aggregate traffic
+        env:
           GITHUB_TOKEN: ${{ github.token }}
+          TRAFFIC_RAW: ${{ runner.temp }}/traffic-raw
         run: python3 tools/traffic_history.py

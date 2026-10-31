@@ -7,6 +7,19 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- Migrate traffic collection to an isolated GitHub App token and curl-only
+  API step; retain validated atomic publication with the workflow token (#181).
+
+- The issue forms ask for the affected area, the validation evidence and the
+  dependency status in the form Issue triage checks; the bug form also asks
+  for the full commit SHA, a sourced expected value and the Excel or
+  LibreOffice environment, and the feature form for the compatibility impact.
+  The outdated branch history is removed from their opening note. The labels
+  and the assignee are unchanged; the adapted forms are under MPL-2.0 and
+  listed in `docs/licenses/THIRD_PARTY_NOTICES.txt` (#177).
+- The settings evidence, the Excel evidence guide and the market-risk diagram
+  notes describe only this repository, and the #168 entry below links to
+  `AGENTS.md` instead of restating its rules (#174).
 - The settings document names the default-branch ruleset "Protect main", as it
   is live, states that the traffic-history rule blocks deletion and force
   pushes while direct pushes stay allowed for the traffic workflow, and
@@ -153,11 +166,8 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
-- `AGENTS.md` holds the editorial and assistant rules only: my decisions in
-  the first person, documentation limited to this repository with license
-  attributions in the license files, descriptive branch prefixes and never
-  `codex/` or `claude/`, and the domain conventions as intended defaults. It
-  links to governance and contributing for the procedures (#168).
+- [AGENTS.md](AGENTS.md) holds the editorial and assistant rules. Governance
+  and contributing link to it (#168).
 - `tools/check_repository.py` fails when a workflow lacks top-level
   permissions, a job lacks a timeout, a checkout keeps its credentials, a job
   outside an explicit list gets a write permission, or the label

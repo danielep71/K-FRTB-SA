@@ -3,8 +3,7 @@
 The diagrams in docs/assets/market-risk/ map the regulatory architecture of
 FRTB-SA and CVA risk (Basel MAR20-MAR23 and MAR50; the framework diagram also
 cites MAR30-MAR33, MAR40, BCBS 158 and BCBS 189). They are method maps: they do
-not describe the implemented scope of K-FRTB-SA or K-CVA. The same set is
-published on the K-Risk-Engines site.
+not describe the scope this prototype implements.
 
 Text is real SVG text; "K_{SBM}" in a label is written as K with a subscript.
 PNGs are rendered with CairoSVG 2.9.1 (and its Cairo system library), which is
