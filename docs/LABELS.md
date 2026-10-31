@@ -21,11 +21,12 @@ issue. **PRs must have no milestone**, including closed, merged and bot PRs.
 Milestone ownership is recorded on the issue only (#104). The metadata
 workflow removes PR assignments automatically; issue triage remains manual.
 
-The triage convention reserves **P1 for confirmed calculation bugs**.
+**P1 is reserved for a confirmed calculation bug: wrong results for valid
+inputs.** It is used only together with `bug`. An input that should have been
+rejected but was accepted, such as a blank parameter, is a P2 defect, not P1.
 P2 covers material defects in correctness, robustness or maintainability. P3
-covers setup, documentation, testing and other non-blocking quality work.
-The shared P1 catalogue description is retained verbatim for cross-repository
-alignment; it does not override this narrower assignment rule.
+covers setup, documentation, testing and other non-blocking quality work. The
+catalogue description of P1 states the same rule.
 
 | Label | Use |
 | --- | --- |
