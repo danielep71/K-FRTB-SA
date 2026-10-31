@@ -44,6 +44,10 @@ DAILY = "daily.csv"
 SNAPSHOTS = "snapshots.csv"
 REFERRERS = "referrers.csv"
 PATHS = "paths.csv"
+# The columns that identify one row of each file; a repeated key is refused.
+KEYS: dict[str, tuple[str, ...]] = {DAILY: ("date",), SNAPSHOTS: ("snapshot_date",),
+                                    REFERRERS: ("snapshot_date", "rank"),
+                                    PATHS: ("snapshot_date", "rank")}
 HEADERS: dict[str, tuple[str, ...]] = {
     DAILY: ("date", "views", "unique_views", "views_collected_at",
             "clones", "unique_clones", "clones_collected_at"),
@@ -209,6 +213,7 @@ def read_history(path: Path) -> list[Row]:
     if found != header and found != LEGACY_HEADERS.get(path.name):
         raise TrafficError(f"{path.name}: header is {reader.fieldnames}, expected {list(header)}")
     rows = []
+    seen: dict[tuple[str, ...], int] = {}
     for number, row in enumerate(reader, start=2):
         if None in row or any(value is None for value in row.values()):
             raise TrafficError(f"{path.name}:{number}: wrong number of fields")
@@ -216,6 +221,13 @@ def read_history(path: Path) -> list[Row]:
             raise TrafficError(f"{path.name}:{number}: invalid date {row[header[0]]!r}")
         complete = {key: "" for key in header} | dict(row)
         check_fields(path.name, number, complete)
+        # A repeated key would be collapsed silently by the merge, losing a row
+        # that later collections cannot restore once it leaves the API window.
+        key = tuple(complete[column] for column in KEYS[path.name])
+        if key in seen:
+            raise TrafficError(f"{path.name}:{number}: duplicate {', '.join(KEYS[path.name])} "
+                               f"{' '.join(key)} (first on line {seen[key]})")
+        seen[key] = number
         rows.append(complete)
     return rows
 
