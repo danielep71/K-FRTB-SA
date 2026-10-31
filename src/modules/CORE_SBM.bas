@@ -350,7 +350,7 @@ End Sub
 Private Sub LoadCurvature()
     Dim ws As Object, r As Long, src As String
     Dim rc As String, bucket As String, qual As String, subType As String
-    Dim up As Double, dn As Double, ok As Boolean
+    Dim up As Double, dn As Double, ok As Boolean, refCcy As Boolean
 
     ResetStore
     Set ws = GetSheet(SH_IN_CURV)
@@ -366,9 +366,14 @@ Private Sub LoadCurvature()
             LogMessage "ERROR", src, "CVR up and CVR down must both be numeric; row skipped"
             ok = False
         End If
+        If ok And Not IsBlankOrBool(TableCell(ws, r, 8).Value) Then
+            LogMessage "ERROR", src, "RefReportingCcy must be TRUE, FALSE or blank; row skipped"
+            ok = False
+        End If
         If ok Then
             up = ToDouble(TableCell(ws, r, 6).Value, 0#)
             dn = ToDouble(TableCell(ws, r, 7).Value, 0#)
+            refCcy = ToBool(TableCell(ws, r, 8).Value, False)
             Select Case rc
                 Case RC_GIRR
                     ' All curves of a currency are shifted together: one risk factor per bucket
@@ -381,8 +386,8 @@ Private Sub LoadCurvature()
                 Case RC_FX
                     qual = bucket
                     subType = ""
-                    up = up / FxCurvatureDivisor()
-                    dn = dn / FxCurvatureDivisor()
+                    up = up / FxCurvatureDivisor(refCcy)
+                    dn = dn / FxCurvatureDivisor(refCcy)
             End Select
             If qual = "" And rc <> RC_GIRR Then
                 LogMessage "ERROR", src, "Qualifier (issuer or commodity) is required; row skipped"

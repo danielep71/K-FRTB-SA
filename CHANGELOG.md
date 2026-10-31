@@ -7,10 +7,37 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- `FX_CURVATURE_DIVISOR` divides only the FX CVRs of options that do not
+  reference the reporting currency, which a new `RefReportingCcy` column on
+  `In_Curvature` marks (MAR21.98). The new `FX_CURVATURE_DIVISOR_ALL` divides
+  every FX CVR: the alternative that needs supervisory approval, labeled as
+  such. An unrecognized flag rejects the row. The sample's USD/EUR row is
+  flagged; with both switches off, the sample results are unchanged.
+  Compatibility: the column moves `Comment` on `In_Curvature` one column to
+  the right, so a workbook built earlier needs a rebuild or an inserted
+  column; until then its comments are rejected as flags, never applied
+  (#144, from the #29 decisions).
+- The methodology states the curvature input contract the upstream pricing
+  must follow: shock sizes (MAR21.98, MAR21.99), the delta deduction, the
+  loss-positive sign, entry before the FX divisor, and no position on the
+  sqrt(2) discretions for curvature shocks. It also records that a `P_CSR`
+  override of the covered-bond risk weight applies to the whole bucket. The
+  `In_Curvature` and `P_CSR` bucket 8 descriptions follow; no calculation
+  changed (#140, from the #29 decisions).
+- Import the shared repository-settings target and separate local/historical
+  evidence, recording verified live alignment and PR-based synchronization (#149).
+- The PR template, the release procedure, the v0.2.0 milestone guide and the
+  governance controls table describe release-branch synchronization through a
+  reviewed merge-commit PR from main, without a direct fast-forward or a
+  ruleset bypass (#151).
+- `release/v0.3.0`, created on October 28, 2026 from `69e3df3`, is the
+  integration branch for milestone 3, starting with the methodology
+  decisions of #29. `release/v0.2.0` keeps the prototype closeout,
+  repository maintenance and Dependabot. Governance, contributing and the
+  roadmap name both lines (#132).
 - The prototype milestone guide names its assignee directly and limits the
   input-validation statement to the required-parameter cases covered by the
   recorded regression evidence (#32).
-
 - The social preview image shows "PROTOTYPE 0.2.0", rendered again from its
   HTML source with the figures unchanged, and the root README navigation links
   the wiki after the website (#126).
@@ -24,6 +51,23 @@ Unreleased describe integrated work, not a published version.
 
 ### Fixed
 
+- A DRC obligor whose positions name different buckets is logged as an error
+  and skipped with all its positions, instead of taking the first position's
+  bucket (MAR22.22). When its positions differ in credit quality, the worst
+  one, with the highest risk weight, applies with a warning, instead of the
+  first one (MAR22.24). The reference, the methodology and the tests follow;
+  the sample results are unchanged (#142, from the #29 decisions).
+- With `GIRR_SPECIFIED_CCY_DISCRETION` on, the sqrt(2) division of MAR21.44
+  also applies to the inflation and cross-currency basis risk weights of a
+  specified currency or the reporting currency, not only to the tenor
+  weights. The Control description, the methodology and the reference follow;
+  the sample results are unchanged because the discretion is off by default
+  (#136, from the #29 decisions).
+- A cash-equity DRC position (`EQUITY` seniority) with a maturity between
+  three months and one year is rejected and logged instead of being scaled:
+  MAR22.16 and its FAQ allow only three months or at least one year. The
+  `In_DRC` description, the methodology and the reference follow; the
+  sample results are unchanged (#134, from the #29 decisions).
 - The LibreOffice installation step of the prototype checks stops after 8
   minutes, so a hung package mirror fails the job early instead of holding it
   for the whole 20-minute limit (#124).
@@ -87,6 +131,11 @@ Unreleased describe integrated work, not a published version.
 
 ### Added
 
+- `Results` shows a note when two or three correlation scenarios give the
+  same SBM total, naming the tied scenarios and the one reported. Ties still
+  resolve in the order low, medium, high, now recorded as a reporting
+  convention; the capital and the sample results are unchanged (#138, from
+  the #29 decisions).
 - The v0.2.0 — SA prototype milestone guide (`docs/Milestones/v0.2.0.md`)
   and an interim prototype evaluation written before the Excel run
   (`docs/evidence/2026-10-27-prototype-evaluation.md`). The roadmap lists
