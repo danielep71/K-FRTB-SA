@@ -65,11 +65,11 @@ When integration is explicitly requested, open a PR from the applicable integrat
 a **merge commit** to preserve ancestry. Integration does not by itself publish
 a version tag, release, workbook or website.
 
-After integration, an authorized maintainer may fast-forward the active
-integration branch to the main merge commit if work continues, using the
-existing administrator maintenance bypass and an expected-head check. At a
-milestone transition, create the next explicitly approved integration branch and
-update this document, contribution guidance and automated PR targets together.
+After integration, synchronize the active release branch through a reviewed
+merge-commit PR from main, with strict required checks and resolved conversations.
+No administrator or app bypass exists. Do not directly fast-forward the protected
+branch. At a milestone transition, create the next explicitly approved integration
+branch and update this document, contribution guidance and automated PR targets together.
 
 ### Release-branch lifecycle
 
@@ -92,11 +92,11 @@ To delete an obsolete branch:
 
 1. The milestone closeout issue, or a follow-up issue, records the branch
    head, the check of each condition and the search used for the fourth.
-2. The maintainer temporarily excludes the branch from ruleset 25319621, deletes
-   it using the administrator bypass of ruleset 25319604, and then removes
-   the exclusion.
+2. With explicit authorization for the deletion, the maintainer temporarily
+   excludes only the obsolete branch from both release rulesets (25319621 and
+   25319604), deletes it, and immediately removes both exclusions.
 3. The issue records the readback: the branch is absent, its head is on
-   main, and ruleset 25319621 matches its earlier configuration.
+   main, and both release rulesets again have no exclusions or bypass actors.
 
 `release/v0.0.1` was deleted this way (#62). Never delete an active release
 branch, force-push or reset shared history, or recreate a deleted release
@@ -107,9 +107,10 @@ branch name; later work uses a new explicitly approved branch.
 Before integration, record the release head and main head. After the
 explicitly requested merge, inspect the resulting commit: its first parent must
 be the previous main head and its second parent the reviewed release head.
-Fast-forward the active release branch only if it still points to that
-reviewed head and the merge commit descends from it. If it moved, inspect
-the new work before proceeding; never reset or force an update.
+Synchronize main back into the active release branch through a separate reviewed
+merge-commit PR. Record both heads and verify the merged tree and ancestry;
+if either branch moves, reassess the new work before proceeding. Never reset
+or force an update.
 
 Record the PR, merge commit, branch readback, and applicable post-merge checks.
 PR [#13](https://github.com/danielep71/K-FRTB-SA/pull/13) demonstrates this
@@ -223,24 +224,25 @@ version convention (#8).
 
 ## Current controls and maintenance
 
-[Repository settings](REPOSITORY_SETTINGS.md) records the live rulesets,
-bypass actors, security features and current limitations. PRs and resolved
-conversations are required; main allows merge commits, release branches allow
-squash merges. Required approvals are zero. The universal integrity workflow
+[Repository settings](REPOSITORY_SETTINGS.md) records the portable configuration.
+[Local evidence](REPOSITORY_SETTINGS_EVIDENCE.md) records dated readbacks,
+security-feature history and limitations. PRs and resolved
+conversations are required; main allows merge commits; release branches allow
+squash task merges and merge-commit synchronization PRs. No bypass actors exist. Required approvals are zero. The universal integrity workflow
 (#7) is a required check on main and release branches (#2). The ChatGPT Codex
 Connector reviews every PR automatically when it is opened; later pushes are
 re-reviewed only on request (`@codex review`).
 
 | Requirement | Enforcement or working procedure |
 | --- | --- |
-| PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets, with the bypass modes recorded in the settings baseline |
+| PRs, merge methods, conversation resolution, shared-history and deletion protection | Active rulesets without bypass actors, recorded in the [settings](REPOSITORY_SETTINGS.md) and their [evidence](REPOSITORY_SETTINGS_EVIDENCE.md) |
 | Release-branch deletion protection | Separate active ruleset with no bypass actors; an obsolete branch is deleted only through the lifecycle procedure above (#66) |
 | Independent approval | No required approvals configured; maintainer procedure must not claim independent review occurred |
 | Successful universal integrity check | Required `Repository integrity` check on main (strict) and release branches (#7, #2) |
 | Review coverage for every PR | Automatic Codex review when a PR is opened, on main and release targets (#2); maintainer review of later pushes |
 | Issue/PR assignee, priority, acceptance evidence; issue milestone | Manual triage and completion procedure |
 | No milestone on any PR | Trusted metadata workflow on PR events, daily reconciliation and manual dispatch; Dependabot configuration is checked offline (#104) |
-| Explicitly requested main integration and controlled release-branch fast-forward | Maintainer procedure using the documented branch protections and expected-head guard |
+| Explicitly requested main integration and reviewed release-branch synchronization | Reviewed merge-commit PR with strict required checks and recorded source heads |
 
 Issue #6 recorded initial default-branch activation of forms and the PR
 template; later changes follow the same activation procedure. [Conduct](../CODE_OF_CONDUCT.md) and [security](../SECURITY.md)
