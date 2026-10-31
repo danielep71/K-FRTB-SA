@@ -1,136 +1,122 @@
-# Repository settings baseline
+# ⚙️ Repository settings · Shared target configuration
 
-Baseline verified on October 17, 2026, against the live GitHub settings and
-rulesets. Later readbacks are dated where they are recorded; the latest is
-October 18, 2026. GitHub Settings remains authoritative; this file records
-the observed baseline and outstanding dependencies.
+> **Alignment pending (2026-10-31).** This imported baseline is the maintainer-approved target, not the current live configuration. See [local evidence and outstanding differences](REPOSITORY_SETTINGS_EVIDENCE.md). Do not use the no-bypass synchronization procedure until the settings have been applied and verified.
 
-## General settings
+[![Scope](https://img.shields.io/badge/Scope-Non--default_settings-00338D?style=flat-square)](#scope)
+[![Format](https://img.shields.io/badge/Format-Portable-005EB8?style=flat-square)](#reuse)
+[![Comparison](https://img.shields.io/badge/Comparison-Documented_defaults-483698?style=flat-square)](#sources)
 
-| Control | Before issue #2 | Verified baseline |
-| --- | --- | --- |
-| Visibility | Private | Public, changed during setup |
-| License | MIT | MIT |
-| Default branch | main | main |
-| Automatically delete merged head branches | Off | On; the release deletion rules keep release branches from automatic deletion; obsolete ones are deleted under the governance lifecycle (#66) |
-| Suggest updating PR branches | Off | On |
-| Merge / squash / rebase availability | All enabled | All enabled globally; branch rules narrow permitted methods |
-| Auto-merge | Off | Off |
-| Wiki | Enabled | Enabled, editing restricted to collaborators; since October 18, 2026 its Home page links to the versioned documents |
-| Issues / projects | Enabled / disabled | Enabled / disabled |
-| Discussions | Disabled in repository API | Disabled in repository API; the navigation may display a Discussions link |
-| GitHub Pages | Disabled | Disabled; website publication is separate work |
+**Only deliberate differences · No repository identifiers · Reusable configuration**
 
-## Active rulesets
+<a id="scope"></a>
 
-| Ruleset | Target | Enforced behavior | Bypass actors |
+## 🧭 Comparison basis
+
+This document records only settings that differ from the comparison baseline:
+a new standalone GitHub.com repository, without inherited organization rules,
+an applied security configuration or copied template customizations. General
+options use GitHub's documented REST parameter defaults; those defaults are
+not a guarantee of every account's repository-creation UI behavior.
+
+Custom active rulesets are compared with an otherwise unprotected repository,
+not with individual checkboxes preselected inside the ruleset editor. In
+particular, deletion protection may be preselected when creating a ruleset;
+creating and activating that targeted ruleset is still a customization.
+
+Reference documentation checked: **2026-10-29**. Repository-specific evidence,
+observation dates and rule IDs belong in the local evidence record, not in this
+portable file. Copying this file does not apply settings or verify another repository.
+
+[General differences](#general) · [Custom protection](#rulesets) · [Reuse](#reuse) · [Sources](#sources)
+
+<a id="general"></a>
+
+## 🏷️ General settings — changed values only
+
+| Setting | Documented baseline | Configured value | Effect / qualification |
 | --- | --- | --- | --- |
-| [Protect main](https://github.com/danielep71/K-FRTB-SA/rules/25319557) | Default branch | PR required; resolved conversations; merge commits only; no deletion or force pushes | Repository admin, through PRs only |
-| [Protect release branches](https://github.com/danielep71/K-FRTB-SA/rules/25319604) | release/** | PR required; resolved conversations; squash only; no force pushes; deletion restriction | Repository admin, always, subject to the separate deletion rule |
-| [Prevent release branch deletion](https://github.com/danielep71/K-FRTB-SA/rules/25319621) | release/** | Deletion blocked independently | None |
-| [Protect release tags](https://github.com/danielep71/K-FRTB-SA/rules/25319649) | v* tags | Updates, deletion and force pushes blocked | None |
+| Automatically delete merged head branches | Off (`delete_branch_on_merge: false`) | **On** | Cleans up eligible task branches; protected retained branches remain subject to their deletion rules. |
+| Always suggest updating PR branches | Off (`allow_update_branch: false`) | **On** | Offers updates even without a freshness requirement; local governance still governs use on shared integration branches. |
+| Repository Projects feature | On (`has_projects: true`) | **Off** | Disables the repository feature; this does not describe account-level project boards. Organization defaults may differ. |
+| Legacy downloads flag | On (`has_downloads: true`) | **Off** | API metadata difference; not a prohibition on release assets or source downloads. |
 
-All four rulesets have active enforcement. Required approval count is zero,
-conversation resolution is required.
-Administrative bypasses are not permissions granted to additional users or
-apps. No app bypass was added.
+Source: GitHub's [repository REST documentation][repo-api]. These values are
+configuration differences, not blanket recommendations for every project.
 
-The setup milestone (v0.1.0 — Repo setup, first named v0.0.1) closed on October 18, 2026.
-**`release/v0.0.1`** was deleted the same day (#62). For the deletion only, ruleset
-25319621 temporarily excluded that branch and stayed active for every other
-`release/**` branch; the exclusion was then removed, and the readback
-matches the earlier configuration. The branch's closeout head
-`b4d6c02edcd60bb412a06999d1909e6eaba63837` (#53) is on main. No setup tag
-was created.
+<a id="rulesets"></a>
 
-The active prototype integration branch **`release/v0.2.0`** also receives
-repository maintenance and all three Dependabot entries, with owning issues in milestone 2. It
-superseded `release/v0.1.0` on October 27, 2026 (#117), which had held them
-under the decision of October 18, 2026 (#51). Shared controls were synchronized
-under #31. Both branches match `release/**`: readback on October 18
-confirmed the active force-push restriction and the separate deletion rule
-with no bypass for `release/v0.1.0`. On October 27, 2026 the owner confirmed
-that the rulesets cover `release/v0.2.0` without change (#117).
-See [branch governance](GOVERNANCE.md) for task PRs, controlled active-branch
-fast-forward after main integration and the deletion of obsolete release
-branches. Task branches can be deleted automatically
-after merge.
+## 🛡️ Custom active protection
 
-**Required status check.** The unconditional **Repository integrity** check
-from #7 (GitHub Actions, app ID 15368) is required by both rulesets, read back
-on October 18, 2026:
+The baseline has no corresponding custom active rulesets. The following five
+rulesets are explicit additions. All are **Active**, have **no excluded refs**
+and **no bypass actors**. Default-valued supporting parameters below are
+included only to describe each custom rule completely; they are not counted
+as separate deviations from GitHub defaults.
 
-| Ruleset | Required check | Up to date before merging | Not enforced on branch creation |
-| --- | --- | --- | --- |
-| Protect main (25319557) | `Repository integrity` | Yes | No |
-| Protect release branches (25319604) | `Repository integrity` | No | Yes, so new release branches can be created from main |
-
-The path-filtered label, traffic and prototype checks are deliberately not
-required: a PR that never triggers them would stay blocked. Dependabot PR
-#37, opened before the workflow reached its base, was reported `blocked`
-only because the required check had not run.
-
-## Actions permissions
-
-- All actions/reusable workflows are allowed, but **full-length
-  commit SHA pinning is now enforced** in repository settings.
-- Default GITHUB_TOKEN permissions remain read-only (contents/packages).
-- Actions cannot create or approve PRs by default.
-- Retention remains 90 days; label evidence artifacts explicitly use 30 days.
-- Existing label workflows separately grant issues:write only to trusted
-  reconciliation, not to PR validation.
-- Public-repository fork approval currently requires approval for first-time
-  contributors; this was read back after the repository became public.
-
-## Security features
-
-| Control | Before | Verified result |
+| Custom ruleset | Target | Added restrictions |
 | --- | --- | --- |
-| Dependency graph | Off | Enabled |
-| Dependabot alerts | Off | Enabled |
-| Low-impact development-dependency auto-dismissal | Enabled by the public-repository preset | Disabled |
-| Private vulnerability reporting | Not offered while private | Enabled after the public-visibility change |
-| Secret scanning alerts | Not offered while private | Secret Protection enabled |
-| Secret push protection | Off | Enabled |
-| CodeQL | Not configured | Default setup for GitHub Actions and Python (added automatically when Python code arrived), default query suite, weekly schedule; setup run succeeded; read back October 18, 2026 |
-| Dependabot version updates | No configuration | Added under #7; #51 consolidates three entries, on release/v0.2.0 since #118 (active on main through #120); PRs have no milestone under #104; scheduling uses the configuration on main; targets in CI.md |
-| Dependabot security update PRs | Off | Remain off; version-update targets do not govern security PRs; changing this is a new explicit settings decision (CI.md) |
+| Protect default branch | `~DEFAULT_BRANCH` | Require PR, resolved conversations and strict up-to-date `Repository integrity` from GitHub Actions; allow merge commits only; block deletion and force pushes. |
+| Protect release branches | `refs/heads/release/**` | Require PR, resolved conversations and the same strict required check; allow squash or merge commits; block deletion and force pushes. |
+| Prevent release branch deletion | `refs/heads/release/**` | Independent deletion restriction. |
+| Protect release tags | `refs/tags/v*` | Block updates, deletion and force pushes. |
+| Protect traffic history | `refs/heads/traffic-history` | Block deletion and force pushes; allow the intended data-writing automation. |
 
-[CodeQL setup evidence](https://github.com/danielep71/K-FRTB-SA/actions/runs/39070451926).
-The detected language at setup was **GitHub Actions**, not an FRTB calculation
-engine. CodeQL setup and scan results do not certify calculation correctness.
-No paid feature or agentic autofix was enabled.
+### 🔬 Supporting parameters for the two PR rulesets
 
-## Automated review and remaining work
+| Parameter | Default-branch rule | Release-branch rule |
+| --- | --- | --- |
+| Required status context | `Repository integrity` | `Repository integrity` |
+| Expected check integration | GitHub Actions (`15368`) | GitHub Actions (`15368`) |
+| Up-to-date requirement | Strict | Strict |
+| Required check enforced on creation | Yes | No — branch bootstrap exception |
+| Required approving reviews | 0 | 0 |
+| Required review-thread resolution | Yes | Yes |
+| Permitted PR merge methods | Merge | Squash, merge |
+| Administrator/app bypass | None | None |
 
-GitHub's Copilot code review page explicitly reports **No Copilot code review
-access** for this account. No paid subscription or Copilot review automation
-was enabled. The ChatGPT Codex Connector reviews automatically when a PR is
-opened or a draft is marked ready for review: on #42 and #46 its summary
-shows the trigger "PR opened" with no manual request. It does not re-review later pushes; request
-one with `@codex review` or review them as a maintainer, and resolve findings
-before merge.
+**Operational implications:** zero approvals does not establish independent
+review. The release bootstrap exception does not exempt subsequent changes.
+Synchronize integration branches through the approved PR process; do not rely
+on an administrator bypass. Tag protection does not itself restrict tag creation
+or authorize publishing a release.
 
-Issue #2 is closed with the readback of the required check, the
-representative blocked PR and the review evidence.
+The check name and branch patterns are reusable conventions, not built-in
+GitHub jobs or automatically existing branches. Confirm that the required job
+reports on every relevant PR before adopting these rules.
 
-The retained-branch lifecycle was exercised through PR #13: main received
-merge commit `c01f2ad6c71ea2d6f23eac2b5a07fcdd430456a4`, the release branch
-was fast-forwarded to it, and the post-integration CodeQL run passed.
-[Governance](GOVERNANCE.md) defines the ongoing verification procedure;
-issue #4 supplies contribution, milestone, and closeout guidance.
+<a id="reuse"></a>
 
-## Traffic analytics
+## ♻️ Reuse and maintenance
 
-Traffic-history collection was authorized under issue #23.
-[Traffic history](TRAFFIC_HISTORY.md) owns the workflow, dedicated data-branch
-protection, analytics environment and credential contract. A real successful
-collection is required before reporting the feature operational; branch or
-workflow presence alone is insufficient.
+- Keep repository names, usernames, URLs, issue numbers and rule IDs out of this file.
+- Verify the destination's actual default and inherited policies before copying a value.
+- Include a setting only when both its configured value and comparison default are known.
+- Remove rows that match the destination's default; retain only its actual differences.
+- Keep unverified settings and historical evidence in the separate local evidence record.
+- Recheck this comparison after platform-default changes or an approved configuration change.
 
-Traffic ruleset **25321321** is active for `traffic-history`, blocks deletion
-and non-fast-forward updates, and has no bypass actors. The `analytics`
-environment is restricted to branch `main` (no tags) and holds the
-`TRAFFIC_TOKEN` secret. The first successful collection ran on October 18,
-2026 ([run 39105087826](https://github.com/danielep71/K-FRTB-SA/actions/runs/39105087826),
-data commit `af6a68a`); #23 is closed.
+> [!NOTE]
+> This is intentionally not a complete settings inventory. Security features
+> whose initial state depends on account, visibility or an applied security
+> configuration are not classified as non-default without a verified comparator.
+> Omission does not mean a feature is disabled or unimportant.
+
+<a id="sources"></a>
+
+## 📚 Default and ruleset references
+
+| Reference | Supports |
+| --- | --- |
+| [Repository REST API][repo-api] | Declared option defaults and parameter meanings |
+| [Creating rulesets][ruleset-create] | Custom targets, bypass configuration and activation; the editor initially uses Disabled enforcement |
+| [Available rules][ruleset-rules] | Meaning of selected protection rules, including editor defaults |
+| [Security configuration defaults][security-defaults] | Why organization-applied defaults must be distinguished from a standalone baseline |
+
+[repo-api]: https://docs.github.com/en/rest/repos/repos
+[ruleset-create]: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository
+[ruleset-rules]: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets
+[security-defaults]: https://docs.github.com/en/enterprise-cloud@latest/code-security/how-tos/secure-at-scale/configure-enterprise-security/establish-complete-coverage/create-custom-configuration
+
+---
+
+[↑ Back to comparison basis](#scope)
