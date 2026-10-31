@@ -8,7 +8,7 @@ Unreleased describe integrated work, not a published version.
 ### Changed
 
 - Import the shared repository-settings target and separate local/historical
-  evidence, explicitly recording pending live alignment (#149).
+  evidence, recording verified live alignment and PR-based synchronization (#149).
 
 - `release/v0.3.0`, created on October 28, 2026 from `69e3df3`, is the
   integration branch for milestone 3, starting with the methodology
