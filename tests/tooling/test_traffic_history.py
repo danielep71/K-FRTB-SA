@@ -4,6 +4,10 @@ import base64
 import csv
 import importlib.util
 import io
+import json
+import tempfile
+import shlex
+import re
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -46,6 +50,49 @@ class Writer:
 
 
 class TrafficTests(unittest.TestCase):
+    def test_app_credentials_stay_in_their_steps(self):
+        workflow = (Path(__file__).resolve().parents[2] /
+            ".github/workflows/traffic-export.yml").read_text()
+        blocks = re.split(r"^      - name: ", workflow, flags=re.MULTILINE)
+        self.assertNotIn("TRAFFIC_APP_PRIVATE_KEY", blocks[0])
+        self.assertNotIn("steps.app-token.outputs.token", blocks[0])
+        key_blocks = [b for b in blocks[1:] if "secrets.TRAFFIC_APP_PRIVATE_KEY" in b]
+        self.assertEqual(len(key_blocks), 2)
+        check = next(b for b in key_blocks if b.startswith("Check the traffic App configuration"))
+        self.assertEqual(check.count("secrets.TRAFFIC_APP_PRIVATE_KEY"), 1)
+        self.assertIn("${{ secrets.TRAFFIC_APP_PRIVATE_KEY != '' }}", check)
+        token = next(b for b in key_blocks if b.startswith("Create the traffic App token"))
+        self.assertIn("private-key: ${{ secrets.TRAFFIC_APP_PRIVATE_KEY }}", token)
+        self.assertIn("permission-administration: read", token)
+        self.assertIn("actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510", token)
+        fetches = [b for b in blocks[1:] if "steps.app-token.outputs.token" in b]
+        self.assertEqual(len(fetches), 1)
+        fetch = fetches[0]
+        self.assertTrue(fetch.startswith("Fetch traffic from the GitHub API"))
+        run = fetch.split("        run: |\n", 1)[1]
+        run = "\n".join(line for line in run.splitlines() if not line.lstrip().startswith("#"))
+        commands = run.replace("\\\n", " ").strip().splitlines()
+        self.assertEqual(len(commands), 4)
+        for command in commands:
+            words = shlex.split(command)
+            self.assertEqual(words[0], "curl")
+            self.assertFalse(set(words) & {";", "&&", "||", "--location", "-L"})
+            self.assertNotIn("$(", command)
+            self.assertNotIn("`", command)
+        self.assertNotIn("secrets.TRAFFIC_TOKEN", workflow)
+
+    def test_response_files_validate_before_api_access(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for name, value in fixture().items():
+                (Path(directory) / (name + ".json")).write_text(json.dumps(value))
+            self.assertEqual(traffic.load_responses(directory), fixture())
+            (Path(directory) / "paths.json").write_text("invalid")
+            with self.assertRaises(ValueError):
+                traffic.load_responses(directory)
+            (Path(directory) / "paths.json").unlink()
+            with self.assertRaises(FileNotFoundError):
+                traffic.load_responses(directory)
+
     def test_overlap_replaces_counts_and_preserves_older_days(self):
         old = "date,views,views_uniques,clones,clones_uniques\n2026-10-01,7,4,0,0\n2026-10-17,3,2,1,1\n"
         rows = list(csv.DictReader(io.StringIO(traffic.merge_daily(old, fixture()))))
@@ -133,7 +180,7 @@ class TrafficTests(unittest.TestCase):
         environment = {"GITHUB_REF": "refs/heads/main", "GITHUB_REPOSITORY": "owner/repo",
                        "GITHUB_SHA": "a" * 40}
         with patch.dict(traffic.os.environ, environment, clear=True), patch.object(traffic, "GitHub") as api:
-            with self.assertRaisesRegex(ValueError, "TRAFFIC_TOKEN"):
+            with self.assertRaisesRegex(ValueError, "TRAFFIC_RAW"):
                 traffic.main()
             api.assert_not_called()
 

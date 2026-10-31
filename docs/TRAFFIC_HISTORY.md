@@ -42,8 +42,9 @@ quality.
   traffic credential. It is path-filtered analytics validation, not the
   universal repository-integrity gate (#7, completed).
 - The export job receives `contents: write` through its built-in
-  `GITHUB_TOKEN` only to publish the data branch. A separate `TRAFFIC_TOKEN`
-  reads the traffic endpoints. Checkout credentials are not persisted.
+  `GITHUB_TOKEN` only to publish the data branch. A short-lived GitHub App installation token
+  reads the traffic endpoints in a separate curl-only step. The Python merge
+  and publication step never receives the App token or private key. Checkout credentials are not persisted.
 - All source/data responses validate before Git writes. A single commit
   contains CSV, latest payload, and snapshot. Ref updates are non-forced;
   competing history updates fail rather than overwrite another commit.
@@ -51,26 +52,49 @@ quality.
   PRs for its ordinary automated data commits. Do not execute workflow code
   from the data branch.
 
-## 🔑 Required credential
+## 🔑 GitHub App configuration
 
-Create an `analytics` environment restricted to deployment from `main`.
-Its environment secret must be named **TRAFFIC_TOKEN**. Use a fine-grained
-token scoped to this repository with **Administration: read**; the token
-does not need contents write, issue write, or access to other repositories.
-GitHub requires this permission to read traffic. The built-in workflow token
-cannot be granted administration access.
+I configure the App and credentials before approving the migration merge:
 
-Token creation and secret entry are owner-controlled operations. Never put
-a token in source, issue comments, command output, screenshots, or chat.
-Record its expiry privately and rotate it before expiry. A missing or invalid
-credential fails collection with an actionable error; it does not create
-zero-valued substitute data.
+1. Create a dedicated traffic GitHub App, disable its webhook and grant only
+   **Administration: Read-only** (GitHub adds Metadata: Read-only).
+2. Install it on this repository. Generate a dedicated private key.
+3. Keep the `analytics` environment restricted to `main`. Add the App Client ID
+   as variable **TRAFFIC_APP_CLIENT_ID** and the complete PEM key as secret
+   **TRAFFIC_APP_PRIVATE_KEY** in that environment, not at repository scope.
+4. Confirm configuration before merging the migration. After integration into
+   the default branch, dispatch **Export repository traffic** on `main` and
+   verify a successful run and a new `traffic-history` commit.
+5. Only after that successful run, I delete the old `TRAFFIC_TOKEN` environment
+   secret and revoke the personal token. There is no fallback to that token.
 
-[GitHub traffic API requirements](https://docs.github.com/en/rest/metrics/traffic)
-define the current access and data contract. This repository had no secrets
-at initial inspection on October 18, 2026 (Europe/Rome). Issue #23 recorded
-credential and first-run readiness and is closed; the first real export is
-recorded below.
+Never put the private key in source, logs, issues, screenshots or chat.
+The configuration check sees only whether the key exists. Only the pinned
+App-token action receives its value; only the curl API step receives the
+installation token. The action scopes the token to this repository with
+Administration: read, expires it after an hour and revokes it at job end.
+Publication retains the built-in `GITHUB_TOKEN` with contents: write.
+
+### Key rotation
+
+Generate a new dedicated key, replace the `analytics` environment secret,
+then dispatch on main and verify the resulting history commit. Only after
+success, delete the old key in the App settings, checking its fingerprint.
+Rotate promptly after suspected exposure. Missed data outside GitHub's
+14-day window cannot be recovered.
+
+### Failure diagnosis
+
+| Failure | Recovery |
+| --- | --- |
+| App client ID or private key not set | Configure both values in `analytics`; check environment access. |
+| App token creation fails | Verify Client ID, key and installation on this repository. |
+| curl HTTP 401 | Check installation and key, then rerun. |
+| curl HTTP 403/404 | Verify Administration: read and repository selection; accept permission changes. |
+| curl HTTP 429/5xx or timeout | Retry later; curl retries transient errors before failing. |
+| Missing, malformed or oversized response | Inspect the failing endpoint; no history is published. |
+| Invalid CSV or missing data branch | Restore valid history; never reset existing history. |
+| Publication rejected or non-fast-forward | Check branch rules and competing updates, then rerun; never force. |
 
 ## 🧪 Validation and operations
 
@@ -84,7 +108,7 @@ python3 -m unittest discover -s tests/tooling -p test_traffic_history.py -v
 Tests cover overlapping windows, preservation of old days, empty windows,
 invalid counts/dates, duplicate samples, atomic publication, non-forced race
 failure, and rejection of privileged execution outside main or without the
-credential.
+response directory, and isolation of App credentials between workflow steps.
 
 After credential configuration and main integration, open Actions →
 **Export repository traffic** → **Run workflow**, select main and run it.
@@ -108,5 +132,5 @@ only (one branch, zero tags) and holds the `TRAFFIC_TOKEN` environment
 secret. The first real export succeeded in
 [run 39105087826](https://github.com/danielep71/K-FRTB-SA/actions/runs/39105087826)
 and published data commit `af6a68a` on `traffic-history`; issue #23 is closed.
-Renew the fine-grained token before it expires; an expired token makes the
-daily run fail.
+This dated record describes the former personal-token setup. The App migration
+requires a separate successful run before its operation is confirmed.

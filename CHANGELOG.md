@@ -8,19 +8,21 @@ Unreleased describe integrated work, not a published version.
 ### Changed
 
 - `.gitattributes`, `.gitignore` and `.editorconfig` are the complete file
-  baseline under MPL-2.0: Git attributes for PDFs, all Office packages, fonts,
-  media and archives; ignore rules for Office and Access locks, coverage,
-  packaging and Node caches; editor indentation for every text type. Every
-  tracked file keeps the same Git attributes, nothing is renormalized, and the
-  template stays the only tracked Office package. No regulatory text is
-  stored; the files state the rule for a byte-for-byte copy (#179).
+  baseline: Git attributes for PDFs, all Office packages, fonts, media and
+  archives; ignore rules for Office and Access locks, coverage, packaging and
+  Node caches; editor indentation for every text type. Every tracked file
+  keeps the same Git attributes, nothing is renormalized, and the template
+  stays the only tracked Office package. No regulatory text is stored; the
+  files state the rule for a byte-for-byte copy (#179).
+- Migrate traffic collection to an isolated GitHub App token and curl-only
+  API step; retain validated atomic publication with the workflow token (#181).
+
 - The issue forms ask for the affected area, the validation evidence and the
   dependency status in the form Issue triage checks; the bug form also asks
   for the full commit SHA, a sourced expected value and the Excel or
   LibreOffice environment, and the feature form for the compatibility impact.
   The outdated branch history is removed from their opening note. The labels
-  and the assignee are unchanged; the adapted forms are under MPL-2.0 and
-  listed in `docs/licenses/THIRD_PARTY_NOTICES.txt` (#177).
+  and the assignee are unchanged (#177).
 - The settings evidence, the Excel evidence guide and the market-risk diagram
   notes describe only this repository, and the #168 entry below links to
   `AGENTS.md` instead of restating its rules (#174).
@@ -41,11 +43,10 @@ Unreleased describe integrated work, not a published version.
   `tools/check_repository.py` requires the condition (#160).
 - The label catalogue uses schema 2, a single `labels` list without overlays,
   and the unused label policy file is removed. The label scripts are replaced
-  by schema-2 versions under MPL-2.0 (listed in
-  `docs/licenses/THIRD_PARTY_NOTICES.txt`) that keep the guard against pruning
-  a used label and write one summary when the final check fails. Live
-  reconciliation runs only from the default branch, and the validation job
-  has a 5-minute timeout (#158).
+  by schema-2 versions that keep the guard against pruning a used label and
+  write one summary when the final check fails. Live reconciliation runs only
+  from the default branch, and the validation job has a 5-minute timeout
+  (#158).
 - `FX_CURVATURE_DIVISOR` divides only the FX CVRs of options that do not
   reference the reporting currency, which a new `RefReportingCcy` column on
   `In_Curvature` marks (MAR21.98). The new `FX_CURVATURE_DIVISOR_ALL` divides
@@ -182,7 +183,7 @@ Unreleased describe integrated work, not a published version.
   dependency section consistent with `blocked`. It is read-only.
   `tools/check_issues.py --check-config`, run by `tools/check_repository.py`,
   checks the issue forms, the label guide and Dependabot against the
-  catalogue. The check, its tests and the workflow are MPL-2.0 (#163).
+  catalogue (#163).
 - `Results` shows a note when two or three correlation scenarios give the
   same SBM total, naming the tied scenarios and the one reported. Ties still
   resolve in the order low, medium, high, now recorded as a reporting

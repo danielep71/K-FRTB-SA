@@ -78,7 +78,7 @@ The root controls already define:
   secrets, caches, coverage and local environments, with the exact approved
   workbook-template exception.
 
-The three files are a complete baseline under MPL-2.0 (#179). Handling
+The three files are a complete baseline (#179). Handling
 depends on the file type only: they describe no tooling this repository does
 not have (#87), and a path rule is added only with a layout change that needs
 it. No regulatory text is stored; a byte-for-byte copy would need its own
