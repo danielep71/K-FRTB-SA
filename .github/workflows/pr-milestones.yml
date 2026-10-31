@@ -19,6 +19,12 @@ concurrency:
 jobs:
   reconcile:
     name: Remove PR milestone assignments
+    # PR events and the schedule always run the trusted copy of this workflow;
+    # a manual dispatch or push runs only from the default branch.
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      github.event_name == 'schedule' ||
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

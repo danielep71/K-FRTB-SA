@@ -114,7 +114,10 @@ assertion made by this file. See the [official options reference](https://docs.g
 milestone assignments from PRs only (#104). It handles `opened`, `reopened`,
 `edited` and `milestoned` PR activity, plus a daily full reconciliation at
 03:17 UTC, manual dispatch and reviewed workflow changes pushed to main.
-The full scan includes open, closed and merged
+PR events and the schedule always run the reconciliation; a push or manual
+dispatch runs it only from the default branch, so no other branch's copy of
+the workflow gets the write token. `tools/check_repository.py` requires this
+condition. The full scan includes open, closed and merged
 PRs. It uses unfiltered creation-order pagination so removing assignments does
 not shift the collection. A 100-page bound, malformed response, API error or
 failed removal fails the run rather than claiming success.

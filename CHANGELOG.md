@@ -7,6 +7,10 @@ Unreleased describe integrated work, not a published version.
 
 ### Changed
 
+- The PR milestone reconciliation runs only for PR events, the schedule, or a
+  push or dispatch on the default branch, so a dispatch on another branch no
+  longer runs that branch's workflow with `pull-requests: write`;
+  `tools/check_repository.py` requires the condition (#160).
 - The label catalogue uses schema 2, a single `labels` list without overlays,
   and the unused label policy file is removed. The label scripts are replaced
   by schema-2 versions under MPL-2.0 (listed in
